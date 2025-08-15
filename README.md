@@ -55,14 +55,14 @@ pnpm build
 ## Publishing
 
 ```bash
-# Build and publish to npm
+# Build and publish
 pnpm publish
 ```
 
 After publishing, users can install globally:
 
 ```bash
-npm install -g my-cli-tool
+pnpm install -g my-cli-tool
 # or
-npx my-cli-tool hello --name "World"
+pnpm dlx my-cli-tool hello --name "World"
 ```

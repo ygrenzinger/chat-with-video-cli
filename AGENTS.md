@@ -1,12 +1,12 @@
 # Agent Guidelines for CLI Tool Development
 
 ## Build & Test Commands
-- **Build**: `npm run build` (uses Vite for TypeScript compilation)
-- **Development**: `npm run dev` (watch mode with auto-rebuild)
-- **Test**: `npm test` (interactive) or `npm run test:run` (single run)
-- **Test single file**: `npx vitest run path/to/test.spec.ts`
-- **Lint**: `npm run lint` (ESLint for TypeScript)
-- **Type check**: `npm run typecheck` (TypeScript compiler check)
+- **Build**: `pnpm build` (uses Vite for TypeScript compilation)
+- **Development**: `pnpm dev` (watch mode with auto-rebuild)
+- **Test**: `pnpm test` (interactive) or `pnpm test:run` (single run)
+- **Test single file**: `pnpm exec vitest run path/to/test.spec.ts`
+- **Lint**: `pnpm lint` (ESLint for TypeScript)
+- **Type check**: `pnpm typecheck` (TypeScript compiler check)
 
 ## Code Style Guidelines
 - **Module system**: ES modules only (`type: "module"`)
@@ -17,6 +17,7 @@
 - **Naming**: PascalCase for components, camelCase for functions/variables
 - **File structure**: Commands in `src/commands/`, components in `src/components/`
 - **Exports**: Named exports preferred, use `export const` for functions
+- **Barrel files**: Avoid barrel files (`index.ts` files that re-export from other modules). Import directly from source files instead
 
 ## Dependencies
 - React Ink for CLI UI components
