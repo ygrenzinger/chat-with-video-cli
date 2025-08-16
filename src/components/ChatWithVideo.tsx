@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, Box, useInput } from 'ink';
-import { SubtitlesSelection } from './SubtitlesSelection.js';
-import { SubtitleLanguage, YtdlpSubtitleService } from '../services/subtitle.js';
+import { SubtitlesSelection } from './SubtitlesSelection';
+import { SubtitleLanguage, YtdlpSubtitleService } from '../services/subtitle';
 
 interface ChatWithVideoProps {
   url: string;
@@ -28,7 +28,6 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({ url, subtitleServi
     // Handle /exit command
     if (state.userInput + input === '/exit') {
       process.exit(0);
-      return;
     }
 
     // Only handle input if we're in chat mode (subtitle already selected)

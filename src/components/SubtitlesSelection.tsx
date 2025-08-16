@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Box, useInput } from 'ink';
-import { SubtitleLanguage, SubtitleService } from '../services/subtitle.js';
+import { SubtitleLanguage, SubtitleService } from '../services/subtitle';
+import Spinner from 'ink-spinner';
 
 interface SubtitlesSelectionProps {
   url: string;
@@ -87,7 +88,9 @@ export const SubtitlesSelection: React.FC<SubtitlesSelectionProps> = ({
   if (state.loading) {
     return (
       <Box flexDirection="column">
-        <Text color="yellow">📥 Fetching available subtitles...</Text>
+        <Text color="yellow">
+          <Spinner type="dots" /> Fetching available subtitles...
+        </Text>
       </Box>
     );
   }
