@@ -39,6 +39,9 @@ importers:
       globals:
         specifier: ^16.3.0
         version: 16.3.0
+      ink-testing-library:
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@19.1.10)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -794,6 +797,15 @@ packages:
   indent-string@5.0.0:
     resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
     engines: {node: '>=12'}
+
+  ink-testing-library@4.0.0:
+    resolution: {integrity: sha512-yF92kj3pmBvk7oKbSq5vEALO//o7Z9Ck/OaLNlkzXNeYdwfpxMQkSowGTFUCS5MSu9bWfSZMewGpp7bFc66D7Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   ink@6.2.0:
     resolution: {integrity: sha512-NQbNokT11cuxlIcCDfBMk1vEwaqc/cjTSqc4R4JugBO4BpWVe2B2A6ElC2koZQ9Vj91z0C40zid/jxOF2hJL9A==}
@@ -1903,6 +1915,10 @@ snapshots:
   imurmurhash@0.1.4: {}
 
   indent-string@5.0.0: {}
+
+  ink-testing-library@4.0.0(@types/react@19.1.10):
+    optionalDependencies:
+      '@types/react': 19.1.10
 
   ink@6.2.0(@types/react@19.1.10)(react@19.1.1):
     dependencies:
