@@ -3,6 +3,8 @@ import { render } from 'ink';
 import React from 'react';
 import { ChatWithVideo } from './components/ChatWithVideo.js';
 import { isValidYouTubeUrl } from './utils/youtube.js';
+import { VideoSubtitleService } from './services/subtitle.js';
+import { VideoSubtitleOrchestrator } from './services/subtitle-orchestrator.js';
 
 const program = new Command();
 
@@ -11,7 +13,7 @@ program
   .description('Chat with YouTube videos using AI')
   .version('1.0.0')
   .argument('<url>', 'YouTube URL to process')
-  .action((url: string) => {
+  .action(async (url: string) => {
     if (!isValidYouTubeUrl(url)) {
       console.error('Error: Please provide a valid YouTube URL');
       console.error('Examples:');
@@ -19,6 +21,11 @@ program
       console.error('  https://youtu.be/dQw4w9WgXcQ');
       process.exit(1);
     }
+    
+    const subtitleService = new VideoSubtitleService();
+    const orchestrator = new VideoSubtitleOrchestrator(subtitleService);
+    
+    await orchestrator.processVideo(url);
     
     render(React.createElement(ChatWithVideo, { url }));
   });
