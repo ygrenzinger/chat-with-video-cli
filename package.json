@@ -15,6 +15,8 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
+    "start": "node dist/cli.js",
+    "build:start": "pnpm build && pnpm start",
     "test": "vitest",
     "test:run": "vitest run",
     "typecheck": "tsc --noEmit",
