@@ -6,9 +6,16 @@ export interface SubtitleLanguage {
   type: "uploaded" | "auto";
 }
 
+export interface SubtitleDownloadResult {
+  success: boolean;
+  filePath?: string;
+  error?: string;
+}
+
 export interface SubtitleService {
   isAvailable(): Promise<boolean>;
   getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>;
+  downloadSubtitle(url: string, subtitle: SubtitleLanguage): Promise<SubtitleDownloadResult>;
 }
 
 export class YtdlpSubtitleService implements SubtitleService {
@@ -52,6 +59,43 @@ export class YtdlpSubtitleService implements SubtitleService {
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
+    }
+  }
+
+  async downloadSubtitle(
+    url: string,
+    subtitle: SubtitleLanguage
+  ): Promise<SubtitleDownloadResult> {
+    try {
+      const command = subtitle.type === "uploaded" 
+        ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`
+        : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`;
+
+      const output = execSync(command, {
+        encoding: "utf8",
+        stdio: "pipe",
+      });
+
+      // Check if download was successful by looking for file mention in output
+      const vttMatch = output.match(/\[download\]\s+(.+\.vtt)/);
+      if (vttMatch) {
+        return {
+          success: true,
+          filePath: vttMatch[1]
+        };
+      }
+
+      return {
+        success: false,
+        error: "Download failed: no subtitle file found"
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to download subtitle: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      };
     }
   }
 

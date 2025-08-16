@@ -12,6 +12,7 @@ describe('SubtitlesSelection', () => {
     mockSubtitleService = {
       isAvailable: vi.fn(),
       getAvailableSubtitles: vi.fn(),
+      downloadSubtitle: vi.fn(),
     } as SubtitleService;
     mockOnSubtitleSelected = vi.fn();
   });

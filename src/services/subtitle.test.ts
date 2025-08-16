@@ -65,12 +65,12 @@ fr       French                  vtt, srt`;
         expect(result[0]).toEqual({
           code: "en-US",
           name: "English (United States)",
-          formats: ["vtt", "srt", "ttml", "srv3", "srv2", "srv1", "json3"],
+          type: "uploaded",
         });
         expect(result[1]).toEqual({
           code: "fr",
           name: "French",
-          formats: ["vtt", "srt"],
+          type: "uploaded",
         });
       }
     });
@@ -83,6 +83,71 @@ fr       French                  vtt, srt`;
       await expect(
         service.getAvailableSubtitles("https://youtube.com/watch?v=test")
       ).rejects.toThrow("Failed to get subtitles: Network error");
+    });
+  });
+
+  describe("downloadSubtitle", () => {
+    it("should download uploaded subtitle using --write-sub", async () => {
+      const mockOutput = "[download] test.vtt has already been downloaded";
+      mockExecSync.mockReturnValue(mockOutput);
+
+      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const url = "https://youtube.com/watch?v=test";
+      
+      const result = await service.downloadSubtitle(url, subtitle);
+
+      expect(result).toEqual({ success: true, filePath: expect.stringContaining(".vtt") });
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'yt-dlp --write-sub --sub-lang en-US --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
+        { encoding: "utf8", stdio: "pipe" }
+      );
+    });
+
+    it("should download auto subtitle using --write-auto-sub", async () => {
+      const mockOutput = "[download] test.vtt has already been downloaded";
+      mockExecSync.mockReturnValue(mockOutput);
+
+      const subtitle = { code: "fr-orig", name: "French", type: "auto" as const };
+      const url = "https://youtube.com/watch?v=test";
+      
+      const result = await service.downloadSubtitle(url, subtitle);
+
+      expect(result).toEqual({ success: true, filePath: expect.stringContaining(".vtt") });
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'yt-dlp --write-auto-sub --sub-lang fr-orig --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
+        { encoding: "utf8", stdio: "pipe" }
+      );
+    });
+
+    it("should handle download errors", async () => {
+      mockExecSync.mockImplementation(() => {
+        throw new Error("Network error");
+      });
+
+      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const url = "https://youtube.com/watch?v=test";
+      
+      const result = await service.downloadSubtitle(url, subtitle);
+
+      expect(result).toEqual({ 
+        success: false, 
+        error: "Failed to download subtitle: Network error" 
+      });
+    });
+
+    it("should handle download command failure", async () => {
+      const mockOutput = "[error] Unable to download subtitle";
+      mockExecSync.mockReturnValue(mockOutput);
+
+      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const url = "https://youtube.com/watch?v=test";
+      
+      const result = await service.downloadSubtitle(url, subtitle);
+
+      expect(result).toEqual({ 
+        success: false, 
+        error: "Download failed: no subtitle file found" 
+      });
     });
   });
 });
