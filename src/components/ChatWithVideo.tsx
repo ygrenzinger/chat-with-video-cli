@@ -66,13 +66,9 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({ url, subtitleServi
         <Box flexDirection="column">
           <Text color="green">✅ Selected subtitle:</Text>
           <Text color="cyan">
-            {state.selectedSubtitle.code} - {state.selectedSubtitle.name}
-          </Text>
-          <Text color="gray">
-            Available formats: {state.selectedSubtitle.formats.join(', ')}
+            {state.selectedSubtitle.name}
           </Text>
           <Text> </Text>
-          <Text color="yellow">Feature coming soon: Chat with your YouTube videos!</Text>
           <Text color="gray">Type "/exit" to quit</Text>
           
           {state.userInput && (

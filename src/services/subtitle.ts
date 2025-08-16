@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 export interface SubtitleLanguage {
   code: string;
   name: string;
-  formats: string[];
+  type: "uploaded" | "auto";
 }
 
 export interface SubtitleService {
@@ -30,13 +30,19 @@ export class YtdlpSubtitleService implements SubtitleService {
         stdio: "pipe",
       });
 
-      if (output.includes("has no subtitles")) {
-        return "This video has no subtitles";
+      if (output.includes("[info] Available subtitles for")) {
+        return this.parseSubtitleOutput(output).map((lang) => ({
+          ...lang,
+          type: "uploaded",
+        })) as SubtitleLanguage[];
       }
 
-      if (output.includes("[info] Available subtitles for")) {
+      if (output.includes("[info] Available automatic captions for")) {
         const languages = this.parseSubtitleOutput(output);
-        return languages;
+        return this.filterOrigSuffixLanguages(languages).map((lang) => ({
+          ...lang,
+          type: "auto",
+        })) as SubtitleLanguage[];
       }
 
       return "No subtitle information found";
@@ -49,9 +55,11 @@ export class YtdlpSubtitleService implements SubtitleService {
     }
   }
 
-  private parseSubtitleOutput(output: string): SubtitleLanguage[] {
+  private parseSubtitleOutput(
+    output: string
+  ): Omit<SubtitleLanguage, "type">[] {
     const lines = output.split("\n");
-    const languages: SubtitleLanguage[] = [];
+    const languages: Omit<SubtitleLanguage, "type">[] = [];
 
     let foundHeader = false;
     for (const line of lines) {
@@ -63,16 +71,21 @@ export class YtdlpSubtitleService implements SubtitleService {
       if (foundHeader && line.trim()) {
         const match = line.match(/^(\S+)\s+(.+?)\s+([a-z0-9, ]+)$/i);
         if (match) {
-          const [, code, name, formats] = match;
+          const [, code, name] = match;
           languages.push({
             code: code.trim(),
             name: name.trim(),
-            formats: formats.split(",").map((f) => f.trim()),
           });
         }
       }
     }
 
     return languages;
+  }
+
+  private filterOrigSuffixLanguages(
+    languages: Omit<SubtitleLanguage, "type">[]
+  ): Omit<SubtitleLanguage, "type">[] {
+    return languages.filter((lang) => lang.code.endsWith("-orig"));
   }
 }

@@ -121,7 +121,7 @@ export const SubtitlesSelection: React.FC<SubtitlesSelectionProps> = ({
         <Box key={subtitle.code}>
           <Text color={index === state.selectedIndex ? 'cyan' : 'white'}>
             {index === state.selectedIndex ? '→ ' : '  '}
-            {subtitle.code} - {subtitle.name} ({subtitle.formats.join(', ')})
+            {subtitle.code} - {subtitle.name}
           </Text>
         </Box>
       ))}

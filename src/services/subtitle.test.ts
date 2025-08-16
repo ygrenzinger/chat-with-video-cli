@@ -45,7 +45,7 @@ describe("VideoSubtitleService", () => {
         "https://youtube.com/watch?v=test"
       );
 
-      expect(result).toBe("This video has no subtitles");
+      expect(result).toBe("No subtitle information found");
     });
 
     it("should parse and return available subtitles", async () => {

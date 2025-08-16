@@ -25,13 +25,13 @@ describe('SubtitlesSelection', () => {
   it('should render loading state initially', () => {
     const { lastFrame } = render(<SubtitlesSelection {...getMockProps()} />);
     
-    expect(lastFrame()).toContain('📥 Fetching available subtitles...');
+    expect(lastFrame()).toContain('⠋ Fetching available subtitles...');
   });
 
   it('should fetch subtitles on mount and display them', async () => {
     const mockSubtitles: SubtitleLanguage[] = [
-      { code: 'en', name: 'English', formats: ['vtt'] },
-      { code: 'fr', name: 'French', formats: ['vtt'] },
+      { code: 'en', name: 'English', type: 'uploaded' },
+      { code: 'fr', name: 'French', type: 'uploaded' },
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValueOnce(mockSubtitles);
@@ -44,8 +44,8 @@ describe('SubtitlesSelection', () => {
     
     expect(mockSubtitleService.getAvailableSubtitles).toHaveBeenCalledWith('https://www.youtube.com/watch?v=test');
     expect(lastFrame()).toContain('📝 Available subtitles:');
-    expect(lastFrame()).toContain('en - English (vtt)');
-    expect(lastFrame()).toContain('fr - French (vtt)');
+    expect(lastFrame()).toContain('en - English');
+    expect(lastFrame()).toContain('fr - French');
   });
 
   it('should display error message when fetch fails', async () => {
@@ -75,9 +75,9 @@ describe('SubtitlesSelection', () => {
 
   it('should handle arrow key navigation', async () => {
     const mockSubtitles: SubtitleLanguage[] = [
-      { code: 'en', name: 'English', formats: ['vtt'] },
-      { code: 'fr', name: 'French', formats: ['vtt'] },
-      { code: 'es', name: 'Spanish', formats: ['vtt'] },
+      { code: 'en', name: 'English', type: 'uploaded' },
+      { code: 'fr', name: 'French', type: 'uploaded' },
+      { code: 'es', name: 'Spanish', type: 'uploaded' },
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValueOnce(mockSubtitles);
@@ -106,8 +106,8 @@ describe('SubtitlesSelection', () => {
 
   it('should wrap navigation from first to last item', async () => {
     const mockSubtitles: SubtitleLanguage[] = [
-      { code: 'en', name: 'English', formats: ['vtt'] },
-      { code: 'fr', name: 'French', formats: ['vtt'] },
+      { code: 'en', name: 'English', type: 'uploaded' },
+      { code: 'fr', name: 'French', type: 'uploaded' },
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValueOnce(mockSubtitles);
@@ -126,8 +126,8 @@ describe('SubtitlesSelection', () => {
 
   it('should call onSubtitleSelected when Enter is pressed', async () => {
     const mockSubtitles: SubtitleLanguage[] = [
-      { code: 'en', name: 'English', formats: ['vtt'] },
-      { code: 'fr', name: 'French', formats: ['vtt'] },
+      { code: 'en', name: 'English', type: 'uploaded' },
+      { code: 'fr', name: 'French', type: 'uploaded' },
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValueOnce(mockSubtitles);
