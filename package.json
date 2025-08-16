@@ -1,11 +1,11 @@
 {
-  "name": "my-cli-tool",
+  "name": "chat-with-video",
   "version": "1.0.0",
-  "description": "A CLI tool built with TypeScript and React Ink",
+  "description": "Chat with YouTube videos using AI",
   "type": "module",
   "main": "dist/cli.js",
   "bin": {
-    "my-cli": "bin/cli.js"
+    "chat-with-video": "bin/cli.js"
   },
   "files": [
     "dist",

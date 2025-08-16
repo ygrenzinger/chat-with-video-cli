@@ -23,3 +23,5 @@
 - React Ink for CLI UI components
 - Commander.js for CLI argument parsing
 - Vitest for testing with node environment
+
+use context7
