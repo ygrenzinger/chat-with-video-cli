@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { YtdlpSubtitleService } from "./subtitle.js";
-import { execSync } from "child_process";
+import { execAsync } from "../utils/exec-async";
 
-vi.mock("child_process");
+vi.mock("../utils/exec-async");
 
 describe("VideoSubtitleService", () => {
   let service: YtdlpSubtitleService;
-  const mockExecSync = vi.mocked(execSync);
+  const mockExecAsync = vi.mocked(execAsync);
 
   beforeEach(() => {
     service = new YtdlpSubtitleService();
@@ -15,18 +15,19 @@ describe("VideoSubtitleService", () => {
 
   describe("isAvailable", () => {
     it("should return true when yt-dlp is available", async () => {
-      mockExecSync.mockReturnValue("yt-dlp 2023.07.06");
+      mockExecAsync.mockResolvedValue({
+        stdout: "yt-dlp 2023.07.06",
+        stderr: "",
+      });
 
       const result = await service.isAvailable();
 
       expect(result).toBe(true);
-      expect(mockExecSync).toHaveBeenCalledWith("yt-dlp --version", {
-        stdio: "pipe",
-      });
+      expect(mockExecAsync).toHaveBeenCalledWith("yt-dlp --version");
     });
 
     it("should return false when yt-dlp is not available", async () => {
-      mockExecSync.mockImplementation(() => {
+      mockExecAsync.mockImplementation(() => {
         throw new Error("Command not found");
       });
 
@@ -39,7 +40,10 @@ describe("VideoSubtitleService", () => {
   describe("getAvailableSubtitles", () => {
     it("should return no subtitles message when video has no subtitles", async () => {
       const output = "[info] Video has no subtitles";
-      mockExecSync.mockReturnValue(output);
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
 
       const result = await service.getAvailableSubtitles(
         "https://youtube.com/watch?v=test"
@@ -53,7 +57,10 @@ describe("VideoSubtitleService", () => {
 Language Name                    Formats
 en-US    English (United States) vtt, srt, ttml, srv3, srv2, srv1, json3
 fr       French                  vtt, srt`;
-      mockExecSync.mockReturnValue(output);
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
 
       const result = await service.getAvailableSubtitles(
         "https://youtube.com/watch?v=test"
@@ -76,7 +83,7 @@ fr       French                  vtt, srt`;
     });
 
     it("should handle execution errors", async () => {
-      mockExecSync.mockImplementation(() => {
+      mockExecAsync.mockImplementation(() => {
         throw new Error("Network error");
       });
 
@@ -88,65 +95,96 @@ fr       French                  vtt, srt`;
 
   describe("downloadSubtitle", () => {
     it("should download uploaded subtitle using --write-sub", async () => {
-      const mockOutput = "[download] test.vtt has already been downloaded";
-      mockExecSync.mockReturnValue(mockOutput);
+      const output = "[download] test.vtt has already been downloaded";
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
 
-      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
       const url = "https://youtube.com/watch?v=test";
-      
+
       const result = await service.downloadSubtitle(url, subtitle);
 
-      expect(result).toEqual({ success: true, filePath: expect.stringContaining(".vtt") });
-      expect(mockExecSync).toHaveBeenCalledWith(
+      expect(result).toEqual({
+        success: true,
+        filePath: expect.stringContaining(".vtt"),
+      });
+      expect(mockExecAsync).toHaveBeenCalledWith(
         'yt-dlp --write-sub --sub-lang en-US --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
-        { encoding: "utf8", stdio: "pipe" }
+        { encoding: "utf8" }
       );
     });
 
     it("should download auto subtitle using --write-auto-sub", async () => {
-      const mockOutput = "[download] test.vtt has already been downloaded";
-      mockExecSync.mockReturnValue(mockOutput);
+      const output = "[download] test.vtt has already been downloaded";
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
 
-      const subtitle = { code: "fr-orig", name: "French", type: "auto" as const };
+      const subtitle = {
+        code: "fr-orig",
+        name: "French",
+        type: "auto" as const,
+      };
       const url = "https://youtube.com/watch?v=test";
-      
+
       const result = await service.downloadSubtitle(url, subtitle);
 
-      expect(result).toEqual({ success: true, filePath: expect.stringContaining(".vtt") });
-      expect(mockExecSync).toHaveBeenCalledWith(
+      expect(result).toEqual({
+        success: true,
+        filePath: expect.stringContaining(".vtt"),
+      });
+      expect(mockExecAsync).toHaveBeenCalledWith(
         'yt-dlp --write-auto-sub --sub-lang fr-orig --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
-        { encoding: "utf8", stdio: "pipe" }
+        { encoding: "utf8" }
       );
     });
 
     it("should handle download errors", async () => {
-      mockExecSync.mockImplementation(() => {
+      mockExecAsync.mockImplementation(() => {
         throw new Error("Network error");
       });
 
-      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
       const url = "https://youtube.com/watch?v=test";
-      
+
       const result = await service.downloadSubtitle(url, subtitle);
 
-      expect(result).toEqual({ 
-        success: false, 
-        error: "Failed to download subtitle: Network error" 
+      expect(result).toEqual({
+        success: false,
+        error: "Failed to download subtitle: Network error",
       });
     });
 
     it("should handle download command failure", async () => {
-      const mockOutput = "[error] Unable to download subtitle";
-      mockExecSync.mockReturnValue(mockOutput);
+      const output = "[error] Unable to download subtitle";
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
 
-      const subtitle = { code: "en-US", name: "English", type: "uploaded" as const };
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
       const url = "https://youtube.com/watch?v=test";
-      
+
       const result = await service.downloadSubtitle(url, subtitle);
 
-      expect(result).toEqual({ 
-        success: false, 
-        error: "Download failed: no subtitle file found" 
+      expect(result).toEqual({
+        success: false,
+        error: "Download failed: no subtitle file found",
       });
     });
   });

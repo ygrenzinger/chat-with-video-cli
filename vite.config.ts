@@ -11,7 +11,17 @@ export default defineConfig({
       formats: ["es"],
     },
     rollupOptions: {
-      external: ["fs", "path", "process", "os", "child_process", "react", "ink", "commander"],
+      external: [
+        "fs",
+        "path",
+        "process",
+        "os",
+        "child_process",
+        "react",
+        "ink",
+        "commander",
+        "util",
+      ],
       output: {
         banner: "#!/usr/bin/env node",
       },

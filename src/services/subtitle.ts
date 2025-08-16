@@ -1,4 +1,4 @@
-import { execSync } from "child_process";
+import { execAsync } from "../utils/exec-async";
 
 export interface SubtitleLanguage {
   code: string;
@@ -15,13 +15,16 @@ export interface SubtitleDownloadResult {
 export interface SubtitleService {
   isAvailable(): Promise<boolean>;
   getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>;
-  downloadSubtitle(url: string, subtitle: SubtitleLanguage): Promise<SubtitleDownloadResult>;
+  downloadSubtitle(
+    url: string,
+    subtitle: SubtitleLanguage
+  ): Promise<SubtitleDownloadResult>;
 }
 
 export class YtdlpSubtitleService implements SubtitleService {
   async isAvailable(): Promise<boolean> {
     try {
-      execSync("yt-dlp --version", { stdio: "pipe" });
+      await execAsync("yt-dlp --version");
       return true;
     } catch {
       return false;
@@ -32,10 +35,11 @@ export class YtdlpSubtitleService implements SubtitleService {
     url: string
   ): Promise<SubtitleLanguage[] | string> {
     try {
-      const output = execSync(`yt-dlp --list-subs "${url}"`, {
+      const result = await execAsync(`yt-dlp --list-subs "${url}"`, {
         encoding: "utf8",
-        stdio: "pipe",
       });
+
+      const output = result.stdout;
 
       if (output.includes("[info] Available subtitles for")) {
         return this.parseSubtitleOutput(output).map((lang) => ({
@@ -67,34 +71,34 @@ export class YtdlpSubtitleService implements SubtitleService {
     subtitle: SubtitleLanguage
   ): Promise<SubtitleDownloadResult> {
     try {
-      const command = subtitle.type === "uploaded" 
-        ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`
-        : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`;
+      const command =
+        subtitle.type === "uploaded"
+          ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`
+          : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`;
 
-      const output = execSync(command, {
+      const output = await execAsync(command, {
         encoding: "utf8",
-        stdio: "pipe",
       });
 
       // Check if download was successful by looking for file mention in output
-      const vttMatch = output.match(/\[download\]\s+(.+\.vtt)/);
+      const vttMatch = output.stdout.match(/\[download\]\s+(.+\.vtt)/);
       if (vttMatch) {
         return {
           success: true,
-          filePath: vttMatch[1]
+          filePath: vttMatch[1],
         };
       }
 
       return {
         success: false,
-        error: "Download failed: no subtitle file found"
+        error: "Download failed: no subtitle file found",
       };
     } catch (error) {
       return {
         success: false,
         error: `Failed to download subtitle: ${
           error instanceof Error ? error.message : "Unknown error"
-        }`
+        }`,
       };
     }
   }
