@@ -1,4 +1,5 @@
-import { execAsync } from "../utils/exec-async";
+import { execAsync } from "../utils/exec-async.js";
+import { convertVttToTxt } from "../utils/vtt-converter.js";
 
 export type SubtitleLanguage = {
   code: string;
@@ -20,6 +21,10 @@ export interface SubtitleService {
   isAvailable(): Promise<boolean>;
   getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>;
   downloadSubtitle(
+    url: string,
+    subtitle: SubtitleLanguage
+  ): Promise<SubtitleDownloadResult>;
+  downloadAndTransformToRawText(
     url: string,
     subtitle: SubtitleLanguage
   ): Promise<SubtitleDownloadResult>;
@@ -84,8 +89,12 @@ export class YtdlpSubtitleService implements SubtitleService {
         encoding: "utf8",
       });
 
+      console.log(output.stdout);
+
       // Check if download was successful by looking for file mention in output
-      const vttMatch = output.stdout.match(/\[download\]\s+(.+\.vtt)/);
+      const vttMatch = output.stdout.match(
+        /\[download\] Destination: (.+\.vtt)/
+      );
       if (vttMatch) {
         return {
           success: true,
@@ -101,6 +110,32 @@ export class YtdlpSubtitleService implements SubtitleService {
       return {
         success: false,
         error: `Failed to download subtitle: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      };
+    }
+  }
+
+  async downloadAndTransformToRawText(
+    url: string,
+    subtitle: SubtitleLanguage
+  ): Promise<SubtitleDownloadResult> {
+    const downloadResult = await this.downloadSubtitle(url, subtitle);
+
+    if (!downloadResult.success) {
+      return downloadResult;
+    }
+
+    try {
+      const txtFilePath = convertVttToTxt(downloadResult.filePath);
+      return {
+        success: true,
+        filePath: txtFilePath,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: `Failed to transform VTT to text: ${
           error instanceof Error ? error.message : "Unknown error"
         }`,
       };

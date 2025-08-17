@@ -11,7 +11,7 @@ describe('ChatWithVideo Integration', () => {
     mockSubtitleService = {
       isAvailable: vi.fn(),
       getAvailableSubtitles: vi.fn(),
-      downloadSubtitle: vi.fn(),
+      downloadAndTransformToRawText: vi.fn(),
     } as unknown as YtdlpSubtitleService;
   });
 
@@ -42,7 +42,7 @@ describe('ChatWithVideo Integration', () => {
     const downloadPromise = new Promise<{ success: true; filePath: string }>(resolve => {
       resolveDownload = resolve;
     });
-    vi.mocked(mockSubtitleService.downloadSubtitle).mockReturnValue(downloadPromise);
+    vi.mocked(mockSubtitleService.downloadAndTransformToRawText).mockReturnValue(downloadPromise);
 
     const { lastFrame, rerender, stdin } = render(<ChatWithVideo {...getMockProps()} />);
     
@@ -78,7 +78,7 @@ describe('ChatWithVideo Integration', () => {
     expect(lastFrame()).toContain('📁 Download completed!');
     expect(lastFrame()).toContain('File: test.en.vtt');    
     // Verify download method was called correctly
-    expect(mockSubtitleService.downloadSubtitle).toHaveBeenCalledWith(
+    expect(mockSubtitleService.downloadAndTransformToRawText).toHaveBeenCalledWith(
       'https://www.youtube.com/watch?v=test',
       mockSubtitles[0]
     );
@@ -90,7 +90,7 @@ describe('ChatWithVideo Integration', () => {
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValue(mockSubtitles);
-    vi.mocked(mockSubtitleService.downloadSubtitle).mockResolvedValue({
+    vi.mocked(mockSubtitleService.downloadAndTransformToRawText).mockResolvedValue({
       success: true,
       filePath: 'test.fr-orig.vtt'
     });
@@ -107,7 +107,7 @@ describe('ChatWithVideo Integration', () => {
     rerender(<ChatWithVideo {...getMockProps()} />);
     
     // Verify download method was called with auto subtitle
-    expect(mockSubtitleService.downloadSubtitle).toHaveBeenCalledWith(
+    expect(mockSubtitleService.downloadAndTransformToRawText).toHaveBeenCalledWith(
       'https://www.youtube.com/watch?v=test',
       mockSubtitles[0]
     );
@@ -121,7 +121,7 @@ describe('ChatWithVideo Integration', () => {
     ];
     
     vi.mocked(mockSubtitleService.getAvailableSubtitles).mockResolvedValue(mockSubtitles);
-    vi.mocked(mockSubtitleService.downloadSubtitle).mockResolvedValue({
+    vi.mocked(mockSubtitleService.downloadAndTransformToRawText).mockResolvedValue({
       success: false,
       error: 'Network error'
     });

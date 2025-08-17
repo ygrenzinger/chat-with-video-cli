@@ -79,8 +79,7 @@ Always write one test at a time, make it run, then improve structure. Always run
 
 ## Code Style Guidelines
 - **Module system**: ES modules only (`type: "module"`)
-- **Imports**: Use `.js` extensions for local imports (not `.ts`)
-- **TypeScript**: Strict mode enabled, use interfaces for props
+- **TypeScript**: Strict mode enabled, use type instead of interface, use type for props, use discriminated union types for clear state instead of having nullable or undefined properties
 - **React**: Functional components with TypeScript interfaces
 - **CLI**: Commander.js for command structure, React Ink for UI
 - **Naming**: PascalCase for components, camelCase for functions/variables

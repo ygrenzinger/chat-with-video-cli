@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { YtdlpSubtitleService } from "./subtitle";
-import { execAsync } from "../utils/exec-async";
+import { YtdlpSubtitleService } from "./subtitle.js";
+import { execAsync } from "../utils/exec-async.js";
+import { convertVttToTxt } from "../utils/vtt-converter.js";
 
 vi.mock("../utils/exec-async");
+vi.mock("../utils/vtt-converter");
 
 describe("VideoSubtitleService", () => {
   let service: YtdlpSubtitleService;
   const mockExecAsync = vi.mocked(execAsync);
+  const mockConvertVttToTxt = vi.mocked(convertVttToTxt);
 
   beforeEach(() => {
     service = new YtdlpSubtitleService();
@@ -95,7 +98,8 @@ fr       French                  vtt, srt`;
 
   describe("downloadSubtitle", () => {
     it("should download uploaded subtitle using --write-sub", async () => {
-      const output = "[download] test.vtt has already been downloaded";
+      const output =
+        "[download] Destination: AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.vtt";
       mockExecAsync.mockResolvedValue({
         stdout: output,
         stderr: "",
@@ -112,7 +116,8 @@ fr       French                  vtt, srt`;
 
       expect(result).toEqual({
         success: true,
-        filePath: expect.stringContaining(".vtt"),
+        filePath:
+          "AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.vtt",
       });
       expect(mockExecAsync).toHaveBeenCalledWith(
         'yt-dlp --write-sub --sub-lang en-US --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
@@ -185,6 +190,80 @@ fr       French                  vtt, srt`;
       expect(result).toEqual({
         success: false,
         error: "Download failed: no subtitle file found",
+      });
+    });
+  });
+
+  describe("downloadAndTransformToRawText", () => {
+    it("should download subtitle and convert to raw text", async () => {
+      const output = "[download] test.vtt has already been downloaded";
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
+      mockConvertVttToTxt.mockReturnValue("test.txt");
+
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
+      const url = "https://youtube.com/watch?v=test";
+
+      const result = await service.downloadAndTransformToRawText(url, subtitle);
+
+      expect(result).toEqual({
+        success: true,
+        filePath: "test.txt",
+      });
+      expect(mockConvertVttToTxt).toHaveBeenCalledWith(
+        expect.stringContaining(".vtt")
+      );
+    });
+
+    it("should return download error if download fails", async () => {
+      mockExecAsync.mockImplementation(() => {
+        throw new Error("Network error");
+      });
+
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
+      const url = "https://youtube.com/watch?v=test";
+
+      const result = await service.downloadAndTransformToRawText(url, subtitle);
+
+      expect(result).toEqual({
+        success: false,
+        error: "Failed to download subtitle: Network error",
+      });
+      expect(mockConvertVttToTxt).not.toHaveBeenCalled();
+    });
+
+    it("should handle VTT conversion errors", async () => {
+      const output = "[download] test.vtt has already been downloaded";
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: "",
+      });
+      mockConvertVttToTxt.mockImplementation(() => {
+        throw new Error("File not found");
+      });
+
+      const subtitle = {
+        code: "en-US",
+        name: "English",
+        type: "uploaded" as const,
+      };
+      const url = "https://youtube.com/watch?v=test";
+
+      const result = await service.downloadAndTransformToRawText(url, subtitle);
+
+      expect(result).toEqual({
+        success: false,
+        error: "Failed to transform VTT to text: File not found",
       });
     });
   });

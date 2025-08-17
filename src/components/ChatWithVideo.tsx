@@ -28,17 +28,26 @@ type ChatWithVideoState =
       downloadResult: SubtitleDownloadResult;
     };
 
+const YoutubeUrlInfo: React.FC<{ url: string }> = ({ url }) => {
+  return (
+    <Box flexDirection="column">
+      <Text color="green">🎥 Processing YouTube video...</Text>
+      <Text color="gray">URL: {url}</Text>
+    </Box>
+  );
+};
+
 export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
   url,
   subtitleService,
 }) => {
-  const [state, setState] = useState<ChatWithVideoState>({
+  const [chatState, setChatState] = useState<ChatWithVideoState>({
     status: "started",
   });
   const [userInput, setUserInput] = useState<string>("");
 
   const handleSubtitleSelected = (subtitle: SubtitleLanguage) => {
-    setState({
+    setChatState({
       status: "subtitle-selected",
       selectedSubtitle: subtitle,
     });
@@ -46,14 +55,14 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
 
   // Download subtitle when one is selected
   useEffect(() => {
-    if (state.status == "subtitle-selected" && state.selectedSubtitle) {
+    if (chatState.status == "subtitle-selected" && chatState.selectedSubtitle) {
       const downloadSubtitle = async () => {
-        const result = await subtitleService.downloadSubtitle(
+        const result = await subtitleService.downloadAndTransformToRawText(
           url,
-          state.selectedSubtitle
+          chatState.selectedSubtitle
         );
-        setState({
-          selectedSubtitle: state.selectedSubtitle,
+        setChatState({
+          selectedSubtitle: chatState.selectedSubtitle,
           status: "subtitle-downloaded",
           downloadStatus: "finished",
           downloadResult: result,
@@ -61,7 +70,7 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
       };
       downloadSubtitle();
     }
-  }, [state, subtitleService, url]);
+  }, [chatState, subtitleService, url]);
 
   // Handle user input for chat mode only
   useInput((input, key) => {
@@ -72,7 +81,7 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
 
     // Build up the input string
     if (input && !key.ctrl) {
-      setState((prev) => ({
+      setChatState((prev) => ({
         ...prev,
         userInput: prev + input,
       }));
@@ -87,29 +96,23 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
     }
   });
 
-  const renderDownloadStatus = () => {
-    switch (state.status) {
+  const renderChatState = () => {
+    switch (chatState.status) {
       case "started":
         return (
           <Box flexDirection="column">
-            <Text color="green">🎥 Processing YouTube video...</Text>
-            <Text>URL: {url}</Text>
-            <Text> </Text>
-
-            {state.status === "started" && (
-              <SubtitlesSelection
-                url={url}
-                subtitleService={subtitleService}
-                onSubtitleSelected={handleSubtitleSelected}
-              />
-            )}
+            <SubtitlesSelection
+              url={url}
+              subtitleService={subtitleService}
+              onSubtitleSelected={handleSubtitleSelected}
+            />
           </Box>
         );
       case "subtitle-selected":
         return (
           <Box flexDirection="column">
             <Text color="green">✅ Selected subtitle:</Text>
-            <Text color="cyan">{state.selectedSubtitle.name}</Text>
+            <Text color="cyan">{chatState.selectedSubtitle.name}</Text>
             <Text> </Text>
             <Text color="yellow">
               <Spinner type="dots" /> Downloading VTT subtitle file...
@@ -118,24 +121,24 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
         );
 
       case "subtitle-downloaded":
-        if (state.downloadResult.success) {
+        if (chatState.downloadResult.success) {
           return (
             <Box flexDirection="column">
               <Text color="green">✅ Selected subtitle:</Text>
-              <Text color="cyan">{state.selectedSubtitle.name}</Text>
+              <Text color="cyan">{chatState.selectedSubtitle.name}</Text>
               <Text> </Text>
               <Text color="green">📁 Download completed!</Text>
-              <Text color="gray">File: {state.downloadResult.filePath}</Text>
+              <Text color="gray">File: {chatState.downloadResult.filePath}</Text>
             </Box>
           );
         } else {
           return (
             <Box flexDirection="column">
               <Text color="green">✅ Selected subtitle:</Text>
-              <Text color="cyan">{state.selectedSubtitle.name}</Text>
+              <Text color="cyan">{chatState.selectedSubtitle.name}</Text>
               <Text> </Text>
               <Text color="red">❌ Download failed!</Text>
-              <Text color="red">Error: {state.downloadResult.error}</Text>
+              <Text color="red">Error: {chatState.downloadResult.error}</Text>
             </Box>
           );
         }
@@ -145,5 +148,10 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
     }
   };
 
-  return renderDownloadStatus();
+  return (
+    <>
+      <YoutubeUrlInfo url={url} />
+      {renderChatState()}
+    </>
+  );
 };
