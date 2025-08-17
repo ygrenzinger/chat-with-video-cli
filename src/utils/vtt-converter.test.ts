@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { convertVttToTxt } from "./vtt-converter.js";
+import { convertVttToTxt } from "./vtt-converter";
 import { readFileSync, writeFileSync, unlinkSync, existsSync } from "fs";
 
 describe("convertVttToTxt", () => {

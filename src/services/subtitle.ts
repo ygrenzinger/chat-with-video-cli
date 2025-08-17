@@ -1,16 +1,20 @@
 import { execAsync } from "../utils/exec-async";
 
-export interface SubtitleLanguage {
+export type SubtitleLanguage = {
   code: string;
   name: string;
   type: "uploaded" | "auto";
-}
+};
 
-export interface SubtitleDownloadResult {
-  success: boolean;
-  filePath?: string;
-  error?: string;
-}
+export type SubtitleDownloadResult =
+  | {
+      success: true;
+      filePath: string;
+    }
+  | {
+      success: false;
+      error: string;
+    };
 
 export interface SubtitleService {
   isAvailable(): Promise<boolean>;

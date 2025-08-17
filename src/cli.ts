@@ -1,9 +1,9 @@
 import { Command } from "commander";
 import { render } from "ink";
 import React from "react";
-import { ChatWithVideo } from "./components/ChatWithVideo.js";
-import { isValidYouTubeUrl } from "./utils/youtube.js";
-import { YtdlpSubtitleService } from "./services/subtitle.js";
+import { ChatWithVideo } from "./components/ChatWithVideo";
+import { isValidYouTubeUrl } from "./utils/youtube";
+import { YtdlpSubtitleService } from "./services/subtitle";
 
 const program = new Command();
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { YtdlpSubtitleService } from "./subtitle.js";
+import { YtdlpSubtitleService } from "./subtitle";
 import { execAsync } from "../utils/exec-async";
 
 vi.mock("../utils/exec-async");
