@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { YtdlpSubtitleService } from "./subtitle.js";
 import { execAsync } from "../utils/exec-async.js";
-import { convertVttToTxt } from "../utils/vtt-converter.js";
+import { convertSrtToTxt } from "../utils/srt-converter.js";
 
 vi.mock("../utils/exec-async");
-vi.mock("../utils/vtt-converter");
+vi.mock("../utils/srt-converter");
 
 describe("VideoSubtitleService", () => {
   let service: YtdlpSubtitleService;
   const mockExecAsync = vi.mocked(execAsync);
-  const mockConvertVttToTxt = vi.mocked(convertVttToTxt);
+  const mockConvertSrtToTxt = vi.mocked(convertSrtToTxt);
 
   beforeEach(() => {
     service = new YtdlpSubtitleService();
@@ -99,7 +99,7 @@ fr       French                  vtt, srt`;
   describe("downloadSubtitle", () => {
     it("should download uploaded subtitle using --write-sub", async () => {
       const output =
-        "[download] Destination: AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.vtt";
+        "[download] Destination: AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.srt";
       mockExecAsync.mockResolvedValue({
         stdout: output,
         stderr: "",
@@ -117,16 +117,16 @@ fr       French                  vtt, srt`;
       expect(result).toEqual({
         success: true,
         filePath:
-          "AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.vtt",
+          "AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.srt",
       });
       expect(mockExecAsync).toHaveBeenCalledWith(
-        'yt-dlp --write-sub --sub-lang en-US --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
+        'yt-dlp --write-sub --sub-lang en-US --sub-format srt --skip-download "https://youtube.com/watch?v=test"',
         { encoding: "utf8" }
       );
     });
 
     it("should download auto subtitle using --write-auto-sub", async () => {
-      const output = "[download] test.vtt has already been downloaded";
+      const output = "[download] Destination: test.srt";
       mockExecAsync.mockResolvedValue({
         stdout: output,
         stderr: "",
@@ -143,10 +143,10 @@ fr       French                  vtt, srt`;
 
       expect(result).toEqual({
         success: true,
-        filePath: expect.stringContaining(".vtt"),
+        filePath: expect.stringContaining(".srt"),
       });
       expect(mockExecAsync).toHaveBeenCalledWith(
-        'yt-dlp --write-auto-sub --sub-lang fr-orig --sub-format vtt --skip-download "https://youtube.com/watch?v=test"',
+        'yt-dlp --write-auto-sub --sub-lang fr-orig --sub-format srt --skip-download "https://youtube.com/watch?v=test"',
         { encoding: "utf8" }
       );
     });
@@ -196,12 +196,12 @@ fr       French                  vtt, srt`;
 
   describe("downloadAndTransformToRawText", () => {
     it("should download subtitle and convert to raw text", async () => {
-      const output = "[download] test.vtt has already been downloaded";
+      const output = "[download] Destination: test.srt";
       mockExecAsync.mockResolvedValue({
         stdout: output,
         stderr: "",
       });
-      mockConvertVttToTxt.mockReturnValue("test.txt");
+      mockConvertSrtToTxt.mockReturnValue("test.txt");
 
       const subtitle = {
         code: "en-US",
@@ -216,8 +216,8 @@ fr       French                  vtt, srt`;
         success: true,
         filePath: "test.txt",
       });
-      expect(mockConvertVttToTxt).toHaveBeenCalledWith(
-        expect.stringContaining(".vtt")
+      expect(mockConvertSrtToTxt).toHaveBeenCalledWith(
+        expect.stringContaining(".srt")
       );
     });
 
@@ -239,16 +239,16 @@ fr       French                  vtt, srt`;
         success: false,
         error: "Failed to download subtitle: Network error",
       });
-      expect(mockConvertVttToTxt).not.toHaveBeenCalled();
+      expect(mockConvertSrtToTxt).not.toHaveBeenCalled();
     });
 
     it("should handle VTT conversion errors", async () => {
-      const output = "[download] test.vtt has already been downloaded";
+      const output = "[download] Destination: test.srt";
       mockExecAsync.mockResolvedValue({
         stdout: output,
         stderr: "",
       });
-      mockConvertVttToTxt.mockImplementation(() => {
+      mockConvertSrtToTxt.mockImplementation(() => {
         throw new Error("File not found");
       });
 
@@ -263,7 +263,7 @@ fr       French                  vtt, srt`;
 
       expect(result).toEqual({
         success: false,
-        error: "Failed to transform VTT to text: File not found",
+        error: "Failed to transform SRT to text: File not found",
       });
     });
   });

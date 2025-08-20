@@ -1,11 +1,25 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { convertVttToTxt } from "./vtt-converter";
-import { readFileSync, writeFileSync, unlinkSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 describe("convertVttToTxt", () => {
+  let tempDir: string;
+
+  beforeEach(() => {
+    tempDir = mkdtempSync(join(tmpdir(), "vtt-converter-test-"));
+  });
+
+  afterEach(() => {
+    if (existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
+  });
+
   it("should extract text content from VTT file and save to TXT file", () => {
-    const testVttPath = "test-original.vtt";
-    const expectedOutputPath = "test-cleaned.txt";
+      const testVttPath = join(tempDir, "test.vtt");
+      const expectedOutputPath = join(tempDir, "test.txt");
 
     const sampleVttContent = `WEBVTT
 Kind: captions
@@ -39,17 +53,10 @@ version," but then it comes out and it's not.`;
     writeFileSync(testVttPath, sampleVttContent);
     const result = convertVttToTxt(testVttPath);
 
-    expect(result).toBe(expectedOutputPath);
+    expect(result).toEqual(expectedOutputPath);
     expect(existsSync(expectedOutputPath)).toBe(true);
 
     const actualContent = readFileSync(expectedOutputPath, "utf-8");
     expect(actualContent).toBe(expectedTxtContent);
-
-    if (existsSync(testVttPath)) {
-      unlinkSync(testVttPath);
-    }
-    if (existsSync(expectedOutputPath)) {
-      unlinkSync(expectedOutputPath);
-    }
   });
 });

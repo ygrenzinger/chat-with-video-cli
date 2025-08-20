@@ -1,20 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 import { convertSrtToTxt } from "./srt-converter";
 
-vi.mock("fs");
-
-const mockReadFileSync = vi.mocked(readFileSync);
-const mockWriteFileSync = vi.mocked(writeFileSync);
-
 describe("SRT Converter", () => {
+  let tempDir: string;
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    vi.spyOn(console, "log").mockImplementation(() => {});
+    tempDir = mkdtempSync(join(tmpdir(), "srt-converter-test-"));
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    if (existsSync(tempDir)) {
+      rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 
   it("should convert SRT content to plain text", () => {
@@ -54,21 +55,29 @@ version," but then it comes out and it's not.
 What are a few techniques that you
 recommend people start implementing?`;
 
-    mockReadFileSync.mockReturnValue(srtContent);
+    const inputPath = join(tempDir, "test.srt");
+    const expectedOutputPath = join(tempDir, "test.txt");
+    
+    writeFileSync(inputPath, srtContent);
 
-    const result = convertSrtToTxt("test.srt");
+    const result = convertSrtToTxt(inputPath);
 
-    expect(mockReadFileSync).toHaveBeenCalledWith("test.srt", "utf-8");
-    expect(mockWriteFileSync).toHaveBeenCalledWith("test.txt", expectedText);
-    expect(result).toBe("test.txt");
+    expect(result).toBe(expectedOutputPath);
+    expect(existsSync(expectedOutputPath)).toBe(true);
+    expect(readFileSync(expectedOutputPath, "utf-8")).toBe(expectedText);
   });
 
   it("should generate correct output path", () => {
-    mockReadFileSync.mockReturnValue("1\n00:00:00,000 --> 00:00:01,000\nTest");
+    const srtContent = "1\n00:00:00,000 --> 00:00:01,000\nTest";
+    const inputPath = join(tempDir, "input.srt");
+    const expectedOutputPath = join(tempDir, "input.txt");
+    
+    writeFileSync(inputPath, srtContent);
 
-    const result = convertSrtToTxt("input.srt");
+    const result = convertSrtToTxt(inputPath);
 
-    expect(result).toBe("input.txt");
+    expect(result).toBe(expectedOutputPath);
+    expect(existsSync(expectedOutputPath)).toBe(true);
   });
 
   it("should handle empty lines correctly", () => {
@@ -80,10 +89,14 @@ First line
 00:00:01,000 --> 00:00:02,000
 Second line`;
 
-    mockReadFileSync.mockReturnValue(srtContent);
+    const inputPath = join(tempDir, "test.srt");
+    const expectedOutputPath = join(tempDir, "test.txt");
+    
+    writeFileSync(inputPath, srtContent);
 
-    convertSrtToTxt("test.srt");
+    convertSrtToTxt(inputPath);
 
-    expect(mockWriteFileSync).toHaveBeenCalledWith("test.txt", "First line\nSecond line");
+    expect(existsSync(expectedOutputPath)).toBe(true);
+    expect(readFileSync(expectedOutputPath, "utf-8")).toBe("First line\nSecond line");
   });
 });

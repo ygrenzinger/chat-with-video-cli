@@ -1,5 +1,5 @@
 import { execAsync } from "../utils/exec-async.js";
-import { convertVttToTxt } from "../utils/vtt-converter.js";
+import { convertSrtToTxt } from "../utils/srt-converter.js";
 
 export type SubtitleLanguage = {
   code: string;
@@ -82,8 +82,8 @@ export class YtdlpSubtitleService implements SubtitleService {
     try {
       const command =
         subtitle.type === "uploaded"
-          ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`
-          : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format vtt --skip-download "${url}"`;
+          ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format srt --skip-download "${url}"`
+          : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format srt --skip-download "${url}"`;
 
       const output = await execAsync(command, {
         encoding: "utf8",
@@ -92,13 +92,13 @@ export class YtdlpSubtitleService implements SubtitleService {
       console.log(output.stdout);
 
       // Check if download was successful by looking for file mention in output
-      const vttMatch = output.stdout.match(
-        /\[download\] Destination: (.+\.vtt)/
+      const srtMatch = output.stdout.match(
+        /\[download\] Destination: (.+\.srt)/
       );
-      if (vttMatch) {
+      if (srtMatch) {
         return {
           success: true,
-          filePath: vttMatch[1],
+          filePath: srtMatch[1],
         };
       }
 
@@ -127,7 +127,7 @@ export class YtdlpSubtitleService implements SubtitleService {
     }
 
     try {
-      const txtFilePath = convertVttToTxt(downloadResult.filePath);
+      const txtFilePath = convertSrtToTxt(downloadResult.filePath);
       return {
         success: true,
         filePath: txtFilePath,
@@ -135,7 +135,7 @@ export class YtdlpSubtitleService implements SubtitleService {
     } catch (error) {
       return {
         success: false,
-        error: `Failed to transform VTT to text: ${
+        error: `Failed to transform SRT to text: ${
           error instanceof Error ? error.message : "Unknown error"
         }`,
       };
