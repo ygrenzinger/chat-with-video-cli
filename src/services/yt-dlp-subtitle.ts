@@ -1,35 +1,7 @@
 import { execAsync } from "../utils/exec-async.js";
 import { convertSrtToTxt } from "../utils/srt-converter.js";
-
-export type SubtitleLanguage = {
-  code: string;
-  name: string;
-  type: "uploaded" | "auto";
-};
-
-export type SubtitleDownloadResult =
-  | {
-      success: true;
-      filePath: string;
-      content?: string;
-    }
-  | {
-      success: false;
-      error: string;
-    };
-
-export interface SubtitleService {
-  isAvailable(): Promise<boolean>;
-  getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>;
-  downloadSubtitle(
-    url: string,
-    subtitle: SubtitleLanguage
-  ): Promise<SubtitleDownloadResult>;
-  downloadAndTransformToRawText(
-    url: string,
-    subtitle: SubtitleLanguage
-  ): Promise<SubtitleDownloadResult>;
-}
+import {readFileSync} from "fs";
+import {SubtitleDownloadResult, SubtitleLanguage, SubtitleService} from "./subtitle";
 
 export class YtdlpSubtitleService implements SubtitleService {
   async isAvailable(): Promise<boolean> {
@@ -79,7 +51,14 @@ export class YtdlpSubtitleService implements SubtitleService {
   async downloadSubtitle(
     url: string,
     subtitle: SubtitleLanguage
-  ): Promise<SubtitleDownloadResult> {
+  ): Promise<{
+          success: true;
+          filePath: string;
+      }
+      | {
+      success: false;
+      error: string;
+  }> {
     try {
       const command =
         subtitle.type === "uploaded"
@@ -105,7 +84,7 @@ export class YtdlpSubtitleService implements SubtitleService {
 
       return {
         success: false,
-        error: "Download failed: no subtitle file found",
+        error: "Download failed: unable to download subtitle",
       };
     } catch (error) {
       return {
@@ -117,7 +96,7 @@ export class YtdlpSubtitleService implements SubtitleService {
     }
   }
 
-  async downloadAndTransformToRawText(
+  async retrieveRawText(
     url: string,
     subtitle: SubtitleLanguage
   ): Promise<SubtitleDownloadResult> {
@@ -129,9 +108,11 @@ export class YtdlpSubtitleService implements SubtitleService {
 
     try {
       const txtFilePath = convertSrtToTxt(downloadResult.filePath);
+      const content = readFileSync(txtFilePath, 'utf8');
+
       return {
         success: true,
-        filePath: txtFilePath,
+        content,
       };
     } catch (error) {
       return {

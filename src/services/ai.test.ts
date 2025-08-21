@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { ChatService } from './ai.js'
 
+// FIXME : replace with evalite test
 describe('ChatService', () => {
   let chatService: ChatService
 
@@ -10,23 +11,12 @@ describe('ChatService', () => {
     chatService = new ChatService('Test video transcript content')
   })
 
-  it('should create a ChatService instance with transcript', () => {
-    expect(chatService).toBeDefined()
-    expect(chatService.getTranscript()).toBe('Test video transcript content')
-  })
-
   it('should generate system prompt with transcript', () => {
     const systemPrompt = chatService.getSystemPrompt()
     
     expect(systemPrompt).toContain('Test video transcript content')
     expect(systemPrompt).toContain('transcript')
     expect(systemPrompt).toContain('helpful AI')
-  })
-
-  it('should validate API key is required', () => {
-    delete process.env.ANTHROPIC_API_KEY
-    
-    expect(() => new ChatService('transcript')).toThrow('ANTHROPIC_API_KEY environment variable is required')
   })
 
   it('should have sendMessage method that returns async iterable', async () => {

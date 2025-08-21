@@ -3,8 +3,8 @@ import { render } from "ink";
 import React from "react";
 import { ChatWithVideo } from "./components/ChatWithVideo.js";
 import { isValidYouTubeUrl } from "./utils/youtube.js";
-import { YtdlpSubtitleService } from "./services/subtitle.js";
 import { validateEnvironment } from "./utils/env.js";
+import {YtdlpSubtitleService} from "./services/yt-dlp-subtitle";
 
 const program = new Command();
 

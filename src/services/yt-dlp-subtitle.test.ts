@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { YtdlpSubtitleService } from "./subtitle.js";
+import { YtdlpSubtitleService } from "./yt-dlp-subtitle.js";
 import { execAsync } from "../utils/exec-async.js";
 import { writeFileSync} from "fs";
 import {join} from "path";
@@ -7,7 +7,7 @@ import {tmpdir} from "os";
 
 vi.mock("../utils/exec-async");
 
-describe("VideoSubtitleService", () => {
+describe("YT DLP subtitle service", () => {
     let service: YtdlpSubtitleService;
     const mockExecAsync = vi.mocked(execAsync);
 
@@ -189,7 +189,7 @@ fr       French                  vtt, srt`;
 
             expect(result).toEqual({
                 success: false,
-                error: "Download failed: no subtitle file found",
+                error: "Download failed: unable to download subtitle",
             });
         });
     });
@@ -242,7 +242,7 @@ Is prompt engineering a thing you need to spend your time on?`);
             });
         });
 
-        it("should handle VTT conversion errors", async () => {
+        it("should handle conversion errors", async () => {
             const output = "[download] Destination: test.srt";
             mockExecAsync.mockResolvedValue({
                 stdout: output,

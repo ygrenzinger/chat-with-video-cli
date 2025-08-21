@@ -6,8 +6,7 @@ import { ChatInterface } from "./ChatInterface.js";
 import { ChatInput } from "./ChatInput.js";
 import {
     SubtitleDownloadResult,
-    SubtitleLanguage,
-    YtdlpSubtitleService,
+    SubtitleLanguage, SubtitleService,
 } from "../services/subtitle.js";
 import {ChatMessage, ChatService} from "../services/ai.js";
 import { parseCommand, isCommand, getHelpText } from "../utils/chat-commands.js";
@@ -33,7 +32,7 @@ export type ChatWithVideoState =
 
 type ChatWithVideoEnhancedProps = {
   url: string;
-  subtitleService: YtdlpSubtitleService;
+  subtitleService: SubtitleService;
 };
 
 const YoutubeUrlInfo: React.FC<{ url: string }> = ({ url }) => {

@@ -1,6 +1,5 @@
-import { createAnthropic } from '@ai-sdk/anthropic'
+import {AnthropicProvider, createAnthropic} from '@ai-sdk/anthropic'
 import { streamText } from 'ai'
-import { validateEnvironment } from '../utils/env.js'
 
 export type ChatMessage = {
     id: string;
@@ -11,25 +10,20 @@ export type ChatMessage = {
 }
 
 export class ChatService {
-  private transcript: string
-  private anthropic: any
-  private messages: ChatMessage[] = []
+  private readonly transcript: string
+  private readonly anthropic: AnthropicProvider
+  private readonly messages: ChatMessage[] = []
 
   constructor(transcript: string) {
-    validateEnvironment()
-    
     this.transcript = transcript
     this.anthropic = createAnthropic({
       apiKey: process.env.ANTHROPIC_API_KEY
     })
   }
 
-  getTranscript(): string {
-    return this.transcript
-  }
-
   getSystemPrompt(): string {
-    return `You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>`
+    return `You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>
+All the answer should be in markdown format.`
   }
 
   async *sendMessage(message: string): AsyncIterable<string> {
@@ -39,7 +33,7 @@ export class ChatService {
       content: message,
       timestamp: new Date()
     }
-    
+
     this.messages.push(userMessage)
 
     const result = streamText({
@@ -64,7 +58,7 @@ export class ChatService {
       timestamp: new Date(),
       streamingComplete: true
     }
-    
+
     this.messages.push(assistantMessage)
   }
 }
