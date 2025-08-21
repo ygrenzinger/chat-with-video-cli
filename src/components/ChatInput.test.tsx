@@ -12,7 +12,7 @@ describe('ChatInput', () => {
     )
 
     const output = lastFrame()
-    expect(output).toContain('>')  // Input prompt indicator
+    expect(output).toContain('>') // Input prompt indicator
   })
 
   it('should show loading state when disabled', () => {
@@ -23,6 +23,6 @@ describe('ChatInput', () => {
     )
 
     const output = lastFrame()
-    expect(output).toContain('...')  // Loading indicator
+    expect(output).toContain('...') // Loading indicator
   })
 })

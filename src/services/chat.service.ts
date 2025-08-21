@@ -1,12 +1,12 @@
-import {AnthropicProvider, createAnthropic} from '@ai-sdk/anthropic'
+import { AnthropicProvider, createAnthropic } from '@ai-sdk/anthropic'
 import { streamText } from 'ai'
 
 export type ChatMessage = {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-    streamingComplete?: boolean;
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+  streamingComplete?: boolean
 }
 
 export class ChatService {
@@ -24,6 +24,10 @@ export class ChatService {
   getSystemPrompt(): string {
     return `You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>
 All the answer should be in markdown format.`
+  }
+
+  getMessages(): ChatMessage[] {
+    return this.messages
   }
 
   async *sendMessage(message: string): AsyncIterable<string> {

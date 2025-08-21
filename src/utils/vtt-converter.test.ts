@@ -1,25 +1,31 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { convertVttToTxt } from "./vtt-converter";
-import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { convertVttToTxt } from './vtt-converter'
+import {
+  readFileSync,
+  writeFileSync,
+  mkdtempSync,
+  rmSync,
+  existsSync
+} from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
-describe("convertVttToTxt", () => {
-  let tempDir: string;
+describe('convertVttToTxt', () => {
+  let tempDir: string
 
   beforeEach(() => {
-    tempDir = mkdtempSync(join(tmpdir(), "vtt-converter-test-"));
-  });
+    tempDir = mkdtempSync(join(tmpdir(), 'vtt-converter-test-'))
+  })
 
   afterEach(() => {
     if (existsSync(tempDir)) {
-      rmSync(tempDir, { recursive: true, force: true });
+      rmSync(tempDir, { recursive: true, force: true })
     }
-  });
+  })
 
-  it("should extract text content from VTT file and save to TXT file", () => {
-      const testVttPath = join(tempDir, "test.vtt");
-      const expectedOutputPath = join(tempDir, "test.txt");
+  it('should extract text content from VTT file and save to TXT file', () => {
+    const testVttPath = join(tempDir, 'test.vtt')
+    const expectedOutputPath = join(tempDir, 'test.txt')
 
     const sampleVttContent = `WEBVTT
 Kind: captions
@@ -39,7 +45,7 @@ People will always be saying, "It's dead," or,&nbsp;&nbsp;
 
 00:00:12.160 --> 00:00:15.680
 "It's going to be dead with the next model&nbsp;
-version," but then it comes out and it's not.`;
+version," but then it comes out and it's not.`
 
     const expectedTxtContent = `Is prompt engineering a thing&nbsp;
 you need to spend your time on?
@@ -48,15 +54,15 @@ can get you down to 0% on a problem,&nbsp;&nbsp;
 and good prompts can boost you up to 90%.&nbsp;
 People will always be saying, "It's dead," or,&nbsp;&nbsp;
 "It's going to be dead with the next model&nbsp;
-version," but then it comes out and it's not.`;
+version," but then it comes out and it's not.`
 
-    writeFileSync(testVttPath, sampleVttContent);
-    const result = convertVttToTxt(testVttPath);
+    writeFileSync(testVttPath, sampleVttContent)
+    const result = convertVttToTxt(testVttPath)
 
-    expect(result).toEqual(expectedOutputPath);
-    expect(existsSync(expectedOutputPath)).toBe(true);
+    expect(result).toEqual(expectedOutputPath)
+    expect(existsSync(expectedOutputPath)).toBe(true)
 
-    const actualContent = readFileSync(expectedOutputPath, "utf-8");
-    expect(actualContent).toBe(expectedTxtContent);
-  });
-});
+    const actualContent = readFileSync(expectedOutputPath, 'utf-8')
+    expect(actualContent).toBe(expectedTxtContent)
+  })
+})

@@ -11,7 +11,7 @@ describe('ChatInterface', () => {
     const transcript = 'Test video transcript'
 
     const { lastFrame } = render(
-      <ChatInterface 
+      <ChatInterface
         transcript={transcript}
         chatService={mockChatService}
         onExit={mockOnExit}
@@ -20,7 +20,9 @@ describe('ChatInterface', () => {
 
     const output = lastFrame()
     expect(output).toContain('Chat Mode')
-    expect(output).toContain('You can now ask questions about the video transcript')
+    expect(output).toContain(
+      'You can now ask questions about the video transcript'
+    )
   })
 
   it('should display message history', () => {
@@ -29,7 +31,7 @@ describe('ChatInterface', () => {
     const transcript = 'Test video transcript'
 
     const { lastFrame } = render(
-      <ChatInterface 
+      <ChatInterface
         transcript={transcript}
         chatService={mockChatService}
         onExit={mockOnExit}

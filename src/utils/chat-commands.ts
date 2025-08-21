@@ -1,10 +1,10 @@
 const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear']
 
 export type ChatCommand =
-    | { type: 'exit' }
-    | { type: 'help' }
-    | { type: 'transcript' }
-    | { type: 'clear' }
+  | { type: 'exit' }
+  | { type: 'help' }
+  | { type: 'transcript' }
+  | { type: 'clear' }
 
 export const isCommand = (input: string): boolean => {
   return VALID_COMMANDS.includes(input)

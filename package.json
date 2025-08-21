@@ -21,6 +21,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "format:src": "prettier --write \"src/**/*\"",
     "prepublishOnly": "pnpm build"
   },
   "keywords": [
@@ -29,7 +32,7 @@
     "react",
     "ink"
   ],
-  "author": "Your Name",
+  "author": "Y",
   "license": "MIT",
   "engines": {
     "node": ">=16"
@@ -43,6 +46,7 @@
     "eslint": "^9.33.0",
     "globals": "^16.3.0",
     "ink-testing-library": "^4.0.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.9.2",
     "vite": "^7.1.2",
     "vitest": "^3.2.4"

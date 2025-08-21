@@ -1,24 +1,24 @@
 export type SubtitleLanguage = {
-  code: string;
-  name: string;
-  type: "uploaded" | "auto";
-};
+  code: string
+  name: string
+  type: 'uploaded' | 'auto'
+}
 
 export type SubtitleDownloadResult =
   | {
-      success: true;
-      content: string;
+      success: true
+      content: string
     }
   | {
-      success: false;
-      error: string;
-    };
+      success: false
+      error: string
+    }
 
 export interface SubtitleService {
-  isAvailable(): Promise<boolean>;
-  getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>;
+  isAvailable(): Promise<boolean>
+  getAvailableSubtitles(url: string): Promise<SubtitleLanguage[] | string>
   retrieveRawText(
     url: string,
     subtitle: SubtitleLanguage
-  ): Promise<SubtitleDownloadResult>;
+  ): Promise<SubtitleDownloadResult>
 }
