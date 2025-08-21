@@ -17,8 +17,8 @@
     "build": "vite build",
     "start": "node dist/cli.js",
     "build:start": "pnpm build && pnpm start",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test:watch": "vitest",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "prepublishOnly": "pnpm build"
@@ -48,9 +48,12 @@
     "vitest": "^3.2.4"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^2.0.5",
+    "ai": "^5.0.18",
     "commander": "^14.0.0",
     "ink": "^6.2.0",
     "ink-spinner": "^5.0.0",
-    "react": "^19.1.1"
+    "react": "^19.1.1",
+    "zod": "^4.0.17"
   }
 }

@@ -42,7 +42,7 @@ Only present code when:
 ## Build & Test Commands
 - **Build**: `pnpm build` (uses Vite for TypeScript compilation)
 - **Development**: `pnpm dev` (watch mode with auto-rebuild)
-- **Test**: `pnpm test` (interactive) or `pnpm test:run` (single run)
+- **Test**: `pnpm test`
 - **Test single file**: `pnpm exec vitest run path/to/test.spec.ts`
 - **Lint**: `pnpm lint` (ESLint for TypeScript)
 - **Type check**: `pnpm typecheck` (TypeScript compiler check)
