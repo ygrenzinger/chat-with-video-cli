@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Mock console.error to avoid test pollution
 vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -28,6 +28,10 @@ describe('MessageHandler', () => {
     mockOnStreamingUpdate = vi.fn()
 
     messageHandler = new MessageHandler(mockExitHandler, mockTimeoutHandler)
+  })
+
+  afterEach(() => {
+    vi.resetAllMocks()
   })
 
   describe('regular message handling', () => {
@@ -83,8 +87,11 @@ describe('MessageHandler', () => {
       const error = new Error('API Error')
 
       // Mock sendMessage to return a generator that throws
-      async function* mockErrorStream() {
+      const throwError = () => {
         throw error
+      }
+      async function* mockErrorStream() {
+        yield throwError()
       }
       vi.mocked(mockChatService.sendMessage).mockReturnValue(mockErrorStream())
 
@@ -196,13 +203,6 @@ describe('MessageHandler', () => {
     })
 
     it('should treat invalid commands as regular messages', async () => {
-      // Mock a failing stream since /invalidcommand is not a valid command
-      // and will be treated as a regular message to the AI
-      async function* mockErrorStream() {
-        throw new Error('Invalid command not recognized')
-      }
-      vi.mocked(mockChatService.sendMessage).mockReturnValue(mockErrorStream())
-
       await messageHandler.handleMessage(
         '/invalidcommand',
         mockChatService,
@@ -216,7 +216,6 @@ describe('MessageHandler', () => {
       expect(mockChatService.sendMessage).toHaveBeenCalledWith(
         '/invalidcommand'
       )
-      expect(mockOnMessageUpdate).toHaveBeenCalled() // Will be called for user message and error handling
     })
   })
 

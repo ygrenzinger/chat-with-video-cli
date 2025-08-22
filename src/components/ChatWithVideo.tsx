@@ -29,7 +29,7 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
   config
 }) => {
   const mergedConfig = mergeConfig(config)
-  
+
   // Initialize hooks
   const {
     chatState,
@@ -56,7 +56,7 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
   useChatService({
     chatState,
     onChatServiceReady: transitionToChatReady,
-    onChatServiceError: (error) => {
+    onChatServiceError: error => {
       console.error('Failed to initialize chat service:', error)
     },
     createChatService: mergedConfig.chatServiceFactory
@@ -75,12 +75,19 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
 
   // Auto-transition to chat-active when ready and no messages
   useEffect(() => {
-    if (mergedConfig.enableAutoTransition &&
-        chatState.status === 'chat-ready' && 
-        messages.length === 0) {
+    if (
+      mergedConfig.enableAutoTransition &&
+      chatState.status === 'chat-ready' &&
+      messages.length === 0
+    ) {
       transitionToChatActive(chatState.transcript, chatState.chatService)
     }
-  }, [chatState, messages.length, mergedConfig.enableAutoTransition, transitionToChatActive])
+  }, [
+    chatState,
+    messages.length,
+    mergedConfig.enableAutoTransition,
+    transitionToChatActive
+  ])
 
   const handleSubtitleSelected = (subtitle: SubtitleLanguage) => {
     transitionToSubtitleSelected(subtitle)

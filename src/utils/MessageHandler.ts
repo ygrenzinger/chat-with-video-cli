@@ -6,7 +6,10 @@ export type ExitHandler = () => void
 export class MessageHandler {
   constructor(
     private exitHandler: ExitHandler = () => process.exit(0),
-    private timeoutHandler: (callback: () => void, delay: number) => void = (cb, delay) => setTimeout(cb, delay)
+    private timeoutHandler: (callback: () => void, delay: number) => void = (
+      cb,
+      delay
+    ) => setTimeout(cb, delay)
   ) {}
 
   async handleMessage(
@@ -19,7 +22,12 @@ export class MessageHandler {
   ): Promise<void> {
     // Check if it's a command
     if (isCommand(message)) {
-      this.handleCommand(message, transcript, currentMessages, onMessageUpdate)
+      await this.handleCommand(
+        message,
+        transcript,
+        currentMessages,
+        onMessageUpdate
+      )
       return
     }
 
@@ -60,7 +68,7 @@ export class MessageHandler {
 
       const finalMessages = messagesWithAssistant.map(msg =>
         msg.id === assistantMessage.id
-          ? { ...msg, streamingComplete: true }
+          ? { ...msg, content: assistantContent, streamingComplete: true }
           : msg
       )
       onMessageUpdate(finalMessages)
@@ -85,12 +93,12 @@ export class MessageHandler {
     }
   }
 
-  private handleCommand(
+  private async handleCommand(
     command: string,
     transcript: string,
     currentMessages: ChatMessage[],
     onMessageUpdate: (messages: ChatMessage[]) => void
-  ): void {
+  ): Promise<void> {
     const parsedCommand = parseCommand(command)
     if (!parsedCommand) return
 
