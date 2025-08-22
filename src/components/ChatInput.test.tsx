@@ -311,6 +311,7 @@ describe('ChatInput', () => {
       await flush()
       stdin.write('\r') // Submit
       await flush()
+
       expect(mockOnSubmit).toHaveBeenCalledWith('second message')
       expect(lastFrame()).not.toContain('second message') // Should be cleared
 
@@ -339,6 +340,7 @@ describe('ChatInput', () => {
         await flush()
       }
 
+      await flush()
       expect(lastFrame()).toContain('hello world')
 
       await flush()
@@ -397,6 +399,8 @@ describe('ChatInput', () => {
         stdin.write(ch)
         await flush()
       }
+      await flush()
+
       // Component filters out tabs, so check for concatenated result
       expect(lastFrame()).toContain('helloworld')
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render } from 'ink-testing-library'
 import { ChatInterface } from './ChatInterface.js'
-import { ChatService } from '../services/ai.js'
+import { ChatService } from '../services/chat.service.js'
 
 describe('ChatInterface', () => {
   it('should render welcome message and input prompt', () => {
