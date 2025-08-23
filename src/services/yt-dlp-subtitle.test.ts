@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { YtdlpSubtitleService } from './yt-dlp-subtitle.js'
 import { execAsync } from '../utils/exec-async.js'
-import { writeFileSync } from 'fs'
+import { writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
 
@@ -294,6 +294,38 @@ Is prompt engineering a thing you need to spend your time on?`
         error:
           "Failed to transform SRT to text: ENOENT: no such file or directory, open 'test.srt'"
       })
+    })
+
+    it('should clean up SRT and TXT files after processing', async () => {
+      const srtPath = join(tmpdir(), `yt-dlp-cleanup-test.srt`)
+      writeFileSync(
+        srtPath,
+        `1\n00:00:00,000 --> 00:00:01,000\nHello world`,
+        { encoding: 'utf-8' }
+      )
+
+      // Simulate yt-dlp reporting the srtPath as destination
+      const output = `[download] Destination: ${srtPath}`
+      mockExecAsync.mockResolvedValue({
+        stdout: output,
+        stderr: ''
+      })
+
+      const subtitle = {
+        code: 'en-US',
+        name: 'English',
+        type: 'uploaded' as const
+      }
+      const url = 'https://youtube.com/watch?v=test'
+
+      const result = await service.retrieveRawText(url, subtitle)
+      expect(result).toEqual({ success: true, content: 'Hello world' })
+
+      const txtPath = srtPath.replace(/\.srt$/, '.txt')
+
+      // After retrieveRawText completes, both files should be removed
+      expect(existsSync(srtPath)).toBe(false)
+      expect(existsSync(txtPath)).toBe(false)
     })
   })
 })

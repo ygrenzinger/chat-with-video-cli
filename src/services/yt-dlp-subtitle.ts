@@ -1,6 +1,6 @@
 import { execAsync } from '../utils/exec-async.js'
 import { convertSrtToTxt } from '../utils/srt-converter.js'
-import { readFileSync } from 'fs'
+import { readFileSync, rmSync } from 'fs'
 import {
   SubtitleDownloadResult,
   SubtitleLanguage,
@@ -80,9 +80,7 @@ export class YtdlpSubtitleService implements SubtitleService {
       console.log(output.stdout)
 
       // Check if download was successful by looking for file mention in output
-      const srtMatch = output.stdout.match(
-        /\[download\] Destination: (.+\.srt)/
-      )
+      const srtMatch = output.stdout.match(/\[download] Destination: (.+\.srt)/)
       if (srtMatch) {
         return {
           success: true,
@@ -114,8 +112,9 @@ export class YtdlpSubtitleService implements SubtitleService {
       return downloadResult
     }
 
+    let txtFilePath: string | undefined
     try {
-      const txtFilePath = convertSrtToTxt(downloadResult.filePath)
+      txtFilePath = convertSrtToTxt(downloadResult.filePath)
       const content = readFileSync(txtFilePath, 'utf8')
 
       return {
@@ -128,6 +127,16 @@ export class YtdlpSubtitleService implements SubtitleService {
         error: `Failed to transform SRT to text: ${
           error instanceof Error ? error.message : 'Unknown error'
         }`
+      }
+    } finally {
+      // Best-effort cleanup of generated files
+      try {
+        if (txtFilePath) {
+          rmSync(downloadResult.filePath, { force: true })
+          rmSync(txtFilePath, { force: true })
+        }
+      } catch (error) {
+        console.error('Error cleaning up generated files:', error)
       }
     }
   }
