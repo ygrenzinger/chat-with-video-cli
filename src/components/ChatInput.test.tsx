@@ -6,7 +6,7 @@ import { ChatInput } from './ChatInput.js'
 describe('ChatInput', () => {
   let mockOnSubmit: ReturnType<typeof vi.fn>
 
-  const flush = () => new Promise(resolve => setTimeout(resolve, 0))
+  const flush = () => new Promise(resolve => setTimeout(resolve, 10))
 
   beforeEach(() => {
     mockOnSubmit = vi.fn()
@@ -178,6 +178,7 @@ describe('ChatInput', () => {
         await flush()
       }
 
+      await flush()
       stdin.write('\r') // Enter key
       await flush()
 
@@ -441,6 +442,221 @@ describe('ChatInput', () => {
       stdin.write('ok')
       await flush()
       expect(lastFrame()).toContain('ok')
+    })
+  })
+
+  // NEW TESTS - Command Prediction
+  describe('Command Prediction', () => {
+    it('should show suggestions when typing slash command', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      stdin.write('/')
+      await flush()
+      stdin.write('c')
+      await flush()
+
+      // Wait for suggestions to appear
+      await flush()
+      await flush()
+
+      const output = lastFrame()
+      expect(output).toContain('/c')
+      expect(output).toContain('/clear')
+      expect(output).toContain('/copy-last')
+    })
+
+    it('should filter suggestions as user types', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      for (const ch of '/cl') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      const output = lastFrame()
+      expect(output).toContain('/cl')
+      expect(output).toContain('/clear')
+      expect(output).not.toContain('/copy-last')
+    })
+
+    it('should navigate suggestions with arrow keys', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type /c to get suggestions
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Press down arrow to select second suggestion
+      stdin.write('\u001b[B') // Down arrow
+      await flush()
+
+      const output = lastFrame()
+      expect(output).toContain('/c')
+      expect(output).toContain('/clear')
+      expect(output).toContain('/copy-last')
+    })
+
+    it('should select suggestion with Tab key', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type /c to get suggestions
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Wait for suggestions to appear
+      await flush()
+
+      // Verify suggestions are shown first
+      let output = lastFrame()
+      expect(output).toContain('/c')
+      expect(output).toContain('/clear')
+      expect(output).toContain('/copy-last')
+
+      // Press Tab to select first suggestion
+      stdin.write('\t') // Tab character
+      await flush()
+
+      output = lastFrame()
+      // After tab selection, input should show the full command
+      expect(output).toContain('/clear')
+    })
+
+    it('should select suggestion with Enter key', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type /c to get suggestions
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Wait for suggestions to appear
+      await flush()
+
+      // Verify suggestions are shown first
+      let output = lastFrame()
+      expect(output).toContain('/c')
+      expect(output).toContain('/clear')
+      expect(output).toContain('/copy-last')
+
+      // Press Enter to select first suggestion
+      stdin.write('\r')
+      await flush()
+
+      output = lastFrame()
+      // After enter selection, input should show the full command
+      expect(output).toContain('/clear')
+    })
+
+    it('should hide suggestions with Escape key', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type /c to get suggestions
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Wait for suggestions to appear
+      await flush()
+
+      // Verify suggestions are shown
+      let output = lastFrame()
+      expect(output).toContain('/clear')
+
+      // Press Escape to hide suggestions
+      stdin.write('\u001b') // Escape key
+      await flush()
+
+      output = lastFrame()
+      expect(output).toContain('/c')
+      // Suggestions should be hidden after escape
+    })
+
+    it('should not show suggestions for non-slash commands', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      for (const ch of 'hello') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      const output = lastFrame()
+      expect(output).toContain('hello')
+      expect(output).not.toContain('/clear')
+      expect(output).not.toContain('/help')
+    })
+
+    it('should hide suggestions when backspacing to non-command', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type /c to get suggestions
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Wait for suggestions to appear
+      await flush()
+
+      // Verify suggestions are shown
+      let output = lastFrame()
+      expect(output).toContain('/clear')
+
+      // Backspace to remove 'c'
+      stdin.write('\u007F')
+      await flush()
+
+      // Backspace to remove '/'
+      stdin.write('\u007F')
+      await flush()
+
+      output = lastFrame()
+      expect(output).not.toContain('/clear')
+      expect(output).not.toContain('/copy-last')
+    })
+
+    it('should submit completed command when Enter is pressed', async () => {
+      // Ensure clean mock state
+      mockOnSubmit.mockClear()
+
+      const { stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      // Type complete command
+      for (const ch of '/clear') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      // Press Enter to submit
+      await flush()
+      stdin.write('\r')
+      await flush()
+
+      expect(mockOnSubmit).toHaveBeenCalledTimes(1)
+      expect(mockOnSubmit).toHaveBeenCalledWith('/clear')
     })
   })
 })

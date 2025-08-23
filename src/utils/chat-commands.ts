@@ -1,5 +1,10 @@
 const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last']
 
+export type CommandSuggestion = {
+  command: string
+  description: string
+}
+
 export type ChatCommand =
   | { type: 'exit' }
   | { type: 'help' }
@@ -30,6 +35,28 @@ export const parseCommand = (input: string): ChatCommand | null => {
     default:
       return null
   }
+}
+
+const COMMAND_DESCRIPTIONS: Record<string, string> = {
+  '/help': 'Show this help message',
+  '/exit': 'Exit the chat and close the application',
+  '/transcript': 'Show the full video transcript',
+  '/clear': 'Clear the message history',
+  '/copy-last': 'Copy the last assistant message to clipboard'
+}
+
+export const getCommandSuggestions = (input: string): CommandSuggestion[] => {
+  if (!input.startsWith('/') || input.length < 2) {
+    return []
+  }
+
+  const searchTerm = input.toLowerCase()
+  return VALID_COMMANDS
+    .filter(command => command.toLowerCase().startsWith(searchTerm))
+    .map(command => ({
+      command,
+      description: COMMAND_DESCRIPTIONS[command]
+    }))
 }
 
 export const getHelpText = (): string => {

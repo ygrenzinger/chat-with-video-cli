@@ -171,6 +171,7 @@ describe('SubtitlesSelection', () => {
     await new Promise(resolve => setTimeout(resolve, 10))
 
     // Press Enter to select
+    await new Promise(resolve => setTimeout(resolve, 10))
     stdin.write('\r') // Enter key
     await new Promise(resolve => setTimeout(resolve, 10))
 

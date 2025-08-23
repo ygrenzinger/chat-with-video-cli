@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseCommand, isCommand } from './chat-commands.js'
+import { parseCommand, isCommand, getCommandSuggestions } from './chat-commands.js'
 
 describe('Chat Commands', () => {
   describe('isCommand', () => {
@@ -48,6 +48,72 @@ describe('Chat Commands', () => {
     it('should return null for invalid commands', () => {
       expect(parseCommand('invalid')).toBeNull()
       expect(parseCommand('/invalid')).toBeNull()
+    })
+  })
+
+  describe('getCommandSuggestions', () => {
+    it('should return empty array for non-slash input', () => {
+      expect(getCommandSuggestions('help')).toEqual([])
+      expect(getCommandSuggestions('test')).toEqual([])
+      expect(getCommandSuggestions('')).toEqual([])
+    })
+
+    it('should return empty array for single slash', () => {
+      expect(getCommandSuggestions('/')).toEqual([])
+    })
+
+    it('should return matching commands for partial input', () => {
+      const suggestions = getCommandSuggestions('/c')
+      expect(suggestions).toHaveLength(2)
+      expect(suggestions[0].command).toBe('/clear')
+      expect(suggestions[0].description).toBe('Clear the message history')
+      expect(suggestions[1].command).toBe('/copy-last')
+      expect(suggestions[1].description).toBe('Copy the last assistant message to clipboard')
+    })
+
+    it('should return single match for more specific input', () => {
+      const suggestions = getCommandSuggestions('/cl')
+      expect(suggestions).toHaveLength(1)
+      expect(suggestions[0].command).toBe('/clear')
+      expect(suggestions[0].description).toBe('Clear the message history')
+    })
+
+    it('should return single match for transcript', () => {
+      const suggestions = getCommandSuggestions('/t')
+      expect(suggestions).toHaveLength(1)
+      expect(suggestions[0].command).toBe('/transcript')
+      expect(suggestions[0].description).toBe('Show the full video transcript')
+    })
+
+    it('should return single match for help', () => {
+      const suggestions = getCommandSuggestions('/h')
+      expect(suggestions).toHaveLength(1)
+      expect(suggestions[0].command).toBe('/help')
+      expect(suggestions[0].description).toBe('Show this help message')
+    })
+
+    it('should return single match for exit', () => {
+      const suggestions = getCommandSuggestions('/e')
+      expect(suggestions).toHaveLength(1)
+      expect(suggestions[0].command).toBe('/exit')
+      expect(suggestions[0].description).toBe('Exit the chat and close the application')
+    })
+
+    it('should return empty array for no matches', () => {
+      expect(getCommandSuggestions('/z')).toEqual([])
+      expect(getCommandSuggestions('/xyz')).toEqual([])
+    })
+
+    it('should be case insensitive', () => {
+      const lowerSuggestions = getCommandSuggestions('/c')
+      const upperSuggestions = getCommandSuggestions('/C')
+      expect(lowerSuggestions).toEqual(upperSuggestions)
+    })
+
+    it('should return exact match for complete command', () => {
+      const suggestions = getCommandSuggestions('/clear')
+      expect(suggestions).toHaveLength(1)
+      expect(suggestions[0].command).toBe('/clear')
     })
   })
 })
