@@ -1,10 +1,11 @@
-const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear']
+const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last']
 
 export type ChatCommand =
   | { type: 'exit' }
   | { type: 'help' }
   | { type: 'transcript' }
   | { type: 'clear' }
+  | { type: 'copy-last' }
 
 export const isCommand = (input: string): boolean => {
   return VALID_COMMANDS.includes(input)
@@ -24,6 +25,8 @@ export const parseCommand = (input: string): ChatCommand | null => {
       return { type: 'transcript' }
     case '/clear':
       return { type: 'clear' }
+    case '/copy-last':
+      return { type: 'copy-last' }
     default:
       return null
   }
@@ -35,6 +38,7 @@ export const getHelpText = (): string => {
   /exit        - Exit the chat and close the application
   /transcript  - Show the full video transcript
   /clear       - Clear the message history
+  /copy-last   - Copy the last assistant message to clipboard
 
 You can also ask questions about the video content directly.`
 }

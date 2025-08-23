@@ -1,9 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
+// Mock clipboardy
+vi.mock('copy-paste/promises', () => ({
+  copy: vi.fn()
+}))
+
 // Mock console.error to avoid test pollution
 vi.spyOn(console, 'error').mockImplementation(() => {})
 import { MessageHandler } from './MessageHandler.js'
 import { ChatMessage, ChatService } from '../services/chat.service.js'
+import { copy } from 'copy-paste/promises'
 
 describe('MessageHandler', () => {
   let messageHandler: MessageHandler
@@ -200,6 +206,140 @@ describe('MessageHandler', () => {
 
       // Verify exit handler is scheduled
       expect(mockTimeoutHandler).toHaveBeenCalledWith(mockExitHandler, 1000)
+    })
+
+    it('should handle copy-last command with existing assistant message', async () => {
+      const existingMessages: ChatMessage[] = [
+        {
+          id: 'msg-1',
+          role: 'user',
+          content: 'User message',
+          timestamp: new Date()
+        },
+        {
+          id: 'msg-2',
+          role: 'assistant',
+          content: 'Assistant response to copy',
+          timestamp: new Date()
+        }
+      ]
+
+      await messageHandler.handleMessage(
+        '/copy-last',
+        mockChatService,
+        transcript,
+        existingMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      expect(copy).toHaveBeenCalledWith('Assistant response to copy')
+      const finalCall = mockOnMessageUpdate.mock.calls[0][0]
+      expect(finalCall).toHaveLength(4) // 2 existing + User command + Assistant response
+      expect(finalCall[0].content).toBe('User message') // First existing message
+      expect(finalCall[1].content).toBe('Assistant response to copy') // Second existing message
+      expect(finalCall[2].content).toBe('/copy-last') // User command
+      expect(finalCall[3].content).toBe(
+        'Last assistant message copied to clipboard! ✓'
+      ) // Command response
+    })
+
+    it('should handle copy-last command with no assistant messages', async () => {
+      const existingMessages: ChatMessage[] = [
+        {
+          id: 'msg-1',
+          role: 'user',
+          content: 'User message',
+          timestamp: new Date()
+        }
+      ]
+
+      await messageHandler.handleMessage(
+        '/copy-last',
+        mockChatService,
+        transcript,
+        existingMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      expect(copy).not.toHaveBeenCalled()
+      const finalCall = mockOnMessageUpdate.mock.calls[0][0]
+      expect(finalCall).toHaveLength(3) // 1 existing + User command + Assistant response
+      expect(finalCall[0].content).toBe('User message') // Existing message
+      expect(finalCall[1].content).toBe('/copy-last') // User command
+      expect(finalCall[2].content).toBe('No assistant message found to copy.') // Command response
+    })
+
+    it('should handle copy-last command when clipboard fails', async () => {
+      const existingMessages: ChatMessage[] = [
+        {
+          id: 'msg-1',
+          role: 'assistant',
+          content: 'Assistant message',
+          timestamp: new Date()
+        }
+      ]
+
+      // Make writeSync throw an error
+      vi.mocked(copy).mockImplementationOnce(() => {
+        throw new Error('Clipboard error')
+      })
+
+      await messageHandler.handleMessage(
+        '/copy-last',
+        mockChatService,
+        transcript,
+        existingMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      expect(console.error).toHaveBeenCalledWith(
+        'Error copying to clipboard:',
+        expect.any(Error)
+      )
+      const finalCall = mockOnMessageUpdate.mock.calls[0][0]
+      expect(finalCall).toHaveLength(3) // 1 existing + User command + Assistant response
+      expect(finalCall[0].content).toBe('Assistant message') // Existing message
+      expect(finalCall[1].content).toBe('/copy-last') // User command
+      expect(finalCall[2].content).toBe(
+        'Failed to copy message to clipboard. Please try again.'
+      ) // Command response
+    })
+
+    it('should find the last assistant message from multiple', async () => {
+      const existingMessages: ChatMessage[] = [
+        {
+          id: 'msg-1',
+          role: 'assistant',
+          content: 'First assistant message',
+          timestamp: new Date()
+        },
+        {
+          id: 'msg-2',
+          role: 'user',
+          content: 'User message',
+          timestamp: new Date()
+        },
+        {
+          id: 'msg-3',
+          role: 'assistant',
+          content: 'Last assistant message',
+          timestamp: new Date()
+        }
+      ]
+
+      await messageHandler.handleMessage(
+        '/copy-last',
+        mockChatService,
+        transcript,
+        existingMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      expect(copy).toHaveBeenCalledWith('Last assistant message')
     })
 
     it('should treat invalid commands as regular messages', async () => {

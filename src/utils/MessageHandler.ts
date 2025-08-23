@@ -1,5 +1,6 @@
 import { ChatMessage, ChatService } from '../services/chat.service.js'
 import { parseCommand, isCommand, getHelpText } from './chat-commands.js'
+import { copy } from 'copy-paste/promises'
 
 export type ExitHandler = () => void
 
@@ -122,6 +123,28 @@ export class MessageHandler {
       case 'clear':
         onMessageUpdate([]) // Clear all messages
         return // Don't add response message for clear
+      case 'copy-last': {
+        // Find the last assistant message
+        const assistantMessages = currentMessages.filter(
+          msg => msg.role === 'assistant'
+        )
+
+        if (assistantMessages.length == 0) {
+          responseContent = 'No assistant message found to copy.'
+        } else {
+          try {
+            const lastMessage =
+              assistantMessages[assistantMessages.length - 1].content
+            await copy(lastMessage)
+            responseContent = 'Last assistant message copied to clipboard! ✓'
+          } catch (error) {
+            console.error('Error copying to clipboard:', error)
+            responseContent =
+              'Failed to copy message to clipboard. Please try again.'
+          }
+        }
+        break
+      }
       case 'exit':
         responseContent = 'Goodbye! 👋'
         break

@@ -8,6 +8,7 @@ describe('Chat Commands', () => {
       expect(isCommand('/help')).toBe(true)
       expect(isCommand('/transcript')).toBe(true)
       expect(isCommand('/clear')).toBe(true)
+      expect(isCommand('/copy-last')).toBe(true)
     })
 
     it('should not identify invalid commands', () => {
@@ -37,6 +38,11 @@ describe('Chat Commands', () => {
     it('should parse clear command', () => {
       const result = parseCommand('/clear')
       expect(result).toEqual({ type: 'clear' })
+    })
+
+    it('should parse copy-last command', () => {
+      const result = parseCommand('/copy-last')
+      expect(result).toEqual({ type: 'copy-last' })
     })
 
     it('should return null for invalid commands', () => {

@@ -21,7 +21,12 @@ export default defineConfig({
         'react',
         'ink',
         'commander',
-        'util'
+        'util',
+        'node:child_process',
+        'node:util',
+        'node:path',
+        'buffer',
+        'string_decoder'
       ],
       output: {
         banner: '#!/usr/bin/env node'

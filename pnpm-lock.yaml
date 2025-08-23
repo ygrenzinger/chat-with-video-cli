@@ -11,6 +11,9 @@ importers:
       '@ai-sdk/anthropic':
         specifier: ^2.0.5
         version: 2.0.5(zod@4.0.17)
+      '@types/copy-paste':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@24.3.0)(jsdom@26.1.0))
@@ -20,6 +23,9 @@ importers:
       commander:
         specifier: ^14.0.0
         version: 14.0.0
+      copy-paste:
+        specifier: ^2.2.0
+        version: 2.2.0
       ink:
         specifier: ^6.2.0
         version: 6.2.0(@types/react@19.1.10)(react@19.1.1)
@@ -573,6 +579,9 @@ packages:
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
 
+  '@types/copy-paste@2.1.0':
+    resolution: {integrity: sha512-u9PFnY4MVc7U90RYcItZxiUYLbdaO5HRbCVQ08Aurt+fQHKMcVOLM4/1ior1nEHX3yFEhh2dSz1CuGV0XBPWew==}
+
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
 
@@ -824,6 +833,9 @@ packages:
     resolution: {integrity: sha512-rcQ1bsQO9799wq24uE5AM2tAILy4gXGIK/njFWcVQkGNZ96edlpY+A7bjwvzjYvLDyzmG1MmMLZhpcsb+klNMQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
+  copy-paste@2.2.0:
+    resolution: {integrity: sha512-jqSL4r9DSeiIvJZStLzY/sMLt9ToTM7RsK237lYOTG+KcbQJHGala3R1TUpa8h1p9adswVgIdV4qGbseVhL4lg==}
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -1055,6 +1067,10 @@ packages:
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
     engines: {node: '>= 14'}
+
+  iconv-lite@0.4.24:
+    resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
+    engines: {node: '>=0.10.0'}
 
   iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
@@ -2080,6 +2096,8 @@ snapshots:
     dependencies:
       '@types/deep-eql': 4.0.2
 
+  '@types/copy-paste@2.1.0': {}
+
   '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
@@ -2368,6 +2386,10 @@ snapshots:
 
   convert-to-spaces@2.0.1: {}
 
+  copy-paste@2.2.0:
+    dependencies:
+      iconv-lite: 0.4.24
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -2620,6 +2642,10 @@ snapshots:
       debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
+
+  iconv-lite@0.4.24:
+    dependencies:
+      safer-buffer: 2.1.2
 
   iconv-lite@0.6.3:
     dependencies:
