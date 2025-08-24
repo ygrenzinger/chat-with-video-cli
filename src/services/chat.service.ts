@@ -1,5 +1,5 @@
-import { AnthropicProvider, createAnthropic } from '@ai-sdk/anthropic'
 import { streamText } from 'ai'
+import { ModelSelectionService, type ModelConfiguration } from './model-selection.service.js'
 
 export type ChatMessage = {
   id: string
@@ -11,14 +11,12 @@ export type ChatMessage = {
 
 export class ChatService {
   private readonly transcript: string
-  private readonly anthropic: AnthropicProvider
+  private readonly modelConfig: ModelConfiguration
   private readonly messages: ChatMessage[] = []
 
-  constructor(transcript: string) {
+  constructor(transcript: string, modelConfig?: ModelConfiguration) {
     this.transcript = transcript
-    this.anthropic = createAnthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
-    })
+    this.modelConfig = modelConfig || ModelSelectionService.selectModel()
   }
 
   getSystemPrompt(): string {
@@ -41,7 +39,7 @@ All the answer should be in markdown format.`
     this.messages.push(userMessage)
 
     const result = streamText({
-      model: this.anthropic('claude-3-5-sonnet-20241022'),
+      model: this.modelConfig.model,
       system: this.getSystemPrompt(),
       messages: this.messages.map(msg => ({
         role: msg.role,

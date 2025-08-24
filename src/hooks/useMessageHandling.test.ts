@@ -127,6 +127,8 @@ describe('useMessageHandling', () => {
 
       // Note: This might be the same reference due to how renderHook works
       // The important thing is that it uses the new transcript when called
+      expect(typeof firstHandleSendMessage).toBe('function')
+      expect(typeof secondHandleSendMessage).toBe('function')
     })
   })
 
@@ -227,7 +229,7 @@ describe('useMessageHandling', () => {
       
       // Mock messageHandler to simulate updating messages
       vi.mocked(mockMessageHandler.handleMessage).mockImplementation(
-        async (message, chatService, transcript, currentMessages, setMessages, setStreaming) => {
+        async (message, chatService, transcript, currentMessages, setMessages, _setStreaming) => {
           const newMessage: ChatMessage = {
             id: 'test-message',
             role: 'user',

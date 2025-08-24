@@ -1,9 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ChatService } from './chat.service.js'
 import { streamText } from 'ai'
+import { ModelSelectionService, type ModelConfiguration } from './model-selection.service.js'
 
-vi.mock('@ai-sdk/anthropic', () => ({
-  createAnthropic: vi.fn(() => vi.fn())
+vi.mock('./model-selection.service.js', () => ({
+  ModelSelectionService: {
+    selectModel: vi.fn()
+  }
 }))
 
 vi.mock('ai', () => ({
@@ -11,8 +14,16 @@ vi.mock('ai', () => ({
 }))
 
 describe('Chat Service', () => {
+  const mockModelConfig: ModelConfiguration = {
+    provider: 'anthropic',
+    providerInstance: {} as any,
+    model: {} as any,
+    modelId: 'claude-3-5-haiku-latest'
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(ModelSelectionService.selectModel).mockReturnValue(mockModelConfig)
   })
 
   afterEach(() => {
@@ -21,7 +32,7 @@ describe('Chat Service', () => {
 
   it('should generate system prompt with transcript embedded', () => {
     const transcript = 'Video about TypeScript testing'
-    const chatService = new ChatService(transcript)
+    const chatService = new ChatService(transcript, mockModelConfig)
 
     const systemPrompt = chatService.getSystemPrompt()
 
@@ -30,6 +41,20 @@ describe('Chat Service', () => {
       '<transcript>Video about TypeScript testing</transcript>'
     )
     expect(systemPrompt).toContain('markdown format')
+  })
+
+  it('should use ModelSelectionService when no model config provided', () => {
+    const transcript = 'Test transcript'
+    new ChatService(transcript)
+
+    expect(ModelSelectionService.selectModel).toHaveBeenCalledOnce()
+  })
+
+  it('should not call ModelSelectionService when model config is provided', () => {
+    const transcript = 'Test transcript'
+    new ChatService(transcript, mockModelConfig)
+
+    expect(ModelSelectionService.selectModel).not.toHaveBeenCalled()
   })
 
   it('should add user and assistant messages when streaming completes', async () => {
@@ -45,7 +70,7 @@ describe('Chat Service', () => {
       textStream: mockTextStream()
     } as any)
 
-    const chatService = new ChatService('Test transcript')
+    const chatService = new ChatService('Test transcript', mockModelConfig)
     const testMessage = 'What is this about?'
 
     const response = chatService.sendMessage(testMessage)

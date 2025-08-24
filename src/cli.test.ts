@@ -50,7 +50,7 @@ describe('Enhanced CLI with environment validation', () => {
 
   it('should exit gracefully when environment validation fails', () => {
     vi.mocked(validateEnvironment).mockImplementation(() => {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required')
+      throw new Error('At least one AI provider API key is required. Please set one of: MISTRAL_API_KEY, OPENAI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, or ANTHROPIC_API_KEY')
     })
 
     expect(() => {
