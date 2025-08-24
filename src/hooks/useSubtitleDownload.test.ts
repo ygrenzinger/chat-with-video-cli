@@ -9,6 +9,8 @@ describe('useSubtitleDownload', () => {
   let mockOnDownloadSuccess: ReturnType<typeof vi.fn>
   let mockOnDownloadError: ReturnType<typeof vi.fn>
 
+  const flush = () => new Promise(resolve => setTimeout(resolve, 1))
+
   const mockSubtitle: SubtitleLanguage = {
     code: 'en',
     name: 'English',
@@ -87,7 +89,7 @@ describe('useSubtitleDownload', () => {
     renderDownloadHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnDownloadSuccess).toHaveBeenCalledWith(transcript)
     expect(mockOnDownloadError).not.toHaveBeenCalled()
@@ -107,7 +109,7 @@ describe('useSubtitleDownload', () => {
     renderDownloadHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnDownloadError).toHaveBeenCalledWith(mockSubtitle, {
       success: false,
@@ -128,7 +130,7 @@ describe('useSubtitleDownload', () => {
     renderDownloadHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnDownloadError).toHaveBeenCalledWith(mockSubtitle, error)
     expect(mockOnDownloadSuccess).not.toHaveBeenCalled()

@@ -8,6 +8,8 @@ describe('SubtitlesSelection', () => {
   let mockSubtitleService: SubtitleService
   let mockOnSubtitleSelected: ReturnType<typeof vi.fn>
 
+  const flush = () => new Promise(resolve => setTimeout(resolve, 10))
+
   beforeEach(() => {
     mockSubtitleService = {
       isAvailable: vi.fn(),
@@ -45,7 +47,7 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     expect(mockSubtitleService.getAvailableSubtitles).toHaveBeenCalledWith(
@@ -67,7 +69,7 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     expect(lastFrame()).toContain('❌ Network error')
@@ -83,7 +85,7 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     expect(lastFrame()).toContain('📭 No subtitles available for this video')
@@ -105,7 +107,7 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     // First item should be selected (with arrow)
@@ -113,13 +115,13 @@ describe('SubtitlesSelection', () => {
 
     // Navigate down
     stdin.write('\u001B[B') // Down arrow
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     expect(lastFrame()).toContain('→ fr - French')
     expect(lastFrame()).not.toContain('→ en - English')
 
     // Navigate up
     stdin.write('\u001B[A') // Up arrow
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     expect(lastFrame()).toContain('→ en - English')
     expect(lastFrame()).not.toContain('→ fr - French')
   })
@@ -139,12 +141,12 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     // Navigate up from first item should wrap to last
     stdin.write('\u001B[A') // Up arrow
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     expect(lastFrame()).toContain('→ fr - French')
   })
 
@@ -163,17 +165,16 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     // Navigate to second item
     stdin.write('\u001B[B') // Down arrow
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
 
     // Press Enter to select
-    await new Promise(resolve => setTimeout(resolve, 10))
     stdin.write('\r') // Enter key
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
 
     expect(mockOnSubtitleSelected).toHaveBeenCalledWith(mockSubtitles[1])
   })
@@ -188,12 +189,12 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     // Try to navigate - should not affect anything
     stdin.write('\u001B[B') // Down arrow
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
 
     expect(lastFrame()).toContain('📭 No subtitles available for this video')
     expect(mockOnSubtitleSelected).not.toHaveBeenCalled()
@@ -210,7 +211,7 @@ describe('SubtitlesSelection', () => {
     )
 
     // Wait for async state update
-    await new Promise(resolve => setTimeout(resolve, 10))
+    await flush()
     rerender(<SubtitlesSelection {...getMockProps()} />)
 
     expect(lastFrame()).toContain('❌ Service unavailable')

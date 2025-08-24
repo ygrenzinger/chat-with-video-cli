@@ -10,6 +10,8 @@ describe('useChatService', () => {
   let mockCreateChatService: ReturnType<typeof vi.fn>
   let mockChatService: ChatService
 
+  const flush = () => new Promise(resolve => setTimeout(resolve, 1))
+
   beforeEach(() => {
     mockOnChatServiceReady = vi.fn()
     mockOnChatServiceError = vi.fn()
@@ -80,7 +82,7 @@ describe('useChatService', () => {
     renderChatServiceHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnChatServiceReady).toHaveBeenCalledWith(
       transcript,
@@ -102,7 +104,7 @@ describe('useChatService', () => {
     renderChatServiceHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnChatServiceError).toHaveBeenCalledWith(error)
     expect(mockOnChatServiceReady).not.toHaveBeenCalled()
@@ -121,7 +123,7 @@ describe('useChatService', () => {
     renderChatServiceHook(chatState)
 
     // Wait for the async operation
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     expect(mockOnChatServiceError).toHaveBeenCalledWith(new Error(errorMessage))
   })
@@ -143,7 +145,7 @@ describe('useChatService', () => {
     )
 
     // Wait for the async operation - it should try to create a real ChatService
-    await new Promise(resolve => setTimeout(resolve, 0))
+    await flush()
 
     // We expect this to be called since the default factory tries to create a real service
     expect(mockOnChatServiceReady).toHaveBeenCalledTimes(1)

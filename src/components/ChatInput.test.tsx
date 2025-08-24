@@ -13,7 +13,6 @@ describe('ChatInput', () => {
   })
 
   afterEach(async () => {
-    await flush()
     vi.clearAllMocks()
   })
 
