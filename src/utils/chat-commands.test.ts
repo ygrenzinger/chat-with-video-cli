@@ -9,6 +9,7 @@ describe('Chat Commands', () => {
       expect(isCommand('/transcript')).toBe(true)
       expect(isCommand('/clear')).toBe(true)
       expect(isCommand('/copy-last')).toBe(true)
+      expect(isCommand('/copy-all')).toBe(true)
     })
 
     it('should not identify invalid commands', () => {
@@ -45,6 +46,11 @@ describe('Chat Commands', () => {
       expect(result).toEqual({ type: 'copy-last' })
     })
 
+    it('should parse copy-all command', () => {
+      const result = parseCommand('/copy-all')
+      expect(result).toEqual({ type: 'copy-all' })
+    })
+
     it('should return null for invalid commands', () => {
       expect(parseCommand('invalid')).toBeNull()
       expect(parseCommand('/invalid')).toBeNull()
@@ -64,11 +70,13 @@ describe('Chat Commands', () => {
 
     it('should return matching commands for partial input', () => {
       const suggestions = getCommandSuggestions('/c')
-      expect(suggestions).toHaveLength(2)
+      expect(suggestions).toHaveLength(3)
       expect(suggestions[0].command).toBe('/clear')
       expect(suggestions[0].description).toBe('Clear the message history')
       expect(suggestions[1].command).toBe('/copy-last')
       expect(suggestions[1].description).toBe('Copy the last assistant message to clipboard')
+      expect(suggestions[2].command).toBe('/copy-all')
+      expect(suggestions[2].description).toBe('Copy the full chat history to clipboard')
     })
 
     it('should return single match for more specific input', () => {

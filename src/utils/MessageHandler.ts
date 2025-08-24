@@ -145,6 +145,24 @@ export class MessageHandler {
         }
         break
       }
+      case 'copy-all': {
+        if (currentMessages.length === 0) {
+          responseContent = 'No messages found to copy.'
+        } else {
+          try {
+            const formattedChat = currentMessages
+              .map(msg => `${msg.role}\n${msg.content}`)
+              .join('\n\n\n')
+            await copy(formattedChat)
+            responseContent = 'Full chat history copied to clipboard! ✓'
+          } catch (error) {
+            console.error('Error copying to clipboard:', error)
+            responseContent =
+              'Failed to copy chat history to clipboard. Please try again.'
+          }
+        }
+        break
+      }
       case 'exit':
         responseContent = 'Goodbye! 👋'
         break
