@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Text, Box, useInput } from 'ink'
+import TextInput from 'ink-text-input'
 import Spinner from 'ink-spinner'
 import { CommandSuggestions } from './CommandSuggestions.js'
 import { getCommandSuggestions } from '../utils/chat-commands.js'
@@ -26,7 +27,27 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
     setShowSuggestions(shouldShow)
   }, [suggestions, input])
 
-  useInput((inputChar, key) => {
+  const handleSubmit = (value: string) => {
+    // If we have partial command with suggestions, use the selected command
+    if (suggestions.length > 0 && value.startsWith('/') && value.length > 1 && 
+        !suggestions.some(s => s.command === value)) {
+      const selectedCommand = suggestions[selectedSuggestionIndex]?.command
+      if (selectedCommand) {
+        setInput(selectedCommand)
+        setSelectedSuggestionIndex(0)
+        return
+      }
+    }
+    
+    if (value.trim()) {
+      onSubmit(value.trim())
+      setInput('')
+      setSelectedSuggestionIndex(0)
+    }
+  }
+
+  // Handle special key navigation for command suggestions
+  useInput((_, key) => {
     if (disabled) return
 
     // Handle suggestion navigation
@@ -62,37 +83,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
         return
       }
     }
-
-    if (key.return) {
-      // If we have partial command with suggestions, use the selected command
-      if (suggestions.length > 0 && input.startsWith('/') && input.length > 1 && 
-          !suggestions.some(s => s.command === input)) {
-        const selectedCommand = suggestions[selectedSuggestionIndex]?.command
-        if (selectedCommand) {
-          setInput(selectedCommand)
-          setSelectedSuggestionIndex(0)
-          return
-        }
-      }
-      
-      if (input.trim()) {
-        onSubmit(input.trim())
-        setInput('')
-        setSelectedSuggestionIndex(0)
-      }
-      return
-    }
-
-    if (key.backspace || key.delete) {
-      setInput(prev => prev.slice(0, -1))
-      setSelectedSuggestionIndex(0)
-      return
-    }
-
-    if (inputChar && !key.ctrl) {
-      setInput(prev => prev + inputChar)
-      setSelectedSuggestionIndex(0)
-    }
   })
 
   if (disabled) {
@@ -109,7 +99,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
     <Box flexDirection="column">
       <Box>
         <Text color="cyan">{'> '}</Text>
-        <Text>{input}</Text>
+        <TextInput
+          value={input}
+          onChange={(value) => {
+            setInput(value)
+            setSelectedSuggestionIndex(0)
+          }}
+          onSubmit={handleSubmit}
+          focus={!disabled}
+          showCursor={true}
+        />
       </Box>
       {showSuggestions && (
         <CommandSuggestions

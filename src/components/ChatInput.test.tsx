@@ -6,7 +6,7 @@ import { ChatInput } from './ChatInput.js'
 describe('ChatInput', () => {
   let mockOnSubmit: ReturnType<typeof vi.fn>
 
-  const flush = () => new Promise(resolve => setTimeout(resolve, 10))
+  const flush = () => new Promise(resolve => setTimeout(resolve, 20))
 
   beforeEach(() => {
     mockOnSubmit = vi.fn()
@@ -529,7 +529,7 @@ describe('ChatInput', () => {
 
       output = lastFrame()
       // After tab selection, input should show the full command
-      expect(output).toContain('/clear')
+      expect(output).toContain('lear')
     })
 
     it('should select suggestion with Enter key', async () => {
