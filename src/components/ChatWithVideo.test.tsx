@@ -87,7 +87,8 @@ describe('ChatWithVideo', () => {
       transitionToChatActive: vi.fn(),
       canProcessMessages: vi.fn().mockReturnValue(false),
       getCurrentTranscript: vi.fn().mockReturnValue(null),
-      getCurrentChatService: vi.fn().mockReturnValue(null)
+      getCurrentChatService: vi.fn().mockReturnValue(null),
+      getCurrentVideoName: vi.fn().mockReturnValue('test')
     })
 
     mockUseSubtitleDownload.mockReturnValue(undefined)
@@ -208,7 +209,11 @@ describe('ChatWithVideo', () => {
       const mockChatServiceFactory = vi.fn()
 
       mockUseChatState.mockReturnValue({
-        chatState: { status: 'chat-initializing', transcript: 'test' },
+        chatState: {
+          status: 'chat-initializing',
+          transcript: 'test',
+          videoName: 'test'
+        },
         transitionToSubtitleSelected: vi.fn(),
         transitionToSubtitleDownloaded: vi.fn(),
         transitionToChatInitializing: vi.fn(),
@@ -230,7 +235,11 @@ describe('ChatWithVideo', () => {
       render(<ChatWithVideo url={url} subtitleService={mockSubtitleService} />)
 
       expect(mockUseChatService).toHaveBeenCalledWith({
-        chatState: { status: 'chat-initializing', transcript: 'test' },
+        chatState: {
+          status: 'chat-initializing',
+          transcript: 'test',
+          videoName: 'test'
+        },
         onChatServiceReady: mockTransitionToChatReady,
         onChatServiceError: expect.any(Function),
         createChatService: mockChatServiceFactory
@@ -246,12 +255,14 @@ describe('ChatWithVideo', () => {
       const mockTimeoutHandler = vi.fn()
       const mockChatService = { test: 'service' }
       const transcript = 'test transcript'
+      const videoName = 'test'
 
       mockUseChatState.mockReturnValue({
         chatState: {
           status: 'chat-active',
           transcript,
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName
         },
         transitionToSubtitleSelected: vi.fn(),
         transitionToSubtitleDownloaded: vi.fn(),
@@ -260,7 +271,8 @@ describe('ChatWithVideo', () => {
         transitionToChatActive: vi.fn(),
         canProcessMessages: vi.fn().mockReturnValue(true),
         getCurrentTranscript: vi.fn().mockReturnValue(transcript),
-        getCurrentChatService: vi.fn().mockReturnValue(mockChatService)
+        getCurrentChatService: vi.fn().mockReturnValue(mockChatService),
+        getCurrentVideoName: vi.fn().mockReturnValue(videoName)
       })
 
       mockMergeConfig.mockReturnValue({
@@ -281,7 +293,8 @@ describe('ChatWithVideo', () => {
         messageHandler: mockMessageHandler,
         chatService: mockChatService,
         transcript,
-        canProcessMessages: true
+        canProcessMessages: true,
+        videoName
       })
     })
   })

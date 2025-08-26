@@ -1,11 +1,12 @@
 import { execAsync } from '../utils/exec-async.js'
 import { convertSrtToTxt } from '../utils/srt-converter.js'
 import { readFileSync, rmSync } from 'fs'
+import { basename } from 'path'
 import {
   SubtitleDownloadResult,
   SubtitleLanguage,
   SubtitleService
-} from './subtitle'
+} from './subtitle.js'
 
 export class YtdlpSubtitleService implements SubtitleService {
   async isAvailable(): Promise<boolean> {
@@ -117,9 +118,15 @@ export class YtdlpSubtitleService implements SubtitleService {
       txtFilePath = convertSrtToTxt(downloadResult.filePath)
       const content = readFileSync(txtFilePath, 'utf8')
 
+      // Extract video name from txtFilePath by removing the extension
+      const fileName = basename(txtFilePath)
+      const videoName =
+        fileName.substring(0, fileName.lastIndexOf('.')) || fileName
+
       return {
         success: true,
-        content
+        content,
+        videoName
       }
     } catch (error) {
       return {

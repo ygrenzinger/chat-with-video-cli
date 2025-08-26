@@ -6,6 +6,7 @@ type UseMessageHandlingProps = {
   messageHandler?: MessageHandler
   chatService: ChatService | null
   transcript: string | null
+  videoName: string | null
   canProcessMessages: boolean
 }
 
@@ -13,6 +14,7 @@ export const useMessageHandling = ({
   messageHandler = new MessageHandler(),
   chatService,
   transcript,
+  videoName,
   canProcessMessages
 }: UseMessageHandlingProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -20,7 +22,7 @@ export const useMessageHandling = ({
 
   const handleSendMessage = useCallback(
     async (message: string) => {
-      if (!canProcessMessages || !chatService || !transcript) {
+      if (!canProcessMessages || !chatService || !transcript || !videoName) {
         return
       }
 
@@ -28,12 +30,20 @@ export const useMessageHandling = ({
         message,
         chatService,
         transcript,
+        videoName,
         messages,
         setMessages,
         setIsStreaming
       )
     },
-    [canProcessMessages, chatService, transcript, messages, messageHandler]
+    [
+      canProcessMessages,
+      chatService,
+      transcript,
+      messages,
+      messageHandler,
+      videoName
+    ]
   )
 
   const clearMessages = useCallback(() => {

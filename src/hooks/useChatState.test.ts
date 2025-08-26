@@ -16,6 +16,7 @@ describe('useChatState', () => {
 
   const mockDownloadResult: SubtitleDownloadResult = {
     success: true,
+    videoName: 'test',
     content: 'test transcript'
   }
 
@@ -81,14 +82,16 @@ describe('useChatState', () => {
     it('should transition to chat-initializing', () => {
       const { result } = renderHook(() => useChatState())
       const transcript = 'test transcript'
+      const videoName = 'test'
 
       act(() => {
-        result.current.transitionToChatInitializing(transcript)
+        result.current.transitionToChatInitializing(transcript, videoName)
       })
 
       expect(result.current.chatState).toEqual({
         status: 'chat-initializing',
-        transcript
+        transcript,
+        videoName
       })
       expect(result.current.getCurrentTranscript()).toBe(transcript)
     })
@@ -96,15 +99,21 @@ describe('useChatState', () => {
     it('should transition to chat-ready', () => {
       const { result } = renderHook(() => useChatState())
       const transcript = 'test transcript'
+      const videoName = 'test'
 
       act(() => {
-        result.current.transitionToChatReady(transcript, mockChatService)
+        result.current.transitionToChatReady(
+          transcript,
+          mockChatService,
+          videoName
+        )
       })
 
       expect(result.current.chatState).toEqual({
         status: 'chat-ready',
         transcript,
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName
       })
       expect(result.current.canProcessMessages()).toBe(true)
       expect(result.current.getCurrentTranscript()).toBe(transcript)
@@ -114,15 +123,21 @@ describe('useChatState', () => {
     it('should transition to chat-active', () => {
       const { result } = renderHook(() => useChatState())
       const transcript = 'test transcript'
+      const videoName = 'test'
 
       act(() => {
-        result.current.transitionToChatActive(transcript, mockChatService)
+        result.current.transitionToChatActive(
+          transcript,
+          mockChatService,
+          videoName
+        )
       })
 
       expect(result.current.chatState).toEqual({
         status: 'chat-active',
         transcript,
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       })
       expect(result.current.canProcessMessages()).toBe(true)
       expect(result.current.getCurrentTranscript()).toBe(transcript)
@@ -138,7 +153,11 @@ describe('useChatState', () => {
           status: 'subtitle-selected' as const,
           selectedSubtitle: mockSubtitle
         },
-        { status: 'chat-initializing' as const, transcript: 'test' }
+        {
+          status: 'chat-initializing' as const,
+          transcript: 'test',
+          videoName: 'test'
+        }
       ]
 
       states.forEach(state => {
@@ -152,12 +171,14 @@ describe('useChatState', () => {
         {
           status: 'chat-ready' as const,
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         },
         {
           status: 'chat-active' as const,
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         }
       ]
 
@@ -182,16 +203,18 @@ describe('useChatState', () => {
     it('should return transcript in chat states', () => {
       const transcript = 'test transcript'
       const states = [
-        { status: 'chat-initializing' as const, transcript },
+        { status: 'chat-initializing' as const, transcript, videoName: 'test' },
         {
           status: 'chat-ready' as const,
           transcript,
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         },
         {
           status: 'chat-active' as const,
           transcript,
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         }
       ]
 
@@ -208,7 +231,11 @@ describe('useChatState', () => {
           status: 'subtitle-selected' as const,
           selectedSubtitle: mockSubtitle
         },
-        { status: 'chat-initializing' as const, transcript: 'test' }
+        {
+          status: 'chat-initializing' as const,
+          transcript: 'test',
+          videoName: 'test'
+        }
       ]
 
       states.forEach(state => {
@@ -222,12 +249,14 @@ describe('useChatState', () => {
         {
           status: 'chat-ready' as const,
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         },
         {
           status: 'chat-active' as const,
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         }
       ]
 

@@ -1,4 +1,4 @@
-const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last', '/copy-all']
+const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last', '/copy-all', '/save-to-file']
 
 export type CommandSuggestion = {
   command: string
@@ -12,6 +12,7 @@ export type ChatCommand =
   | { type: 'clear' }
   | { type: 'copy-last' }
   | { type: 'copy-all' }
+  | { type: 'save-to-file' }
 
 export const isCommand = (input: string): boolean => {
   return VALID_COMMANDS.includes(input)
@@ -35,6 +36,8 @@ export const parseCommand = (input: string): ChatCommand | null => {
       return { type: 'copy-last' }
     case '/copy-all':
       return { type: 'copy-all' }
+    case '/save-to-file':
+      return { type: 'save-to-file' }
     default:
       return null
   }
@@ -46,7 +49,8 @@ const COMMAND_DESCRIPTIONS: Record<string, string> = {
   '/transcript': 'Show the full video transcript',
   '/clear': 'Clear the message history',
   '/copy-last': 'Copy the last assistant message to clipboard',
-  '/copy-all': 'Copy the full chat history to clipboard'
+  '/copy-all': 'Copy the full chat history to clipboard',
+  '/save-to-file': 'Save the full chat history to a markdown file'
 }
 
 export const getCommandSuggestions = (input: string): CommandSuggestion[] => {
@@ -65,12 +69,13 @@ export const getCommandSuggestions = (input: string): CommandSuggestion[] => {
 
 export const getHelpText = (): string => {
   return `Available commands:
-  /help        - Show this help message
-  /exit        - Exit the chat and close the application
-  /transcript  - Show the full video transcript
-  /clear       - Clear the message history
-  /copy-last   - Copy the last assistant message to clipboard
-  /copy-all    - Copy the full chat history to clipboard
+  /help          - Show this help message
+  /exit          - Exit the chat and close the application
+  /transcript    - Show the full video transcript
+  /clear         - Clear the message history
+  /copy-last     - Copy the last assistant message to clipboard
+  /copy-all      - Copy the full chat history to clipboard
+  /save-to-file  - Save the full chat history to a markdown file
 
 You can also ask questions about the video content directly.`
 }

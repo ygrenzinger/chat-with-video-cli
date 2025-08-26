@@ -20,6 +20,7 @@ describe('MessageHandler', () => {
   let mockOnStreamingUpdate: ReturnType<typeof vi.fn>
 
   const transcript = 'Test video transcript content'
+  const videoName = 'Test video'
   const currentMessages: ChatMessage[] = []
 
   beforeEach(() => {
@@ -56,6 +57,7 @@ describe('MessageHandler', () => {
         message,
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -105,6 +107,7 @@ describe('MessageHandler', () => {
         message,
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -137,6 +140,7 @@ describe('MessageHandler', () => {
         '/help',
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -156,6 +160,7 @@ describe('MessageHandler', () => {
         '/transcript',
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -181,6 +186,7 @@ describe('MessageHandler', () => {
         '/clear',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -195,6 +201,7 @@ describe('MessageHandler', () => {
         '/exit',
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -228,6 +235,7 @@ describe('MessageHandler', () => {
         '/copy-last',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -258,6 +266,7 @@ describe('MessageHandler', () => {
         '/copy-last',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -290,6 +299,7 @@ describe('MessageHandler', () => {
         '/copy-last',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -334,6 +344,7 @@ describe('MessageHandler', () => {
         '/copy-last',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -368,18 +379,22 @@ describe('MessageHandler', () => {
         '/copy-all',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
       )
 
-      const expectedFormat = 'user\nHello there\n\n\nassistant\nHi! How can I help you?\n\n\nuser\nTell me about this video'
+      const expectedFormat =
+        'user\nHello there\n\n\nassistant\nHi! How can I help you?\n\n\nuser\nTell me about this video'
       expect(copy).toHaveBeenCalledWith(expectedFormat)
-      
+
       const finalCall = mockOnMessageUpdate.mock.calls[0][0]
       expect(finalCall).toHaveLength(5) // 3 existing + User command + Assistant response
       expect(finalCall[3].content).toBe('/copy-all') // User command
-      expect(finalCall[4].content).toBe('Full chat history copied to clipboard! ✓') // Command response
+      expect(finalCall[4].content).toBe(
+        'Full chat history copied to clipboard! ✓'
+      ) // Command response
     })
 
     it('should handle copy-all command with no messages', async () => {
@@ -389,6 +404,7 @@ describe('MessageHandler', () => {
         '/copy-all',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -420,6 +436,7 @@ describe('MessageHandler', () => {
         '/copy-all',
         mockChatService,
         transcript,
+        videoName,
         existingMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -443,6 +460,7 @@ describe('MessageHandler', () => {
         '/invalidcommand',
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -469,6 +487,7 @@ describe('MessageHandler', () => {
         message,
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate
@@ -501,6 +520,7 @@ describe('MessageHandler', () => {
         '/exit',
         mockChatService,
         transcript,
+        videoName,
         currentMessages,
         mockOnMessageUpdate,
         mockOnStreamingUpdate

@@ -8,6 +8,7 @@ export type SubtitleDownloadResult =
   | {
       success: true
       content: string
+      videoName: string
     }
   | {
       success: false

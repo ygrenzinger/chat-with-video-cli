@@ -31,7 +31,8 @@ export class StateTransitionManager {
         // Step 3: Transition to chat initializing
         onStateChange({
           status: 'chat-initializing',
-          transcript: result.content
+          transcript: result.content,
+          videoName: result.videoName
         })
 
         // Step 4: Initialize chat service
@@ -41,6 +42,7 @@ export class StateTransitionManager {
         onStateChange({
           status: 'chat-ready',
           transcript: result.content,
+          videoName: result.videoName,
           chatService
         })
       } else {

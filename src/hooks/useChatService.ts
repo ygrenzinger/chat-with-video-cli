@@ -4,12 +4,18 @@ import { ChatWithVideoState } from './useChatState.js'
 
 type UseChatServiceProps = {
   chatState: ChatWithVideoState
-  onChatServiceReady: (transcript: string, chatService: ChatService) => void
+  onChatServiceReady: (
+    transcript: string,
+    chatService: ChatService,
+    videoName: string
+  ) => void
   onChatServiceError: (error: Error) => void
   createChatService?: (transcript: string) => Promise<ChatService>
 }
 
-const defaultCreateChatService = async (transcript: string): Promise<ChatService> => {
+const defaultCreateChatService = async (
+  transcript: string
+): Promise<ChatService> => {
   return new ChatService(transcript)
 }
 
@@ -29,13 +35,19 @@ export const useChatService = ({
     const initializeChatService = async () => {
       try {
         const chatService = await createChatService(chatState.transcript)
-        
+
         if (!isCancelled) {
-          onChatServiceReady(chatState.transcript, chatService)
+          onChatServiceReady(
+            chatState.transcript,
+            chatService,
+            chatState.videoName
+          )
         }
       } catch (error) {
         if (!isCancelled) {
-          onChatServiceError(error instanceof Error ? error : new Error(String(error)))
+          onChatServiceError(
+            error instanceof Error ? error : new Error(String(error))
+          )
         }
       }
     }

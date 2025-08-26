@@ -7,14 +7,15 @@ import { MessageHandler } from '../utils/MessageHandler.js'
 describe('useMessageHandling', () => {
   let mockMessageHandler: MessageHandler
   let mockChatService: ChatService
-  
+
   const transcript = 'Test transcript'
+  const videoName = 'Test video'
 
   beforeEach(() => {
     mockMessageHandler = {
       handleMessage: vi.fn()
     } as unknown as MessageHandler
-    
+
     mockChatService = {
       sendMessage: vi.fn(),
       getMessages: vi.fn(),
@@ -22,12 +23,15 @@ describe('useMessageHandling', () => {
     } as unknown as ChatService
   })
 
-  const renderMessageHandlingHook = (props: Partial<Parameters<typeof useMessageHandling>[0]> = {}) => {
+  const renderMessageHandlingHook = (
+    props: Partial<Parameters<typeof useMessageHandling>[0]> = {}
+  ) => {
     return renderHook(() =>
       useMessageHandling({
         messageHandler: mockMessageHandler,
         chatService: mockChatService,
         transcript,
+        videoName,
         canProcessMessages: true,
         ...props
       })
@@ -47,6 +51,7 @@ describe('useMessageHandling', () => {
         useMessageHandling({
           chatService: mockChatService,
           transcript,
+          videoName,
           canProcessMessages: true
         })
       )
@@ -68,14 +73,17 @@ describe('useMessageHandling', () => {
         message,
         mockChatService,
         transcript,
+        videoName,
         [], // initial empty messages
         expect.any(Function), // setMessages
-        expect.any(Function)  // setIsStreaming
+        expect.any(Function) // setIsStreaming
       )
     })
 
     it('should not call messageHandler when canProcessMessages is false', async () => {
-      const { result } = renderMessageHandlingHook({ canProcessMessages: false })
+      const { result } = renderMessageHandlingHook({
+        canProcessMessages: false
+      })
       const message = 'Test message'
 
       await act(async () => {
@@ -172,7 +180,7 @@ describe('useMessageHandling', () => {
   describe('addMessage', () => {
     it('should add a message to the messages array', () => {
       const { result } = renderMessageHandlingHook()
-      
+
       const testMessage: ChatMessage = {
         id: 'test-1',
         role: 'user',
@@ -189,7 +197,7 @@ describe('useMessageHandling', () => {
 
     it('should add multiple messages in order', () => {
       const { result } = renderMessageHandlingHook()
-      
+
       const message1: ChatMessage = {
         id: 'test-1',
         role: 'user',
@@ -226,10 +234,18 @@ describe('useMessageHandling', () => {
   describe('state updates from messageHandler', () => {
     it('should update messages when messageHandler calls setMessages', async () => {
       const { result } = renderMessageHandlingHook()
-      
+
       // Mock messageHandler to simulate updating messages
       vi.mocked(mockMessageHandler.handleMessage).mockImplementation(
-        async (message, chatService, transcript, currentMessages, setMessages, _setStreaming) => {
+        async (
+          message,
+          chatService,
+          transcript,
+          videoName,
+          currentMessages,
+          setMessages,
+          _setStreaming
+        ) => {
           const newMessage: ChatMessage = {
             id: 'test-message',
             role: 'user',
@@ -250,10 +266,18 @@ describe('useMessageHandling', () => {
 
     it('should update streaming state when messageHandler calls setStreaming', async () => {
       const { result } = renderMessageHandlingHook()
-      
+
       // Mock messageHandler to simulate streaming
       vi.mocked(mockMessageHandler.handleMessage).mockImplementation(
-        async (message, chatService, transcript, currentMessages, setMessages, setStreaming) => {
+        async (
+          message,
+          chatService,
+          transcript,
+          videoName,
+          currentMessages,
+          setMessages,
+          setStreaming
+        ) => {
           setStreaming(true)
           // Simulate async work
           await new Promise(resolve => setTimeout(resolve, 0))

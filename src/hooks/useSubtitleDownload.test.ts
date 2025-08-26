@@ -44,9 +44,19 @@ describe('useSubtitleDownload', () => {
   it('should not trigger download when status is not subtitle-selected', () => {
     const states: ChatWithVideoState[] = [
       { status: 'started' },
-      { status: 'chat-initializing', transcript: 'test' },
-      { status: 'chat-ready', transcript: 'test', chatService: {} as any },
-      { status: 'chat-active', transcript: 'test', chatService: {} as any }
+      { status: 'chat-initializing', transcript: 'test', videoName: 'test' },
+      {
+        status: 'chat-ready',
+        transcript: 'test',
+        chatService: {} as any,
+        videoName: 'test'
+      },
+      {
+        status: 'chat-active',
+        transcript: 'test',
+        chatService: {} as any,
+        videoName: 'test'
+      }
     ]
 
     states.forEach(state => {
@@ -63,6 +73,7 @@ describe('useSubtitleDownload', () => {
 
     vi.mocked(mockSubtitleService.retrieveRawText).mockResolvedValue({
       success: true,
+      videoName: 'test',
       content: 'test transcript'
     })
 
@@ -83,6 +94,7 @@ describe('useSubtitleDownload', () => {
     const transcript = 'test transcript content'
     vi.mocked(mockSubtitleService.retrieveRawText).mockResolvedValue({
       success: true,
+      videoName: 'test',
       content: transcript
     })
 
@@ -91,7 +103,7 @@ describe('useSubtitleDownload', () => {
     // Wait for the async operation
     await flush()
 
-    expect(mockOnDownloadSuccess).toHaveBeenCalledWith(transcript)
+    expect(mockOnDownloadSuccess).toHaveBeenCalledWith(transcript, 'test')
     expect(mockOnDownloadError).not.toHaveBeenCalled()
   })
 
@@ -149,6 +161,7 @@ describe('useSubtitleDownload', () => {
 
     vi.mocked(mockSubtitleService.retrieveRawText).mockResolvedValue({
       success: true,
+      videoName: 'test',
       content: 'test'
     })
 

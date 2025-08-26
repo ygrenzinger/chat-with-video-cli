@@ -41,12 +41,14 @@ describe('useChatService', () => {
       {
         status: 'chat-ready',
         transcript: 'test',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       },
       {
         status: 'chat-active',
         transcript: 'test',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
     ]
 
@@ -60,7 +62,8 @@ describe('useChatService', () => {
     const transcript = 'test transcript'
     const chatState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName: 'test'
     }
 
     mockCreateChatService.mockResolvedValue(mockChatService)
@@ -72,9 +75,11 @@ describe('useChatService', () => {
 
   it('should call onChatServiceReady when initialization succeeds', async () => {
     const transcript = 'test transcript'
+    const videoName = 'test video'
     const chatState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName
     }
 
     mockCreateChatService.mockResolvedValue(mockChatService)
@@ -86,7 +91,8 @@ describe('useChatService', () => {
 
     expect(mockOnChatServiceReady).toHaveBeenCalledWith(
       transcript,
-      mockChatService
+      mockChatService,
+      videoName
     )
     expect(mockOnChatServiceError).not.toHaveBeenCalled()
   })
@@ -95,7 +101,8 @@ describe('useChatService', () => {
     const transcript = 'test transcript'
     const chatState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName: 'test'
     }
 
     const error = new Error('Initialization failed')
@@ -114,7 +121,8 @@ describe('useChatService', () => {
     const transcript = 'test transcript'
     const chatState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName: 'test'
     }
 
     const errorMessage = 'String error'
@@ -129,10 +137,13 @@ describe('useChatService', () => {
   })
 
   it('should use default createChatService when none provided', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test-anthropic-key'
+
     const transcript = 'test transcript'
     const chatState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName: 'test'
     }
 
     // Render without providing createChatService
@@ -159,7 +170,8 @@ describe('useChatService', () => {
 
     const newState: ChatWithVideoState = {
       status: 'chat-initializing',
-      transcript: 'new transcript'
+      transcript: 'new transcript',
+      videoName: 'test'
     }
 
     mockCreateChatService.mockResolvedValue(mockChatService)

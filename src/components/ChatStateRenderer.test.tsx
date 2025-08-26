@@ -118,6 +118,7 @@ describe('ChatStateRenderer', () => {
         downloadStatus: 'finished',
         downloadResult: {
           success: true,
+          videoName: 'test',
           content: 'test transcript'
         }
       }
@@ -151,7 +152,8 @@ describe('ChatStateRenderer', () => {
     it('should show initialization message with spinner', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-initializing',
-        transcript: 'test transcript'
+        transcript: 'test transcript',
+        videoName: 'test'
       }
       const { lastFrame } = renderChatStateRenderer(chatState)
 
@@ -166,7 +168,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-ready',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
       const { lastFrame } = renderChatStateRenderer(chatState)
 
@@ -192,7 +195,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       const { lastFrame } = renderChatStateRenderer(chatState, messages, false)
@@ -205,7 +209,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       const { lastFrame } = renderChatStateRenderer(chatState, [], true)
@@ -228,7 +233,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       const { lastFrame } = renderChatStateRenderer(chatState, messages)
@@ -264,7 +270,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       renderChatStateRenderer(chatState, messages, false)
@@ -296,7 +303,8 @@ describe('ChatStateRenderer', () => {
       const chatState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test transcript',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       const { lastFrame } = renderChatStateRenderer(chatState, [], false)

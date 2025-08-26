@@ -5,6 +5,7 @@ import {
   GoogleGenerativeAIProvider,
   createGoogleGenerativeAI
 } from '@ai-sdk/google'
+import { LanguageModelV2 } from '@ai-sdk/provider'
 
 export type SupportedProvider = 'mistral' | 'openai' | 'google' | 'anthropic'
 
@@ -15,7 +16,7 @@ export interface ModelConfiguration {
     | MistralProvider
     | OpenAIProvider
     | GoogleGenerativeAIProvider
-  model: any
+  model: LanguageModelV2
   modelId: string
 }
 

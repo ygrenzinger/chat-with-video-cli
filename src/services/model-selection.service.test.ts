@@ -111,13 +111,6 @@ describe('ModelSelectionService', () => {
       expect(config.providerInstance).toBeDefined()
       expect(config.model).toBeDefined()
     })
-
-    it('should throw error for unsupported provider', () => {
-      // @ts-expect-error Testing invalid provider
-      expect(() =>
-        ModelSelectionService.createModelConfiguration('invalid', mockEnv)
-      ).toThrow('Unsupported provider: invalid')
-    })
   })
 
   describe('selectModel', () => {

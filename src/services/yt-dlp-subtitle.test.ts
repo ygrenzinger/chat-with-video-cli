@@ -249,6 +249,7 @@ Is prompt engineering a thing you need to spend your time on?`
       expect(result).toEqual({
         content:
           'Is prompt engineering a thing you need to spend your time on?',
+        videoName: 'test',
         success: true
       })
     })
@@ -298,11 +299,9 @@ Is prompt engineering a thing you need to spend your time on?`
 
     it('should clean up SRT and TXT files after processing', async () => {
       const srtPath = join(tmpdir(), `yt-dlp-cleanup-test.srt`)
-      writeFileSync(
-        srtPath,
-        `1\n00:00:00,000 --> 00:00:01,000\nHello world`,
-        { encoding: 'utf-8' }
-      )
+      writeFileSync(srtPath, `1\n00:00:00,000 --> 00:00:01,000\nHello world`, {
+        encoding: 'utf-8'
+      })
 
       // Simulate yt-dlp reporting the srtPath as destination
       const output = `[download] Destination: ${srtPath}`
@@ -319,7 +318,11 @@ Is prompt engineering a thing you need to spend your time on?`
       const url = 'https://youtube.com/watch?v=test'
 
       const result = await service.retrieveRawText(url, subtitle)
-      expect(result).toEqual({ success: true, content: 'Hello world' })
+      expect(result).toEqual({
+        success: true,
+        videoName: 'yt-dlp-cleanup-test',
+        content: 'Hello world'
+      })
 
       const txtPath = srtPath.replace(/\.srt$/, '.txt')
 

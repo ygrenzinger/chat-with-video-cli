@@ -42,6 +42,7 @@ describe('StateTransitionManager', () => {
       const transcript = 'Test transcript content'
       const successResult: SubtitleDownloadResult = {
         success: true,
+        videoName: 'test',
         content: transcript
       }
 
@@ -68,14 +69,16 @@ describe('StateTransitionManager', () => {
       // Second call: chat-initializing
       expect(mockOnStateChange).toHaveBeenNthCalledWith(2, {
         status: 'chat-initializing',
-        transcript
+        transcript,
+        videoName: 'test'
       })
 
       // Third call: chat-ready
       expect(mockOnStateChange).toHaveBeenNthCalledWith(3, {
         status: 'chat-ready',
         transcript,
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       })
 
       expect(mockSubtitleService.retrieveRawText).toHaveBeenCalledWith(
@@ -124,6 +127,7 @@ describe('StateTransitionManager', () => {
       const transcript = 'Test transcript content'
       const successResult: SubtitleDownloadResult = {
         success: true,
+        videoName: 'test',
         content: transcript
       }
 
@@ -261,12 +265,14 @@ describe('StateTransitionManager', () => {
       const activeState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
       const readyState: ChatWithVideoState = {
         status: 'chat-ready',
         transcript: 'test',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
 
       expect(StateTransitionManager.canProcessMessages(activeState)).toBe(true)
@@ -277,7 +283,7 @@ describe('StateTransitionManager', () => {
       const states: ChatWithVideoState[] = [
         { status: 'started' },
         { status: 'subtitle-selected', selectedSubtitle: mockSubtitle },
-        { status: 'chat-initializing', transcript: 'test' }
+        { status: 'chat-initializing', transcript: 'test', videoName: 'test' }
       ]
 
       states.forEach(state => {
@@ -291,13 +297,14 @@ describe('StateTransitionManager', () => {
       const activeState: ChatWithVideoState = {
         status: 'chat-active',
         transcript: 'test',
-        chatService: mockChatService
+        chatService: mockChatService,
+        videoName: 'test'
       }
       const downloadedState: ChatWithVideoState = {
         status: 'subtitle-downloaded',
         selectedSubtitle: mockSubtitle,
         downloadStatus: 'finished',
-        downloadResult: { success: true, content: 'test' }
+        downloadResult: { success: true, videoName: 'test', content: 'test' }
       }
 
       expect(StateTransitionManager.isTerminalState(activeState)).toBe(true)
@@ -308,11 +315,12 @@ describe('StateTransitionManager', () => {
       const states: ChatWithVideoState[] = [
         { status: 'started' },
         { status: 'subtitle-selected', selectedSubtitle: mockSubtitle },
-        { status: 'chat-initializing', transcript: 'test' },
+        { status: 'chat-initializing', transcript: 'test', videoName: 'test' },
         {
           status: 'chat-ready',
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         }
       ]
 
@@ -339,7 +347,7 @@ describe('StateTransitionManager', () => {
         status: 'subtitle-downloaded',
         selectedSubtitle: mockSubtitle,
         downloadStatus: 'finished',
-        downloadResult: { success: true, content: 'test' }
+        downloadResult: { success: true, videoName: 'test', content: 'test' }
       }
 
       expect(StateTransitionManager.isErrorState(successState)).toBe(false)
@@ -349,16 +357,18 @@ describe('StateTransitionManager', () => {
       const states: ChatWithVideoState[] = [
         { status: 'started' },
         { status: 'subtitle-selected', selectedSubtitle: mockSubtitle },
-        { status: 'chat-initializing', transcript: 'test' },
+        { status: 'chat-initializing', transcript: 'test', videoName: 'test' },
         {
           status: 'chat-ready',
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         },
         {
           status: 'chat-active',
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         }
       ]
 
@@ -386,7 +396,7 @@ describe('StateTransitionManager', () => {
           status: 'subtitle-downloaded',
           selectedSubtitle: mockSubtitle,
           downloadStatus: 'finished',
-          downloadResult: { success: true, content: 'test' }
+          downloadResult: { success: true, videoName: 'test', content: 'test' }
         })
       ).toBe('Subtitle downloaded successfully')
 
@@ -402,7 +412,8 @@ describe('StateTransitionManager', () => {
       expect(
         StateTransitionManager.getStateDescription({
           status: 'chat-initializing',
-          transcript: 'test'
+          transcript: 'test',
+          videoName: 'test'
         })
       ).toBe('Initializing AI chat service...')
 
@@ -410,7 +421,8 @@ describe('StateTransitionManager', () => {
         StateTransitionManager.getStateDescription({
           status: 'chat-ready',
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         })
       ).toBe('Ready to chat! Type your first message.')
 
@@ -418,7 +430,8 @@ describe('StateTransitionManager', () => {
         StateTransitionManager.getStateDescription({
           status: 'chat-active',
           transcript: 'test',
-          chatService: mockChatService
+          chatService: mockChatService,
+          videoName: 'test'
         })
       ).toBe('Chat active')
     })

@@ -6,7 +6,7 @@ type UseSubtitleDownloadProps = {
   chatState: ChatWithVideoState
   url: string
   subtitleService: SubtitleService
-  onDownloadSuccess: (transcript: string) => void
+  onDownloadSuccess: (transcript: string, videoName: string) => void
   onDownloadError: (selectedSubtitle: SubtitleLanguage, error: any) => void
 }
 
@@ -34,7 +34,7 @@ export const useSubtitleDownload = ({
         if (isCancelled) return
 
         if (result.success && result.content) {
-          onDownloadSuccess(result.content)
+          onDownloadSuccess(result.content, result.videoName)
         } else {
           onDownloadError(chatState.selectedSubtitle, result)
         }

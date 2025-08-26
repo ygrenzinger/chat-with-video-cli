@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { SubtitleLanguage, SubtitleDownloadResult } from '../services/subtitle.js'
+import {
+  SubtitleLanguage,
+  SubtitleDownloadResult
+} from '../services/subtitle.js'
 import { ChatService } from '../services/chat.service.js'
 
 export type ChatWithVideoState =
@@ -11,15 +14,23 @@ export type ChatWithVideoState =
       downloadStatus: 'finished'
       downloadResult: SubtitleDownloadResult
     }
-  | { status: 'chat-initializing'; transcript: string }
-  | { status: 'chat-ready'; transcript: string; chatService: ChatService }
+  | { status: 'chat-initializing'; transcript: string; videoName: string }
+  | {
+      status: 'chat-ready'
+      transcript: string
+      videoName: string
+      chatService: ChatService
+    }
   | {
       status: 'chat-active'
       transcript: string
+      videoName: string
       chatService: ChatService
     }
 
-export const useChatState = (initialState: ChatWithVideoState = { status: 'started' }) => {
+export const useChatState = (
+  initialState: ChatWithVideoState = { status: 'started' }
+) => {
   const [chatState, setChatState] = useState<ChatWithVideoState>(initialState)
 
   const transitionToSubtitleSelected = (subtitle: SubtitleLanguage) => {
@@ -41,45 +52,77 @@ export const useChatState = (initialState: ChatWithVideoState = { status: 'start
     })
   }
 
-  const transitionToChatInitializing = (transcript: string) => {
+  const transitionToChatInitializing = (
+    transcript: string,
+    videoName: string
+  ) => {
     setChatState({
       status: 'chat-initializing',
-      transcript
+      transcript,
+      videoName
     })
   }
 
-  const transitionToChatReady = (transcript: string, chatService: ChatService) => {
+  const transitionToChatReady = (
+    transcript: string,
+    chatService: ChatService,
+    videoName: string
+  ) => {
     setChatState({
       status: 'chat-ready',
       transcript,
-      chatService
+      chatService,
+      videoName
     })
   }
 
-  const transitionToChatActive = (transcript: string, chatService: ChatService) => {
+  const transitionToChatActive = (
+    transcript: string,
+    chatService: ChatService,
+    videoName: string
+  ) => {
     setChatState({
       status: 'chat-active',
       transcript,
-      chatService
+      chatService,
+      videoName
     })
   }
 
   const canProcessMessages = () => {
-    return chatState.status === 'chat-active' || chatState.status === 'chat-ready'
+    return (
+      chatState.status === 'chat-active' || chatState.status === 'chat-ready'
+    )
   }
 
   const getCurrentTranscript = () => {
-    if (chatState.status === 'chat-initializing' || 
-        chatState.status === 'chat-ready' || 
-        chatState.status === 'chat-active') {
+    if (
+      chatState.status === 'chat-initializing' ||
+      chatState.status === 'chat-ready' ||
+      chatState.status === 'chat-active'
+    ) {
       return chatState.transcript
     }
     return null
   }
 
   const getCurrentChatService = () => {
-    if (chatState.status === 'chat-ready' || chatState.status === 'chat-active') {
+    if (
+      chatState.status === 'chat-ready' ||
+      chatState.status === 'chat-active'
+    ) {
       return chatState.chatService
+    }
+    return null
+  }
+
+  const getCurrentVideoName = () => {
+    if (
+      chatState.status === 'chat-initializing' ||
+      chatState.status === 'chat-ready' ||
+      chatState.status === 'chat-active'
+    ) {
+      return chatState.videoName || null
     }
     return null
   }
@@ -93,6 +136,7 @@ export const useChatState = (initialState: ChatWithVideoState = { status: 'start
     transitionToChatActive,
     canProcessMessages,
     getCurrentTranscript,
-    getCurrentChatService
+    getCurrentChatService,
+    getCurrentVideoName
   }
 }

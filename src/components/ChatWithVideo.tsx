@@ -40,7 +40,8 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
     transitionToChatActive,
     canProcessMessages,
     getCurrentTranscript,
-    getCurrentChatService
+    getCurrentChatService,
+    getCurrentVideoName
   } = useChatState()
 
   // Handle subtitle download
@@ -70,7 +71,8 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
     ),
     chatService: getCurrentChatService(),
     transcript: getCurrentTranscript(),
-    canProcessMessages: canProcessMessages()
+    canProcessMessages: canProcessMessages(),
+    videoName: getCurrentVideoName()
   })
 
   // Auto-transition to chat-active when ready and no messages
@@ -80,7 +82,11 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
       chatState.status === 'chat-ready' &&
       messages.length === 0
     ) {
-      transitionToChatActive(chatState.transcript, chatState.chatService)
+      transitionToChatActive(
+        chatState.transcript,
+        chatState.chatService,
+        chatState.videoName
+      )
     }
   }, [
     chatState,
