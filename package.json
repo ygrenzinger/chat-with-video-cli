@@ -3,19 +3,18 @@
   "version": "1.0.0",
   "description": "Chat with YouTube videos using AI",
   "type": "module",
-  "main": "dist/cli.js",
+  "main": "dist/chat-with-video.js",
   "bin": {
-    "chat-with-video": "bin/cli.js"
+    "chat-with-video": "dist/chat-with-video.js"
   },
   "files": [
     "dist",
-    "bin",
     "README.md"
   ],
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "start": "node dist/cli.js",
+    "start": "node dist/chat-with-video.js",
     "build:start": "pnpm build && pnpm start",
     "test:watch": "vitest",
     "test": "vitest run",
@@ -29,14 +28,16 @@
   },
   "keywords": [
     "cli",
-    "tool",
-    "react",
-    "ink"
+    "youtube",
+    "AI",
+    "LLM",
+    "chat",
+    "video"
   ],
-  "author": "Y",
+  "author": "Yannick Grenzinger",
   "license": "MIT",
   "engines": {
-    "node": ">=16"
+    "node": ">=22"
   },
   "devDependencies": {
     "@ai-sdk/provider": "^2.0.0",

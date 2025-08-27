@@ -5,9 +5,9 @@ export default defineConfig({
   build: {
     target: 'node18',
     lib: {
-      entry: resolve(__dirname, 'src/cli.ts'),
-      name: 'cli',
-      fileName: 'cli',
+      entry: resolve(__dirname, 'src/chat-with-video.ts'),
+      name: 'chat-with-video',
+      fileName: 'chat-with-video',
       formats: ['es']
     },
     rollupOptions: {
