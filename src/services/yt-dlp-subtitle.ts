@@ -7,6 +7,7 @@ import {
   SubtitleLanguage,
   SubtitleService
 } from './subtitle.js'
+import { Logger } from '../utils/Logger'
 
 export class YtdlpSubtitleService implements SubtitleService {
   async isAvailable(): Promise<boolean> {
@@ -29,14 +30,23 @@ export class YtdlpSubtitleService implements SubtitleService {
       const output = result.stdout
 
       if (output.includes('[info] Available subtitles for')) {
-        return this.parseSubtitleOutput(output).map(lang => ({
-          ...lang,
-          type: 'uploaded'
-        })) as SubtitleLanguage[]
+        await Logger.log(output)
+        const subtitles = this.parseSubtitleOutput(output, true)
+          .filter(lang => lang.code !== 'live_chat')
+          .map(lang => ({
+            ...lang,
+            type: 'uploaded'
+          })) as SubtitleLanguage[]
+
+        if (subtitles.length === 0) {
+          // No valid subtitles, fall through to check auto captions
+        } else {
+          return subtitles
+        }
       }
 
       if (output.includes('[info] Available automatic captions for')) {
-        const languages = this.parseSubtitleOutput(output)
+        const languages = this.parseSubtitleOutput(output, false)
         return languages
           .filter(lang => lang.code.endsWith('-orig'))
           .map(lang => ({
@@ -149,9 +159,17 @@ export class YtdlpSubtitleService implements SubtitleService {
   }
 
   private parseSubtitleOutput(
-    output: string
+    output: string,
+    uploaded: boolean
   ): Omit<SubtitleLanguage, 'type'>[] {
     const lines = output.split('\n')
+    if (uploaded) {
+      const startIndex = lines.findIndex(line =>
+        line.startsWith('[info] Available subtitles for')
+      )
+      lines.splice(0, startIndex)
+    }
+
     const languages: Omit<SubtitleLanguage, 'type'>[] = []
 
     let foundHeader = false
