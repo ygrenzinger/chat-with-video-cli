@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { validateEnvironment } from './utils/env.js'
-import { start } from './cli.js'
+import { start } from './chat-with-video.js'
 
 // Mock the validateEnvironment function
 vi.mock('./utils/env.js', () => ({
@@ -50,7 +50,9 @@ describe('Enhanced CLI with environment validation', () => {
 
   it('should exit gracefully when environment validation fails', () => {
     vi.mocked(validateEnvironment).mockImplementation(() => {
-      throw new Error('At least one AI provider API key is required. Please set one of: MISTRAL_API_KEY, OPENAI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, or ANTHROPIC_API_KEY')
+      throw new Error(
+        'At least one AI provider API key is required. Please set one of: MISTRAL_API_KEY, OPENAI_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, or ANTHROPIC_API_KEY'
+      )
     })
 
     expect(() => {
