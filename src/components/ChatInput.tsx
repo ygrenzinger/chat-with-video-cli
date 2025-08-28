@@ -4,13 +4,15 @@ import TextInput from 'ink-text-input'
 import Spinner from 'ink-spinner'
 import { CommandSuggestions } from './CommandSuggestions.js'
 import { getCommandSuggestions } from '../utils/chat-commands.js'
+import type { TerminalConstraints } from '../hooks/useTerminalConstraints.js'
 
 type ChatInputProps = {
   onSubmit: (message: string) => void
   disabled: boolean
+  terminalConstraints: TerminalConstraints
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled, terminalConstraints }) => {
   const [input, setInput] = useState('')
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0)
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -96,25 +98,31 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
   }
 
   return (
-    <Box flexDirection="column">
-      <Box>
-        <Text color="cyan">{'> '}</Text>
-        <TextInput
-          value={input}
-          onChange={(value) => {
-            setInput(value)
-            setSelectedSuggestionIndex(0)
-          }}
-          onSubmit={handleSubmit}
-          focus={!disabled}
-          showCursor={true}
-        />
+    <Box flexDirection="column" width={terminalConstraints.maxChatWidth} height={terminalConstraints.inputAreaHeight}>
+      <Box width="100%">
+        <Box width={2}>
+          <Text color="cyan">{'> '}</Text>
+        </Box>
+        <Box flexGrow={1}>
+          <TextInput
+            value={input}
+            onChange={(value) => {
+              setInput(value)
+              setSelectedSuggestionIndex(0)
+            }}
+            onSubmit={handleSubmit}
+            focus={!disabled}
+            showCursor={true}
+          />
+        </Box>
       </Box>
       {showSuggestions && (
-        <CommandSuggestions
-          suggestions={suggestions}
-          selectedIndex={selectedSuggestionIndex}
-        />
+        <Box width="100%" overflow="hidden">
+          <CommandSuggestions
+            suggestions={suggestions}
+            selectedIndex={selectedSuggestionIndex}
+          />
+        </Box>
       )}
     </Box>
   )

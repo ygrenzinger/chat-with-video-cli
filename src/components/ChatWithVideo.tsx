@@ -5,6 +5,7 @@ import { useChatState } from '../hooks/useChatState.js'
 import { useSubtitleDownload } from '../hooks/useSubtitleDownload.js'
 import { useChatService } from '../hooks/useChatService.js'
 import { useMessageHandling } from '../hooks/useMessageHandling.js'
+import { useTerminalConstraints } from '../hooks/useTerminalConstraints.js'
 import { ChatStateRenderer } from './ChatStateRenderer.js'
 import { ChatWithVideoConfig, mergeConfig } from '../utils/factories.js'
 
@@ -29,6 +30,7 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
   config
 }) => {
   const mergedConfig = mergeConfig(config)
+  const terminalConstraints = useTerminalConstraints()
 
   // Initialize hooks
   const {
@@ -104,18 +106,28 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
   }
 
   return (
-    <>
-      <YoutubeUrlInfo url={url} />
-      <ChatStateRenderer
-        url={url}
-        chatState={chatState}
-        subtitleService={subtitleService}
-        messages={messages}
-        isStreaming={isStreaming}
-        onSubtitleSelected={handleSubtitleSelected}
-        onSendMessage={handleSendMessage}
-        onExit={handleExit}
-      />
-    </>
+    <Box 
+      flexDirection="column" 
+      width={terminalConstraints.width}
+      height={terminalConstraints.height}
+      overflow="hidden"
+    >
+      <Box height={terminalConstraints.headerAreaHeight}>
+        <YoutubeUrlInfo url={url} />
+      </Box>
+      <Box flexGrow={1} overflow="hidden">
+        <ChatStateRenderer
+          url={url}
+          chatState={chatState}
+          subtitleService={subtitleService}
+          messages={messages}
+          isStreaming={isStreaming}
+          onSubtitleSelected={handleSubtitleSelected}
+          onSendMessage={handleSendMessage}
+          onExit={handleExit}
+          terminalConstraints={terminalConstraints}
+        />
+      </Box>
+    </Box>
   )
 }

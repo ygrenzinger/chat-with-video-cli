@@ -2,6 +2,7 @@ import React from 'react'
 import { Text, Box } from 'ink'
 import Spinner from 'ink-spinner'
 import { ChatWithVideoState } from '../hooks/useChatState.js'
+import { TerminalConstraints } from '../hooks/useTerminalConstraints.js'
 import { SubtitlesSelection } from './SubtitlesSelection.js'
 import { ChatInterface } from './ChatInterface.js'
 import { ChatInput } from './ChatInput.js'
@@ -14,6 +15,7 @@ type ChatStateRendererProps = {
   subtitleService: SubtitleService
   messages: ChatMessage[]
   isStreaming: boolean
+  terminalConstraints: TerminalConstraints
   onSubtitleSelected: (subtitle: SubtitleLanguage) => void
   onSendMessage: (message: string) => void
   onExit: () => void
@@ -25,6 +27,7 @@ export const ChatStateRenderer: React.FC<ChatStateRendererProps> = ({
   subtitleService,
   messages,
   isStreaming,
+  terminalConstraints,
   onSubtitleSelected,
   onSendMessage,
   onExit
@@ -37,6 +40,7 @@ export const ChatStateRenderer: React.FC<ChatStateRendererProps> = ({
             url={url}
             subtitleService={subtitleService}
             onSubtitleSelected={onSubtitleSelected}
+            terminalConstraints={terminalConstraints}
           />
         </Box>
       )
@@ -99,14 +103,23 @@ export const ChatStateRenderer: React.FC<ChatStateRendererProps> = ({
 
     case 'chat-active':
       return (
-        <Box flexDirection="column">
-          <ChatInterface
-            transcript={chatState.transcript}
-            chatService={chatState.chatService}
-            onExit={onExit}
-            messages={messages}
-          />
-          <ChatInput onSubmit={onSendMessage} disabled={isStreaming} />
+        <Box flexDirection="column" height="100%">
+          <Box flexGrow={1} overflow="hidden">
+            <ChatInterface
+              transcript={chatState.transcript}
+              chatService={chatState.chatService}
+              onExit={onExit}
+              messages={messages}
+              terminalConstraints={terminalConstraints}
+            />
+          </Box>
+          <Box height={terminalConstraints.inputAreaHeight}>
+            <ChatInput 
+              onSubmit={onSendMessage} 
+              disabled={isStreaming}
+              terminalConstraints={terminalConstraints} 
+            />
+          </Box>
         </Box>
       )
 
