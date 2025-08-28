@@ -1,12 +1,12 @@
 # Chat with Video
 
-An interactive CLI tool that enables AI-powered conversations about YouTube videos using multiple AI providers. Simply provide a YouTube URL, select subtitles, and start chatting about the video content.
+An interactive CLI tool that enables AI-powered conversations about videos (Mainly Youtube but any other yt-dlp compatible video) using multiple AI providers. Simply provide a YouTube URL, select subtitles, and start chatting about the video content.
 
 ## Features
 
-- 🎥 YouTube video processing with subtitle extraction
-- 🤖 Multi-AI provider support (Mistral, OpenAI, Google, Anthropic) with automatic detection
+- 🎥 Video subtitle extraction
 - 📝 Automatic subtitle download and text conversion
+- 🤖 Multi-AI provider support (Mistral, OpenAI, Google, Anthropic) with automatic detection
 - 💬 Interactive chat interface with streaming responses
 - 📋 Chat history management with copy and save functionality
 - ⚡ Built with TypeScript, React Ink, and modern CLI tools
