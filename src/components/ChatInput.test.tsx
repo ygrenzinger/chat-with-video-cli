@@ -2,24 +2,14 @@ import React from 'react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render } from 'ink-testing-library'
 import { ChatInput } from './ChatInput.js'
-import { TerminalConstraints } from '../hooks/useTerminalConstraints.js'
 
 describe('ChatInput', () => {
   let mockOnSubmit: ReturnType<typeof vi.fn>
-  let mockTerminalConstraints: TerminalConstraints
 
   const flush = () => new Promise(resolve => setTimeout(resolve, 20))
 
   beforeEach(() => {
     mockOnSubmit = vi.fn()
-    mockTerminalConstraints = {
-      width: 80,
-      height: 24,
-      maxChatWidth: 76,
-      maxChatHeight: 16,
-      inputAreaHeight: 3,
-      headerAreaHeight: 3
-    }
   })
 
   afterEach(async () => {
@@ -29,7 +19,7 @@ describe('ChatInput', () => {
   // Existing tests (already implemented)
   it('should render input prompt when not disabled', () => {
     const { lastFrame } = render(
-      <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+      <ChatInput onSubmit={mockOnSubmit} disabled={false} />
     )
 
     const output = lastFrame()
@@ -38,7 +28,7 @@ describe('ChatInput', () => {
 
   it('should show loading state when disabled', () => {
     const { lastFrame } = render(
-      <ChatInput onSubmit={mockOnSubmit} disabled={true} terminalConstraints={mockTerminalConstraints} />
+      <ChatInput onSubmit={mockOnSubmit} disabled={true} />
     )
 
     const output = lastFrame()
@@ -49,7 +39,7 @@ describe('ChatInput', () => {
   describe('Input Handling', () => {
     it('should display typed characters', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello') {
@@ -63,7 +53,7 @@ describe('ChatInput', () => {
 
     it('should handle backspace to remove last character', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello') {
@@ -81,7 +71,7 @@ describe('ChatInput', () => {
 
     it('should handle multiple backspaces correctly', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'testing') {
@@ -102,7 +92,7 @@ describe('ChatInput', () => {
 
     it('should handle backspace on empty input gracefully', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       stdin.write('\u007F') // backspace on empty input
@@ -118,7 +108,7 @@ describe('ChatInput', () => {
   describe('Submit Behavior', () => {
     it('should submit valid input when Enter is pressed', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello world') {
@@ -136,7 +126,7 @@ describe('ChatInput', () => {
 
     it('should trim whitespace before submitting', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of '   hello world   ') {
@@ -152,7 +142,7 @@ describe('ChatInput', () => {
 
     it('should not submit empty input', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       stdin.write('\r') // Enter key on empty input
@@ -163,7 +153,7 @@ describe('ChatInput', () => {
 
     it('should not submit whitespace-only input', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of '   ') {
@@ -179,7 +169,7 @@ describe('ChatInput', () => {
 
     it('should clear input after successful submission', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'test message') {
@@ -198,7 +188,7 @@ describe('ChatInput', () => {
 
     it('should handle multiple submissions', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'first message') {
@@ -229,7 +219,7 @@ describe('ChatInput', () => {
   describe('Disabled State', () => {
     it('should ignore keyboard input when disabled', () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={true} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={true} />
       )
 
       stdin.write('should be ignored')
@@ -241,7 +231,7 @@ describe('ChatInput', () => {
 
     it('should not submit when Enter is pressed while disabled', () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={true} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={true} />
       )
 
       stdin.write('test')
@@ -252,7 +242,7 @@ describe('ChatInput', () => {
 
     it('should ignore backspace when disabled', () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={true} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={true} />
       )
 
       stdin.write('\u007F') // backspace
@@ -266,7 +256,7 @@ describe('ChatInput', () => {
   describe('State Management', () => {
     it('should maintain input state during typing session', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       stdin.write('h')
@@ -295,7 +285,7 @@ describe('ChatInput', () => {
   describe('Integration Tests', () => {
     it('should handle complete user flow: type → submit → clear → type again', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // First message
@@ -330,7 +320,7 @@ describe('ChatInput', () => {
 
     it('should handle complex input with editing', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello wold') {
@@ -361,7 +351,7 @@ describe('ChatInput', () => {
 
     it('should handle special characters and Unicode', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       const specialText = 'Hello 🌍! @user #hashtag $100 & more...'
@@ -383,7 +373,7 @@ describe('ChatInput', () => {
   describe('Edge Cases', () => {
     it('should handle very long input', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       const longText = 'a'.repeat(99) // Match actual component behavior
@@ -402,7 +392,7 @@ describe('ChatInput', () => {
 
     it('should handle tab characters', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello\tworld') {
@@ -423,7 +413,7 @@ describe('ChatInput', () => {
 
     it('pressing Enter submits instead of inserting newline', async () => {
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'line1') {
@@ -440,11 +430,11 @@ describe('ChatInput', () => {
 
     it('enables input after being disabled', async () => {
       const { lastFrame, stdin, rerender } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={true} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={true} />
       )
       expect(lastFrame()).toContain('Processing your message...')
 
-      rerender(<ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />)
+      rerender(<ChatInput onSubmit={mockOnSubmit} disabled={false} />)
       await flush()
 
       expect(lastFrame()).toContain('>')
@@ -458,7 +448,7 @@ describe('ChatInput', () => {
   describe('Command Prediction', () => {
     it('should show suggestions when typing slash command', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       stdin.write('/')
@@ -478,7 +468,7 @@ describe('ChatInput', () => {
 
     it('should filter suggestions as user types', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of '/cl') {
@@ -494,7 +484,7 @@ describe('ChatInput', () => {
 
     it('should navigate suggestions with arrow keys', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type /c to get suggestions
@@ -515,7 +505,7 @@ describe('ChatInput', () => {
 
     it('should select suggestion with Tab key', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type /c to get suggestions
@@ -544,7 +534,7 @@ describe('ChatInput', () => {
 
     it('should select suggestion with Enter key', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type /c to get suggestions
@@ -573,7 +563,7 @@ describe('ChatInput', () => {
 
     it('should hide suggestions with Escape key', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type /c to get suggestions
@@ -600,7 +590,7 @@ describe('ChatInput', () => {
 
     it('should not show suggestions for non-slash commands', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       for (const ch of 'hello') {
@@ -616,7 +606,7 @@ describe('ChatInput', () => {
 
     it('should hide suggestions when backspacing to non-command', async () => {
       const { lastFrame, stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type /c to get suggestions
@@ -650,7 +640,7 @@ describe('ChatInput', () => {
       mockOnSubmit.mockClear()
 
       const { stdin } = render(
-        <ChatInput onSubmit={mockOnSubmit} disabled={false} terminalConstraints={mockTerminalConstraints} />
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
       // Type complete command
