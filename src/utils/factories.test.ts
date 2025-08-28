@@ -10,6 +10,8 @@ import { ChatService } from '../services/chat.service.js'
 import { MessageHandler } from './MessageHandler.js'
 
 describe('factories', () => {
+  process.env.ANTHROPIC_API_KEY = 'test-key'
+
   describe('createChatService', () => {
     it('should create a ChatService instance with transcript', async () => {
       const transcript = 'Test transcript'
