@@ -5,20 +5,12 @@ on:
     inputs:
       version_type:
         description: 'Version bump type'
-        required: false
-        default: 'minor'
+        required: true
         type: choice
         options:
           - minor
           - patch
           - major
-  push:
-    branches:
-      - main
-    paths:
-      - 'package.json'
-      - 'src/**'
-      - '.github/workflows/publish.yml'
 
 jobs:
   publish:
