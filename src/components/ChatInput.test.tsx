@@ -46,6 +46,7 @@ describe('ChatInput', () => {
         stdin.write(ch)
         await flush()
       }
+      await flush()
 
       const output = lastFrame()
       expect(output).toContain('hello')
@@ -293,6 +294,7 @@ describe('ChatInput', () => {
         stdin.write(ch)
         await flush()
       }
+      await flush()
       expect(lastFrame()).toContain('first message')
 
       await flush()

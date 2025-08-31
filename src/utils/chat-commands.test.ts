@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseCommand, isCommand, getCommandSuggestions } from './chat-commands.js'
+import { parseCommand, isCommand, getCommandSuggestions, isUnknownCommand } from './chat-commands.js'
 
 describe('Chat Commands', () => {
   describe('isCommand', () => {
@@ -17,6 +17,31 @@ describe('Chat Commands', () => {
       expect(isCommand('help me')).toBe(false)
       expect(isCommand('/invalid')).toBe(false)
       expect(isCommand('/EXIT')).toBe(false) // case sensitive
+    })
+  })
+
+  describe('isUnknownCommand', () => {
+    it('should identify unknown commands starting with /', () => {
+      expect(isUnknownCommand('/unknown')).toBe(true)
+      expect(isUnknownCommand('/test')).toBe(true)
+      expect(isUnknownCommand('/xyz')).toBe(true)
+      expect(isUnknownCommand('/123')).toBe(true)
+    })
+
+    it('should not identify valid commands as unknown', () => {
+      expect(isUnknownCommand('/exit')).toBe(false)
+      expect(isUnknownCommand('/help')).toBe(false)
+      expect(isUnknownCommand('/transcript')).toBe(false)
+      expect(isUnknownCommand('/clear')).toBe(false)
+      expect(isUnknownCommand('/copy-last')).toBe(false)
+      expect(isUnknownCommand('/copy-all')).toBe(false)
+      expect(isUnknownCommand('/save-to-file')).toBe(false)
+    })
+
+    it('should not identify regular text as unknown command', () => {
+      expect(isUnknownCommand('hello')).toBe(false)
+      expect(isUnknownCommand('test message')).toBe(false)
+      expect(isUnknownCommand('')).toBe(false)
     })
   })
 
@@ -51,9 +76,16 @@ describe('Chat Commands', () => {
       expect(result).toEqual({ type: 'copy-all' })
     })
 
-    it('should return null for invalid commands', () => {
+    it('should parse unknown commands starting with /', () => {
+      expect(parseCommand('/unknown')).toEqual({ type: 'unknown', command: '/unknown' })
+      expect(parseCommand('/test')).toEqual({ type: 'unknown', command: '/test' })
+      expect(parseCommand('/xyz')).toEqual({ type: 'unknown', command: '/xyz' })
+    })
+
+    it('should return null for regular text', () => {
       expect(parseCommand('invalid')).toBeNull()
-      expect(parseCommand('/invalid')).toBeNull()
+      expect(parseCommand('hello world')).toBeNull()
+      expect(parseCommand('')).toBeNull()
     })
   })
 

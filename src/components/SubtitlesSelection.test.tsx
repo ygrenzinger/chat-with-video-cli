@@ -8,7 +8,7 @@ describe('SubtitlesSelection', () => {
   let mockSubtitleService: SubtitleService
   let mockOnSubtitleSelected: ReturnType<typeof vi.fn>
 
-  const flush = () => new Promise(resolve => setTimeout(resolve, 10))
+  const flush = () => new Promise(resolve => setTimeout(resolve, 20))
 
   beforeEach(() => {
     mockSubtitleService = {

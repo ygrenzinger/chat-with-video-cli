@@ -455,7 +455,7 @@ describe('MessageHandler', () => {
       ) // Command response
     })
 
-    it('should treat invalid commands as regular messages', async () => {
+    it('should handle unknown commands starting with /', async () => {
       await messageHandler.handleMessage(
         '/invalidcommand',
         mockChatService,
@@ -466,10 +466,42 @@ describe('MessageHandler', () => {
         mockOnStreamingUpdate
       )
 
-      // Should treat as regular message and call chatService
-      expect(mockChatService.sendMessage).toHaveBeenCalledWith(
-        '/invalidcommand'
+      // Should not call chat service for unknown commands
+      expect(mockChatService.sendMessage).not.toHaveBeenCalled()
+      
+      // Should not trigger streaming update
+      expect(mockOnStreamingUpdate).not.toHaveBeenCalledWith(true)
+
+      // Should update messages with the unknown command error
+      expect(mockOnMessageUpdate).toHaveBeenCalledTimes(1)
+      const finalCall = mockOnMessageUpdate.mock.calls[0]
+      expect(finalCall[0]).toHaveLength(2) // User message + assistant response
+      expect(finalCall[0][0].content).toBe('/invalidcommand')
+      expect(finalCall[0][1].content).toBe('Unknown command: /invalidcommand. Type /help for available commands.')
+    })
+
+    it('should treat regular text as normal messages', async () => {
+      const message = 'This is a regular message'
+      
+      async function* mockStream() {
+        yield 'Response'
+      }
+
+      vi.mocked(mockChatService.sendMessage).mockReturnValue(mockStream())
+
+      await messageHandler.handleMessage(
+        message,
+        mockChatService,
+        transcript,
+        videoName,
+        currentMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
       )
+
+      // Should call chat service for regular messages
+      expect(mockChatService.sendMessage).toHaveBeenCalledWith(message)
+      expect(mockOnStreamingUpdate).toHaveBeenCalledWith(true)
     })
   })
 

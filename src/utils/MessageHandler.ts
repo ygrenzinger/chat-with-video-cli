@@ -1,5 +1,5 @@
 import { ChatMessage, ChatService } from '../services/chat.service.js'
-import { parseCommand, isCommand, getHelpText } from './chat-commands.js'
+import { parseCommand, getHelpText, type ChatCommand } from './chat-commands.js'
 import { copy } from 'copy-paste/promises'
 import { writeFileSync } from 'fs'
 
@@ -23,14 +23,16 @@ export class MessageHandler {
     onMessageUpdate: (messages: ChatMessage[]) => void,
     onStreamingUpdate: (isStreaming: boolean) => void
   ): Promise<void> {
-    // Check if it's a command
-    if (isCommand(message)) {
+    // Check if it's a command (valid or unknown)
+    const parsedCommand = parseCommand(message)
+    if (parsedCommand) {
       await this.handleCommand(
         message,
         transcript,
         currentMessages,
         onMessageUpdate,
-        videoName
+        videoName,
+        parsedCommand
       )
       return
     }
@@ -102,9 +104,12 @@ export class MessageHandler {
     transcript: string,
     currentMessages: ChatMessage[],
     onMessageUpdate: (messages: ChatMessage[]) => void,
-    videoName?: string
+    videoName?: string,
+    parsedCommand?: ChatCommand | null
   ): Promise<void> {
-    const parsedCommand = parseCommand(command)
+    if (!parsedCommand) {
+      parsedCommand = parseCommand(command)
+    }
     if (!parsedCommand) return
 
     const userMessage: ChatMessage = {
@@ -197,6 +202,9 @@ export class MessageHandler {
       }
       case 'exit':
         responseContent = 'Goodbye! 👋'
+        break
+      case 'unknown':
+        responseContent = `Unknown command: ${parsedCommand.command}. Type /help for available commands.`
         break
     }
 

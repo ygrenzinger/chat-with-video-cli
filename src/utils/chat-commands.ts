@@ -13,12 +13,21 @@ export type ChatCommand =
   | { type: 'copy-last' }
   | { type: 'copy-all' }
   | { type: 'save-to-file' }
+  | { type: 'unknown'; command: string }
 
 export const isCommand = (input: string): boolean => {
   return VALID_COMMANDS.includes(input)
 }
 
+export const isUnknownCommand = (input: string): boolean => {
+  return input.startsWith('/') && !isCommand(input)
+}
+
 export const parseCommand = (input: string): ChatCommand | null => {
+  if (isUnknownCommand(input)) {
+    return { type: 'unknown', command: input }
+  }
+  
   if (!isCommand(input)) {
     return null
   }
