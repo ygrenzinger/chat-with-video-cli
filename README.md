@@ -57,33 +57,14 @@ brew install yt-dlp
 
 The tool supports multiple AI providers and will automatically use the first available one. Set up at least one:
 
-### Option 1: Mistral (Recommended - Highest Priority)
-1. Get your API key from [Mistral Console](https://console.mistral.ai/)
-2. Set environment variable:
-   ```bash
-   export MISTRAL_API_KEY=your_mistral_api_key_here
-   ```
+### AI Provider Setup Options
 
-### Option 2: OpenAI (Second Priority)
-1. Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
-2. Set environment variable:
-   ```bash
-   export OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-### Option 3: Google Generative AI (Third Priority)
-1. Get your API key from [AI Studio](https://aistudio.google.com/apikey)
-2. Set environment variable:
-   ```bash
-   export GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
-   ```
-
-### Option 4: Anthropic (Lowest Priority)
-1. Get your API key from [Anthropic Console](https://console.anthropic.com/)
-2. Set environment variable:
-   ```bash
-   export ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   ```
+| Provider  | API Key Source                                          | Environment Variable                                           |
+|-----------|---------------------------------------------------------|----------------------------------------------------------------|
+| Mistral   | [Mistral Console](https://console.mistral.ai/)          | `export MISTRAL_API_KEY=your_mistral_api_key_here`             |
+| OpenAI    | [OpenAI Platform](https://platform.openai.com/api-keys) | `export OPENAI_API_KEY=your_openai_api_key_here`               |
+| Google AI | [AI Studio](https://aistudio.google.com/apikey)         | `export GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here` |
+| Anthropic | [Anthropic Console](https://console.anthropic.com/)     | `export ANTHROPIC_API_KEY=your_anthropic_api_key_here`         |
 
 ## Usage
 
