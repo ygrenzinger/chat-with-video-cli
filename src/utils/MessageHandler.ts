@@ -28,9 +28,11 @@ export class MessageHandler {
     if (parsedCommand) {
       await this.handleCommand(
         message,
+        chatService,
         transcript,
         currentMessages,
         onMessageUpdate,
+        onStreamingUpdate,
         videoName,
         parsedCommand
       )
@@ -101,9 +103,11 @@ export class MessageHandler {
 
   private async handleCommand(
     command: string,
+    chatService: ChatService,
     transcript: string,
     currentMessages: ChatMessage[],
     onMessageUpdate: (messages: ChatMessage[]) => void,
+    onStreamingUpdate: (isStreaming: boolean) => void,
     videoName?: string,
     parsedCommand?: ChatCommand | null
   ): Promise<void> {
@@ -203,6 +207,75 @@ export class MessageHandler {
       case 'exit':
         responseContent = 'Goodbye! 👋'
         break
+      case 'summary': {
+        // For summary, we need to send a query to the chat service
+        const summaryQuery = 'give me a detailed summary of each topic addressed in this video'
+        
+        // Add the user's command to messages
+        const commandMessage: ChatMessage = {
+          id: `msg-${Date.now()}-user`,
+          role: 'user',
+          content: command,
+          timestamp: new Date()
+        }
+        
+        const messagesWithCommand = [...currentMessages, commandMessage]
+        onMessageUpdate(messagesWithCommand)
+        
+        // Start streaming
+        onStreamingUpdate(true)
+        
+        try {
+          let assistantContent = ''
+          const assistantMessage: ChatMessage = {
+            id: `msg-${Date.now()}-assistant`,
+            role: 'assistant',
+            content: '',
+            timestamp: new Date(),
+            streamingComplete: false
+          }
+          
+          const messagesWithAssistant = [...messagesWithCommand, assistantMessage]
+          onMessageUpdate(messagesWithAssistant)
+          
+          // Send the summary query to the chat service
+          for await (const textPart of chatService.sendMessage(summaryQuery)) {
+            assistantContent += textPart
+            const updatedMessagesWithStream = messagesWithAssistant.map(msg =>
+              msg.id === assistantMessage.id
+                ? { ...msg, content: assistantContent }
+                : msg
+            )
+            onMessageUpdate(updatedMessagesWithStream)
+          }
+          
+          const finalMessages = messagesWithAssistant.map(msg =>
+            msg.id === assistantMessage.id
+              ? { ...msg, content: assistantContent, streamingComplete: true }
+              : msg
+          )
+          onMessageUpdate(finalMessages)
+        } catch (error) {
+          console.error('Error getting summary:', error)
+          
+          // Add error message
+          const errorMessage: ChatMessage = {
+            id: `msg-${Date.now()}-error`,
+            role: 'assistant',
+            content: 'Sorry, I encountered an error getting the summary. Please try again.',
+            timestamp: new Date(),
+            streamingComplete: true
+          }
+          
+          const errorMessages = [...messagesWithCommand, errorMessage]
+          onMessageUpdate(errorMessages)
+        } finally {
+          onStreamingUpdate(false)
+        }
+        
+        // Return early since we've already handled the response
+        return
+      }
       case 'unknown':
         responseContent = `Unknown command: ${parsedCommand.command}. Type /help for available commands.`
         break

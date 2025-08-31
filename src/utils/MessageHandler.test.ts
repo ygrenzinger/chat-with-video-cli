@@ -455,6 +455,81 @@ describe('MessageHandler', () => {
       ) // Command response
     })
 
+    it('should handle summary command', async () => {
+      async function* mockStream() {
+        yield 'Here is a '
+        yield 'summary of '
+        yield 'the video topics'
+      }
+
+      vi.mocked(mockChatService.sendMessage).mockReturnValue(mockStream())
+
+      await messageHandler.handleMessage(
+        '/summary',
+        mockChatService,
+        transcript,
+        videoName,
+        currentMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      // Should call chat service with the summary query
+      expect(mockChatService.sendMessage).toHaveBeenCalledWith(
+        'give me a detailed summary of each topic addressed in this video'
+      )
+
+      // Should trigger streaming updates
+      expect(mockOnStreamingUpdate).toHaveBeenCalledWith(true)
+      expect(mockOnStreamingUpdate).toHaveBeenCalledWith(false)
+
+      // Should update messages multiple times for streaming
+      expect(mockOnMessageUpdate.mock.calls.length).toBeGreaterThan(2)
+
+      // Check final message state
+      const finalCall = mockOnMessageUpdate.mock.calls[mockOnMessageUpdate.mock.calls.length - 1]
+      expect(finalCall[0]).toHaveLength(2) // User command + assistant response
+      expect(finalCall[0][0].content).toBe('/summary')
+      expect(finalCall[0][1].content).toBe('Here is a summary of the video topics')
+      expect(finalCall[0][1].streamingComplete).toBe(true)
+    })
+
+    it('should handle summary command error gracefully', async () => {
+      const error = new Error('API Error')
+      
+      async function* mockErrorStream(): AsyncGenerator<string, void, unknown> {
+        yield '' // Yield at least once to satisfy the generator requirement
+        throw error
+      }
+      
+      vi.mocked(mockChatService.sendMessage).mockReturnValue(mockErrorStream())
+
+      await messageHandler.handleMessage(
+        '/summary',
+        mockChatService,
+        transcript,
+        videoName,
+        currentMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      // Should call chat service
+      expect(mockChatService.sendMessage).toHaveBeenCalledWith(
+        'give me a detailed summary of each topic addressed in this video'
+      )
+
+      // Should handle streaming state
+      expect(mockOnStreamingUpdate).toHaveBeenCalledWith(true)
+      expect(mockOnStreamingUpdate).toHaveBeenCalledWith(false)
+
+      // Should show error message
+      const finalCall = mockOnMessageUpdate.mock.calls[mockOnMessageUpdate.mock.calls.length - 1]
+      expect(finalCall[0]).toHaveLength(2)
+      expect(finalCall[0][0].content).toBe('/summary')
+      expect(finalCall[0][1].content).toBe('Sorry, I encountered an error getting the summary. Please try again.')
+    })
+
     it('should handle unknown commands starting with /', async () => {
       await messageHandler.handleMessage(
         '/invalidcommand',

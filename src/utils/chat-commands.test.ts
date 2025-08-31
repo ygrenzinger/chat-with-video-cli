@@ -10,6 +10,8 @@ describe('Chat Commands', () => {
       expect(isCommand('/clear')).toBe(true)
       expect(isCommand('/copy-last')).toBe(true)
       expect(isCommand('/copy-all')).toBe(true)
+      expect(isCommand('/save-to-file')).toBe(true)
+      expect(isCommand('/summary')).toBe(true)
     })
 
     it('should not identify invalid commands', () => {
@@ -36,6 +38,7 @@ describe('Chat Commands', () => {
       expect(isUnknownCommand('/copy-last')).toBe(false)
       expect(isUnknownCommand('/copy-all')).toBe(false)
       expect(isUnknownCommand('/save-to-file')).toBe(false)
+      expect(isUnknownCommand('/summary')).toBe(false)
     })
 
     it('should not identify regular text as unknown command', () => {
@@ -74,6 +77,16 @@ describe('Chat Commands', () => {
     it('should parse copy-all command', () => {
       const result = parseCommand('/copy-all')
       expect(result).toEqual({ type: 'copy-all' })
+    })
+
+    it('should parse save-to-file command', () => {
+      const result = parseCommand('/save-to-file')
+      expect(result).toEqual({ type: 'save-to-file' })
+    })
+
+    it('should parse summary command', () => {
+      const result = parseCommand('/summary')
+      expect(result).toEqual({ type: 'summary' })
     })
 
     it('should parse unknown commands starting with /', () => {
@@ -137,6 +150,13 @@ describe('Chat Commands', () => {
       expect(suggestions).toHaveLength(1)
       expect(suggestions[0].command).toBe('/exit')
       expect(suggestions[0].description).toBe('Exit the chat and close the application')
+    })
+
+    it('should return matches for /s', () => {
+      const suggestions = getCommandSuggestions('/s')
+      expect(suggestions).toHaveLength(2)
+      expect(suggestions[0].command).toBe('/save-to-file')
+      expect(suggestions[1].command).toBe('/summary')
     })
 
     it('should return empty array for no matches', () => {

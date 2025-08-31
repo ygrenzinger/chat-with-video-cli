@@ -1,6 +1,16 @@
 # Chat with Video
 
-An interactive CLI tool that enables AI-powered conversations about videos (Mainly Youtube but any other yt-dlp compatible video) using multiple AI providers. Simply provide a YouTube URL, select subtitles, and start chatting about the video content.
+An interactive CLI tool that enables AI-powered conversations about videos, mainly Youtube but any other yt-dlp compatible website, will work.
+It can use multiple AI providers -> read [AI Provider Setup section](#ai-provider-setup). Good tip: Google flash model is mostly free for this usage.
+Simply provide a YouTube URL, select subtitles, and start chatting about the video content.
+You have also a few interactive commands to help you -> see [Interactive Chat Commands section](#interactive-chat-commands).
+
+## Important Note
+
+This project has been mainly developed for fun through vibe coding.
+The goal was mainly to learn Agentic Coding best practices and limits.
+So don't be to demanding about the quality of the UX and the code (especially the tests).
+But feedback and even PRs are always welcome ;)
 
 ## Features
 
@@ -100,6 +110,7 @@ Once in chat mode, you can use these special commands:
 
 - `/help` - Display available commands and usage information
 - `/transcript` - Show the full video transcript
+- `/summary` - Get a detailed summary of topics in the video
 - `/clear` - Clear the message history
 - `/copy-last` - Copy the last assistant message to clipboard
 - `/copy-all` - Copy the full chat history to clipboard
@@ -147,7 +158,7 @@ Type your first question to start chatting...
 ...
 
 > /save-to-file
-✅ Chat history saved to: chat-history-20241201-143022.md
+✅ Chat history saved to: fundamentals of artificial intelligence.md
 
 > /exit
 👋 Goodbye!

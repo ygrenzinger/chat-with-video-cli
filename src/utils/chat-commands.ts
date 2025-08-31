@@ -1,4 +1,4 @@
-const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last', '/copy-all', '/save-to-file']
+const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last', '/copy-all', '/save-to-file', '/summary']
 
 export type CommandSuggestion = {
   command: string
@@ -13,6 +13,7 @@ export type ChatCommand =
   | { type: 'copy-last' }
   | { type: 'copy-all' }
   | { type: 'save-to-file' }
+  | { type: 'summary' }
   | { type: 'unknown'; command: string }
 
 export const isCommand = (input: string): boolean => {
@@ -47,6 +48,8 @@ export const parseCommand = (input: string): ChatCommand | null => {
       return { type: 'copy-all' }
     case '/save-to-file':
       return { type: 'save-to-file' }
+    case '/summary':
+      return { type: 'summary' }
     default:
       return null
   }
@@ -59,7 +62,8 @@ const COMMAND_DESCRIPTIONS: Record<string, string> = {
   '/clear': 'Clear the message history',
   '/copy-last': 'Copy the last assistant message to clipboard',
   '/copy-all': 'Copy the full chat history to clipboard',
-  '/save-to-file': 'Save the full chat history to a markdown file'
+  '/save-to-file': 'Save the full chat history to a markdown file',
+  '/summary': 'Get a detailed summary of topics in the video'
 }
 
 export const getCommandSuggestions = (input: string): CommandSuggestion[] => {
@@ -85,6 +89,7 @@ export const getHelpText = (): string => {
   /copy-last     - Copy the last assistant message to clipboard
   /copy-all      - Copy the full chat history to clipboard
   /save-to-file  - Save the full chat history to a markdown file
+  /summary       - Get a detailed summary of topics in the video
 
 You can also ask questions about the video content directly.`
 }
