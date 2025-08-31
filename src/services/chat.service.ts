@@ -25,11 +25,16 @@ export class ChatService {
   getSystemPrompt(): string {
     return `
 You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>
-Mandatory rules: all the answers must be in markdown format.
 
-Try to answer the user's questions in a way that is relevant to the transcript.
-If the user asks questions which are not related to the transcript, please inform the user this is not relative to the content of the video and propose him to extent the search outside the transcript.
-If the user says yes, you can answer without focusing on the content of the transcript.
+Mandatory rule: all the answers must be in markdown format.
+
+Important guidelines:
+- Answer the user's questions in a way that is relevant to the transcript.
+- Maintain original data context (e.g., "2024 study of 150 patients" rather than generic "recent study")
+- Preserve the integrity of information by keeping details anchored to their original context
+- If the user asks questions which are not related to the transcript, please inform the user this is not relative to the content of the video and propose him to extent the search outside the transcript.
+- If the user says yes, you can answer without focusing on the content of the transcript.
+- Use internet search if explicitly asked for.
 `
   }
 
