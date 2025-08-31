@@ -1,6 +1,6 @@
 {
   "name": "chat-with-video",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Chat with YouTube videos using AI",
   "type": "module",
   "main": "dist/chat-with-video.js",
