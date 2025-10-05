@@ -25,6 +25,7 @@ export default defineConfig({
         'node:child_process',
         'node:util',
         'node:path',
+        'node:module',
         'buffer',
         'string_decoder'
       ],

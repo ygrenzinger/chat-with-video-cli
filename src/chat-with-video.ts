@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import { Command } from 'commander'
 import { render } from 'ink'
 import React from 'react'
@@ -5,6 +6,9 @@ import { ChatWithVideo } from './components/ChatWithVideo.js'
 import { isValidYouTubeUrl } from './utils/youtube.js'
 import { validateEnvironment } from './utils/env.js'
 import { YtdlpSubtitleService } from './services/yt-dlp-subtitle'
+
+const require = createRequire(import.meta.url)
+const { version } = require('../package.json')
 
 const program = new Command()
 
@@ -34,7 +38,7 @@ export const start = () => {
   program
     .name('chat-with-video')
     .description('Chat with YouTube videos using AI')
-    .version('1.0.0')
+    .version(version)
     .argument('<url>', 'YouTube URL to process')
     .action(async (url: string) => {
       if (!isValidYouTubeUrl(url)) {
