@@ -174,13 +174,13 @@ export class YtdlpSubtitleService implements SubtitleService {
 
     let foundHeader = false
     for (const line of lines) {
-      if (line.includes('Language Name')) {
+      if (/Language\s+Name/.test(line)) {
         foundHeader = true
         continue
       }
 
       if (foundHeader && line.trim()) {
-        const match = line.match(/^(\S+)\s+(.+?)\s+([a-z0-9, ]+)$/i)
+        const match = line.match(/^(\S+)\s+(.+?)\s+([a-z0-9, ]+)\s*$/i)
         if (match) {
           const [, code, name] = match
           languages.push({
