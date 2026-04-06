@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isValidYouTubeUrl } from './youtube'
+import { extractYouTubeVideoId, isValidYouTubeUrl } from './youtube'
 
 describe('isValidYouTubeUrl', () => {
   it('should return true for valid YouTube URLs with https', () => {
@@ -42,17 +42,35 @@ describe('isValidYouTubeUrl', () => {
     ).toBe(true)
   })
 
+  it('should return true for modern YouTube URL formats', () => {
+    expect(isValidYouTubeUrl('https://m.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(
+      true
+    )
+    expect(isValidYouTubeUrl('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe(
+      true
+    )
+    expect(
+      isValidYouTubeUrl('https://www.youtube.com/shorts/dQw4w9WgXcQ')
+    ).toBe(true)
+    expect(
+      isValidYouTubeUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=120')
+    ).toBe(true)
+  })
+
   it('should return true for YouTube URLs with underscores and hyphens in video ID', () => {
     expect(
-      isValidYouTubeUrl('https://www.youtube.com/watch?v=dQ_w4-w9WgX-Q')
+      isValidYouTubeUrl('https://www.youtube.com/watch?v=dQ_w4-w9WgX')
     ).toBe(true)
-    expect(isValidYouTubeUrl('https://youtu.be/dQ_w4-w9WgX-Q')).toBe(true)
+    expect(isValidYouTubeUrl('https://youtu.be/dQ_w4-w9WgX')).toBe(true)
   })
 
   it('should return false for invalid URLs', () => {
     expect(isValidYouTubeUrl('https://invalid-url.com')).toBe(false)
     expect(isValidYouTubeUrl('https://vimeo.com/123456')).toBe(false)
     expect(isValidYouTubeUrl('https://facebook.com/video')).toBe(false)
+    expect(
+      isValidYouTubeUrl('https://not-youtube.com/watch?v=dQw4w9WgXcQ')
+    ).toBe(false)
     expect(isValidYouTubeUrl('not-a-url-at-all')).toBe(false)
   })
 
@@ -77,5 +95,20 @@ describe('isValidYouTubeUrl', () => {
     expect(isValidYouTubeUrl('https://youtube.com/watch?v=invalid id')).toBe(
       false
     )
+  })
+
+  it('should extract YouTube video IDs from supported URLs', () => {
+    expect(
+      extractYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    ).toBe('dQw4w9WgXcQ')
+    expect(extractYouTubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe(
+      'dQw4w9WgXcQ'
+    )
+    expect(
+      extractYouTubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ')
+    ).toBe('dQw4w9WgXcQ')
+    expect(
+      extractYouTubeVideoId('https://www.youtube.com/embed/dQw4w9WgXcQ')
+    ).toBe('dQw4w9WgXcQ')
   })
 })

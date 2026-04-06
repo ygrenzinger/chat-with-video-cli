@@ -7,3 +7,5 @@ coverage/
 .env.local
 .env.*.local
 .idea/
+.opencode/plans/
+.sisyphus/

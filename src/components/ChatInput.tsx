@@ -22,15 +22,22 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
   // Update showSuggestions when suggestions change
   React.useEffect(() => {
     // Only show suggestions if we have partial matches and input is not a complete command
-    const shouldShow = suggestions.length > 0 && input.startsWith('/') && input.length > 1 && 
-                      !suggestions.some(s => s.command === input)
+    const shouldShow =
+      suggestions.length > 0 &&
+      input.startsWith('/') &&
+      input.length > 1 &&
+      !suggestions.some(s => s.command === input)
     setShowSuggestions(shouldShow)
   }, [suggestions, input])
 
   const handleSubmit = (value: string) => {
     // If we have partial command with suggestions, use the selected command
-    if (suggestions.length > 0 && value.startsWith('/') && value.length > 1 && 
-        !suggestions.some(s => s.command === value)) {
+    if (
+      suggestions.length > 0 &&
+      value.startsWith('/') &&
+      value.length > 1 &&
+      !suggestions.some(s => s.command === value)
+    ) {
       const selectedCommand = suggestions[selectedSuggestionIndex]?.command
       if (selectedCommand) {
         setInput(selectedCommand)
@@ -38,7 +45,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
         return
       }
     }
-    
+
     if (value.trim()) {
       onSubmit(value.trim())
       setInput('')
@@ -51,21 +58,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
     if (disabled) return
 
     // Handle suggestion navigation
-    if (suggestions.length > 0 && input.startsWith('/') && !suggestions.some(s => s.command === input)) {
+    if (
+      suggestions.length > 0 &&
+      input.startsWith('/') &&
+      !suggestions.some(s => s.command === input)
+    ) {
       if (key.upArrow) {
-        setSelectedSuggestionIndex(prev => 
+        setSelectedSuggestionIndex(prev =>
           prev > 0 ? prev - 1 : suggestions.length - 1
         )
         return
       }
-      
+
       if (key.downArrow) {
-        setSelectedSuggestionIndex(prev => 
+        setSelectedSuggestionIndex(prev =>
           prev < suggestions.length - 1 ? prev + 1 : 0
         )
         return
       }
-      
+
       if (key.tab) {
         if (suggestions.length > 0) {
           const selectedCommand = suggestions[selectedSuggestionIndex]?.command
@@ -76,7 +87,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
         }
         return
       }
-      
+
       if (key.escape) {
         setShowSuggestions(false)
         setSelectedSuggestionIndex(0)
@@ -101,7 +112,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
         <Text color="cyan">{'> '}</Text>
         <TextInput
           value={input}
-          onChange={(value) => {
+          onChange={value => {
             setInput(value)
             setSelectedSuggestionIndex(0)
           }}

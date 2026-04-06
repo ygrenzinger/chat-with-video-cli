@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { streamText } from 'ai'
 import {
   ModelSelectionService,
@@ -42,9 +43,13 @@ Important guidelines:
     return this.messages
   }
 
+  clearMessages(): void {
+    this.messages.length = 0
+  }
+
   async *sendMessage(message: string): AsyncIterable<string> {
     const userMessage: ChatMessage = {
-      id: `msg-${Date.now()}-user`,
+      id: `msg-${randomUUID()}-user`,
       role: 'user',
       content: message,
       timestamp: new Date()
@@ -68,7 +73,7 @@ Important guidelines:
     }
 
     const assistantMessage: ChatMessage = {
-      id: `msg-${Date.now()}-assistant`,
+      id: `msg-${randomUUID()}-assistant`,
       role: 'assistant',
       content: assistantContent,
       timestamp: new Date(),

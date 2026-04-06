@@ -1,22 +1,11 @@
 import React from 'react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render } from 'ink-testing-library'
 import { ChatInterface } from './ChatInterface.js'
-import { ChatService } from '../services/chat.service.js'
 
 describe('ChatInterface', () => {
   it('should render welcome message and input prompt', () => {
-    const mockChatService = {} as ChatService
-    const mockOnExit = vi.fn()
-    const transcript = 'Test video transcript'
-
-    const { lastFrame } = render(
-      <ChatInterface
-        transcript={transcript}
-        chatService={mockChatService}
-        onExit={mockOnExit}
-      />
-    )
+    const { lastFrame } = render(<ChatInterface />)
 
     const output = lastFrame()
     expect(output).toContain('Chat Mode')
@@ -26,15 +15,8 @@ describe('ChatInterface', () => {
   })
 
   it('should display message history', () => {
-    const mockChatService = {} as ChatService
-    const mockOnExit = vi.fn()
-    const transcript = 'Test video transcript'
-
     const { lastFrame } = render(
       <ChatInterface
-        transcript={transcript}
-        chatService={mockChatService}
-        onExit={mockOnExit}
         messages={[
           {
             id: '1',

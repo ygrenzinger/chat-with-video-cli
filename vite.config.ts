@@ -3,7 +3,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   build: {
-    target: 'node18',
+    target: 'node22',
     lib: {
       entry: resolve(__dirname, 'src/chat-with-video.ts'),
       name: 'chat-with-video',
@@ -26,8 +26,23 @@ export default defineConfig({
         'node:util',
         'node:path',
         'node:module',
+        'ink-spinner',
+        'ink-text-input',
+        'copy-paste',
+        'ai',
+        'zod',
+        '@ai-sdk/anthropic',
+        '@ai-sdk/google',
+        '@ai-sdk/mistral',
+        '@ai-sdk/openai',
+        '@ai-sdk/provider',
+        'node:crypto',
+        'node:fs',
+        'copy-paste/promises.js',
         'buffer',
-        'string_decoder'
+        'string_decoder',
+        'xstate',
+        '@xstate/react'
       ],
       output: {
         banner: '#!/usr/bin/env node'

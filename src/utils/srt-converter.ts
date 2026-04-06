@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs'
 
 export function convertSrtToTxt(inputPath: string): string {
-  console.log(`Converting ${inputPath} to TXT format...`)
   const srtContent = readFileSync(inputPath, 'utf-8')
   const textContent = extractTextFromSrt(srtContent)
 

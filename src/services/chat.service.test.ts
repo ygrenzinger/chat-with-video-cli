@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { ChatService } from './chat.service.js'
 import { streamText } from 'ai'
-import { ModelSelectionService, type ModelConfiguration } from './model-selection.service.js'
+import {
+  ModelSelectionService,
+  type ModelConfiguration
+} from './model-selection.service.js'
 
 vi.mock('./model-selection.service.js', () => ({
   ModelSelectionService: {
@@ -23,7 +26,9 @@ describe('Chat Service', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(ModelSelectionService.selectModel).mockReturnValue(mockModelConfig)
+    vi.mocked(ModelSelectionService.selectModel).mockReturnValue(
+      mockModelConfig
+    )
   })
 
   afterEach(() => {
@@ -55,6 +60,29 @@ describe('Chat Service', () => {
     new ChatService(transcript, mockModelConfig)
 
     expect(ModelSelectionService.selectModel).not.toHaveBeenCalled()
+  })
+
+  it('should clear stored messages when clearMessages is called', async () => {
+    const mockStreamText = vi.mocked(streamText)
+
+    async function* mockTextStream() {
+      yield 'Hello'
+    }
+
+    mockStreamText.mockReturnValue({
+      textStream: mockTextStream()
+    } as any)
+
+    const chatService = new ChatService('Test transcript', mockModelConfig)
+
+    for await (const _ of chatService.sendMessage('First question')) {
+      break
+    }
+    expect(chatService.getMessages()).toHaveLength(1)
+
+    chatService.clearMessages()
+
+    expect(chatService.getMessages()).toEqual([])
   })
 
   it('should add user and assistant messages when streaming completes', async () => {

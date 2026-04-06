@@ -5,6 +5,7 @@ import React from 'react'
 import { ChatWithVideo } from './components/ChatWithVideo.js'
 import { isValidYouTubeUrl } from './utils/youtube.js'
 import { validateEnvironment } from './utils/env.js'
+import { registerCleanupHandler } from './utils/signal-handler.js'
 import { YtdlpSubtitleService } from './services/yt-dlp-subtitle'
 
 const require = createRequire(import.meta.url)
@@ -20,7 +21,9 @@ export const start = () => {
     console.error('❌ Environment setup error:')
     console.error(error instanceof Error ? error.message : 'Unknown error')
     console.error('')
-    console.error('Please ensure you have set up at least one AI provider API key:')
+    console.error(
+      'Please ensure you have set up at least one AI provider API key:'
+    )
     console.error('1. Set up your environment variables')
     console.error('2. Add one of the following to your environment:')
     console.error('   • MISTRAL_API_KEY=your_key_here')
@@ -63,6 +66,8 @@ export const start = () => {
         console.error('  https://github.com/yt-dlp/yt-dlp#installation')
         process.exit(1)
       }
+
+      registerCleanupHandler(() => {})
 
       render(React.createElement(ChatWithVideo, { url, subtitleService }))
     })

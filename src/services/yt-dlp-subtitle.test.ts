@@ -1,15 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { YtdlpSubtitleService } from './yt-dlp-subtitle.js'
-import { execAsync } from '../utils/exec-async.js'
-import { writeFileSync, existsSync } from 'fs'
+import { execFileAsync } from '../utils/exec-async.js'
+import { writeFileSync, existsSync, rmSync } from 'fs'
 import { join } from 'path'
 import { tmpdir } from 'os'
+import * as srtConverterModule from '../utils/srt-converter.js'
 
 vi.mock('../utils/exec-async')
 
 describe('YT DLP subtitle service', () => {
   let service: YtdlpSubtitleService
-  const mockExecAsync = vi.mocked(execAsync)
+  const mockExecFileAsync = vi.mocked(execFileAsync)
 
   beforeEach(() => {
     service = new YtdlpSubtitleService()
@@ -18,7 +19,7 @@ describe('YT DLP subtitle service', () => {
 
   describe('isAvailable', () => {
     it('should return true when yt-dlp is available', async () => {
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: 'yt-dlp 2023.07.06',
         stderr: ''
       })
@@ -26,11 +27,11 @@ describe('YT DLP subtitle service', () => {
       const result = await service.isAvailable()
 
       expect(result).toBe(true)
-      expect(mockExecAsync).toHaveBeenCalledWith('yt-dlp --version')
+      expect(mockExecFileAsync).toHaveBeenCalledWith('yt-dlp', ['--version'])
     })
 
     it('should return false when yt-dlp is not available', async () => {
-      mockExecAsync.mockImplementation(() => {
+      mockExecFileAsync.mockImplementation(() => {
         throw new Error('Command not found')
       })
 
@@ -43,7 +44,7 @@ describe('YT DLP subtitle service', () => {
   describe('getAvailableSubtitles', () => {
     it('should return no subtitles message when video has no subtitles', async () => {
       const output = '[info] Video has no subtitles'
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -60,7 +61,7 @@ describe('YT DLP subtitle service', () => {
 Language Name                    Formats
 en-US    English (United States) vtt, srt, ttml, srv3, srv2, srv1, json3
 fr       French                  vtt, srt`
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -92,7 +93,7 @@ fi       Finnish               vtt, srt, ttml, srv3, srv2, srv1, json3
 fr-orig  French (Original)     vtt, srt, ttml, srv3, srv2, srv1, json3
 fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
 
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -113,7 +114,7 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
     })
 
     it('should handle execution errors', async () => {
-      mockExecAsync.mockImplementation(() => {
+      mockExecFileAsync.mockImplementation(() => {
         throw new Error('Network error')
       })
 
@@ -127,7 +128,7 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
     it('should download uploaded subtitle using --write-sub', async () => {
       const output =
         '[download] Destination: AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.srt'
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -146,15 +147,20 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
         filePath:
           'AI prompt engineering in 2025： What works and what doesn’t ｜ Sander Schulhoff [eKuFqQKYRrA].en-US.srt'
       })
-      expect(mockExecAsync).toHaveBeenCalledWith(
-        'yt-dlp --write-sub --sub-lang en-US --sub-format srt --skip-download "https://youtube.com/watch?v=test"',
-        { encoding: 'utf8' }
-      )
+      expect(mockExecFileAsync).toHaveBeenCalledWith('yt-dlp', [
+        '--write-sub',
+        '--sub-lang',
+        'en-US',
+        '--sub-format',
+        'srt',
+        '--skip-download',
+        'https://youtube.com/watch?v=test'
+      ])
     })
 
     it('should download auto subtitle using --write-auto-sub', async () => {
       const output = '[download] Destination: test.srt'
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -172,14 +178,19 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
         success: true,
         filePath: expect.stringContaining('.srt')
       })
-      expect(mockExecAsync).toHaveBeenCalledWith(
-        'yt-dlp --write-auto-sub --sub-lang fr-orig --sub-format srt --skip-download "https://youtube.com/watch?v=test"',
-        { encoding: 'utf8' }
-      )
+      expect(mockExecFileAsync).toHaveBeenCalledWith('yt-dlp', [
+        '--write-auto-sub',
+        '--sub-lang',
+        'fr-orig',
+        '--sub-format',
+        'srt',
+        '--skip-download',
+        'https://youtube.com/watch?v=test'
+      ])
     })
 
     it('should handle download errors', async () => {
-      mockExecAsync.mockImplementation(() => {
+      mockExecFileAsync.mockImplementation(() => {
         throw new Error('Network error')
       })
 
@@ -200,7 +211,7 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
 
     it('should handle download command failure', async () => {
       const output = '[error] Unable to download subtitle'
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -232,7 +243,7 @@ Is prompt engineering a thing you need to spend your time on?`
       )
 
       const output = `[download] Destination: ${path}`
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -255,7 +266,7 @@ Is prompt engineering a thing you need to spend your time on?`
     })
 
     it('should return download error if download fails', async () => {
-      mockExecAsync.mockImplementation(() => {
+      mockExecFileAsync.mockImplementation(() => {
         throw new Error('Network error')
       })
 
@@ -276,7 +287,7 @@ Is prompt engineering a thing you need to spend your time on?`
 
     it('should handle conversion errors', async () => {
       const output = '[download] Destination: test.srt'
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -305,7 +316,7 @@ Is prompt engineering a thing you need to spend your time on?`
 
       // Simulate yt-dlp reporting the srtPath as destination
       const output = `[download] Destination: ${srtPath}`
-      mockExecAsync.mockResolvedValue({
+      mockExecFileAsync.mockResolvedValue({
         stdout: output,
         stderr: ''
       })
@@ -329,6 +340,42 @@ Is prompt engineering a thing you need to spend your time on?`
       // After retrieveRawText completes, both files should be removed
       expect(existsSync(srtPath)).toBe(false)
       expect(existsSync(txtPath)).toBe(false)
+    })
+
+    it('should clean up SRT file when conversion fails before txt path is created', async () => {
+      const srtPath = join(tmpdir(), 'yt-dlp-cleanup-on-error.srt')
+      writeFileSync(srtPath, 'placeholder', { encoding: 'utf-8' })
+
+      mockExecFileAsync.mockResolvedValue({
+        stdout: `[download] Destination: ${srtPath}`,
+        stderr: ''
+      })
+
+      vi.spyOn(srtConverterModule, 'convertSrtToTxt').mockImplementationOnce(
+        () => {
+          throw new Error('Conversion failed before txt file creation')
+        }
+      )
+
+      const subtitle = {
+        code: 'en-US',
+        name: 'English',
+        type: 'uploaded' as const
+      }
+
+      const result = await service.retrieveRawText(
+        'https://youtube.com/watch?v=test',
+        subtitle
+      )
+
+      expect(result).toEqual({
+        success: false,
+        error:
+          'Failed to transform SRT to text: Conversion failed before txt file creation'
+      })
+      expect(existsSync(srtPath)).toBe(false)
+
+      rmSync(srtPath, { force: true })
     })
   })
 })

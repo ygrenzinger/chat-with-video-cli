@@ -7,7 +7,10 @@ import type { CommandSuggestion } from '../utils/chat-commands.js'
 describe('CommandSuggestions', () => {
   const mockSuggestions: CommandSuggestion[] = [
     { command: '/clear', description: 'Clear the message history' },
-    { command: '/copy-last', description: 'Copy the last assistant message to clipboard' }
+    {
+      command: '/copy-last',
+      description: 'Copy the last assistant message to clipboard'
+    }
   ]
 
   it('should render nothing when no suggestions provided', () => {
@@ -55,7 +58,7 @@ describe('CommandSuggestions', () => {
     const singleSuggestion = [
       { command: '/help', description: 'Show this help message' }
     ]
-    
+
     const { lastFrame } = render(
       <CommandSuggestions suggestions={singleSuggestion} selectedIndex={0} />
     )

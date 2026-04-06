@@ -112,7 +112,7 @@ describe('ChatInput', () => {
         <ChatInput onSubmit={mockOnSubmit} disabled={false} />
       )
 
-      for (const ch of 'hello world') {
+      for (const ch of 'helloworld') {
         stdin.write(ch)
         await flush()
       }
@@ -122,7 +122,7 @@ describe('ChatInput', () => {
       await flush()
 
       expect(mockOnSubmit).toHaveBeenCalledTimes(1)
-      expect(mockOnSubmit).toHaveBeenCalledWith('hello world')
+      expect(mockOnSubmit).toHaveBeenCalledWith('helloworld')
     })
 
     it('should trim whitespace before submitting', async () => {

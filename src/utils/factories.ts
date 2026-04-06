@@ -8,9 +8,15 @@ export type TimeoutHandler = (callback: () => void, delay: number) => void
 /**
  * Factory function for creating ChatService instances
  */
-export type ChatServiceFactory = (transcript: string, modelConfig?: ModelConfiguration) => Promise<ChatService>
+export type ChatServiceFactory = (
+  transcript: string,
+  modelConfig?: ModelConfiguration
+) => Promise<ChatService>
 
-export const createChatService: ChatServiceFactory = async (transcript: string, modelConfig?: ModelConfiguration) => {
+export const createChatService: ChatServiceFactory = async (
+  transcript: string,
+  modelConfig?: ModelConfiguration
+) => {
   return new ChatService(transcript, modelConfig)
 }
 
@@ -44,7 +50,8 @@ export interface ChatWithVideoConfig {
 /**
  * Default configuration
  */
-export const defaultConfig: Required<Omit<ChatWithVideoConfig, 'modelConfig'>> & Pick<ChatWithVideoConfig, 'modelConfig'> = {
+export const defaultConfig: Required<Omit<ChatWithVideoConfig, 'modelConfig'>> &
+  Pick<ChatWithVideoConfig, 'modelConfig'> = {
   chatServiceFactory: createChatService,
   messageHandlerFactory: createMessageHandler,
   exitHandler: () => process.exit(0),
@@ -56,7 +63,10 @@ export const defaultConfig: Required<Omit<ChatWithVideoConfig, 'modelConfig'>> &
 /**
  * Merges user config with default config
  */
-export const mergeConfig = (userConfig: ChatWithVideoConfig = {}): Required<Omit<ChatWithVideoConfig, 'modelConfig'>> & Pick<ChatWithVideoConfig, 'modelConfig'> => {
+export const mergeConfig = (
+  userConfig: ChatWithVideoConfig = {}
+): Required<Omit<ChatWithVideoConfig, 'modelConfig'>> &
+  Pick<ChatWithVideoConfig, 'modelConfig'> => {
   return {
     ...defaultConfig,
     ...userConfig

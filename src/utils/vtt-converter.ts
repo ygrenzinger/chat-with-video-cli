@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs'
 
 export function convertVttToTxt(inputPath: string): string {
-  console.log(`Converting ${inputPath} to TXT format...`)
   const vttContent = readFileSync(inputPath, 'utf-8')
   const textContent = extractTextFromVtt(vttContent)
 

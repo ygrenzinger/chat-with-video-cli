@@ -1,4 +1,4 @@
-import { execAsync } from '../utils/exec-async.js'
+import { execFileAsync } from '../utils/exec-async.js'
 import { convertSrtToTxt } from '../utils/srt-converter.js'
 import { readFileSync, rmSync } from 'fs'
 import { basename } from 'path'
@@ -12,7 +12,7 @@ import { Logger } from '../utils/Logger'
 export class YtdlpSubtitleService implements SubtitleService {
   async isAvailable(): Promise<boolean> {
     try {
-      await execAsync('yt-dlp --version')
+      await execFileAsync('yt-dlp', ['--version'])
       return true
     } catch {
       return false
@@ -23,9 +23,7 @@ export class YtdlpSubtitleService implements SubtitleService {
     url: string
   ): Promise<SubtitleLanguage[] | string> {
     try {
-      const result = await execAsync(`yt-dlp --list-subs "${url}"`, {
-        encoding: 'utf8'
-      })
+      const result = await execFileAsync('yt-dlp', ['--list-subs', url])
 
       const output = result.stdout
 
@@ -79,16 +77,28 @@ export class YtdlpSubtitleService implements SubtitleService {
       }
   > {
     try {
-      const command =
+      const args =
         subtitle.type === 'uploaded'
-          ? `yt-dlp --write-sub --sub-lang ${subtitle.code} --sub-format srt --skip-download "${url}"`
-          : `yt-dlp --write-auto-sub --sub-lang ${subtitle.code} --sub-format srt --skip-download "${url}"`
+          ? [
+              '--write-sub',
+              '--sub-lang',
+              subtitle.code,
+              '--sub-format',
+              'srt',
+              '--skip-download',
+              url
+            ]
+          : [
+              '--write-auto-sub',
+              '--sub-lang',
+              subtitle.code,
+              '--sub-format',
+              'srt',
+              '--skip-download',
+              url
+            ]
 
-      const output = await execAsync(command, {
-        encoding: 'utf8'
-      })
-
-      console.log(output.stdout)
+      const output = await execFileAsync('yt-dlp', args)
 
       // Check if download was successful by looking for file mention in output
       const srtMatch = output.stdout.match(/\[download] Destination: (.+\.srt)/)
@@ -148,8 +158,8 @@ export class YtdlpSubtitleService implements SubtitleService {
     } finally {
       // Best-effort cleanup of generated files
       try {
+        rmSync(downloadResult.filePath, { force: true })
         if (txtFilePath) {
-          rmSync(downloadResult.filePath, { force: true })
           rmSync(txtFilePath, { force: true })
         }
       } catch (error) {

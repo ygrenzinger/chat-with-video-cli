@@ -1,4 +1,13 @@
-const VALID_COMMANDS = ['/exit', '/help', '/transcript', '/clear', '/copy-last', '/copy-all', '/save-to-file', '/summary']
+const VALID_COMMANDS = [
+  '/exit',
+  '/help',
+  '/transcript',
+  '/clear',
+  '/copy-last',
+  '/copy-all',
+  '/save-to-file',
+  '/summary'
+]
 
 export type CommandSuggestion = {
   command: string
@@ -28,7 +37,7 @@ export const parseCommand = (input: string): ChatCommand | null => {
   if (isUnknownCommand(input)) {
     return { type: 'unknown', command: input }
   }
-  
+
   if (!isCommand(input)) {
     return null
   }
@@ -72,12 +81,12 @@ export const getCommandSuggestions = (input: string): CommandSuggestion[] => {
   }
 
   const searchTerm = input.toLowerCase()
-  return VALID_COMMANDS
-    .filter(command => command.toLowerCase().startsWith(searchTerm))
-    .map(command => ({
-      command,
-      description: COMMAND_DESCRIPTIONS[command]
-    }))
+  return VALID_COMMANDS.filter(command =>
+    command.toLowerCase().startsWith(searchTerm)
+  ).map(command => ({
+    command,
+    description: COMMAND_DESCRIPTIONS[command]
+  }))
 }
 
 export const getHelpText = (): string => {

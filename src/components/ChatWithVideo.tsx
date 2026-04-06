@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Text, Box } from 'ink'
-import { SubtitleService, SubtitleLanguage } from '../services/subtitle.js'
-import { useChatState } from '../hooks/useChatState.js'
-import { useSubtitleDownload } from '../hooks/useSubtitleDownload.js'
-import { useChatService } from '../hooks/useChatService.js'
+import {
+  type SubtitleService,
+  type SubtitleLanguage
+} from '../services/subtitle.js'
+import { useChatMachine } from '../hooks/useChatMachine.js'
 import { useMessageHandling } from '../hooks/useMessageHandling.js'
 import { ChatStateRenderer } from './ChatStateRenderer.js'
 import { ChatWithVideoConfig, mergeConfig } from '../utils/factories.js'
@@ -30,38 +31,14 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
 }) => {
   const mergedConfig = mergeConfig(config)
 
-  // Initialize hooks
-  const {
-    chatState,
-    transitionToSubtitleSelected,
-    transitionToSubtitleDownloaded,
-    transitionToChatInitializing,
-    transitionToChatReady,
-    transitionToChatActive,
-    canProcessMessages,
-    getCurrentTranscript,
-    getCurrentChatService,
-    getCurrentVideoName
-  } = useChatState()
+  const createConfiguredChatService = (transcript: string) =>
+    mergedConfig.chatServiceFactory(transcript, mergedConfig.modelConfig)
 
-  // Handle subtitle download
-  useSubtitleDownload({
-    chatState,
+  const { state, send, context } = useChatMachine(
     url,
     subtitleService,
-    onDownloadSuccess: transitionToChatInitializing,
-    onDownloadError: transitionToSubtitleDownloaded
-  })
-
-  // Handle chat service initialization
-  useChatService({
-    chatState,
-    onChatServiceReady: transitionToChatReady,
-    onChatServiceError: error => {
-      console.error('Failed to initialize chat service:', error)
-    },
-    createChatService: mergedConfig.chatServiceFactory
-  })
+    createConfiguredChatService
+  )
 
   // Handle message processing
   const { messages, isStreaming, handleSendMessage } = useMessageHandling({
@@ -69,34 +46,18 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
       mergedConfig.exitHandler,
       mergedConfig.timeoutHandler
     ),
-    chatService: getCurrentChatService(),
-    transcript: getCurrentTranscript(),
-    canProcessMessages: canProcessMessages(),
-    videoName: getCurrentVideoName()
+    chatService: context.chatService,
+    transcript: context.transcript,
+    canProcessMessages: state.matches('chatActive'),
+    videoName: context.videoName
   })
 
-  // Auto-transition to chat-active when ready and no messages
-  useEffect(() => {
-    if (
-      mergedConfig.enableAutoTransition &&
-      chatState.status === 'chat-ready' &&
-      messages.length === 0
-    ) {
-      transitionToChatActive(
-        chatState.transcript,
-        chatState.chatService,
-        chatState.videoName
-      )
-    }
-  }, [
-    chatState,
-    messages.length,
-    mergedConfig.enableAutoTransition,
-    transitionToChatActive
-  ])
-
   const handleSubtitleSelected = (subtitle: SubtitleLanguage) => {
-    transitionToSubtitleSelected(subtitle)
+    send({ type: 'SELECT_SUBTITLE', subtitle })
+  }
+
+  const handleRetry = () => {
+    send({ type: 'RETRY' })
   }
 
   const handleExit = () => {
@@ -108,11 +69,12 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
       <YoutubeUrlInfo url={url} />
       <ChatStateRenderer
         url={url}
-        chatState={chatState}
+        machineState={state}
         subtitleService={subtitleService}
         messages={messages}
         isStreaming={isStreaming}
         onSubtitleSelected={handleSubtitleSelected}
+        onRetry={handleRetry}
         onSendMessage={handleSendMessage}
         onExit={handleExit}
       />

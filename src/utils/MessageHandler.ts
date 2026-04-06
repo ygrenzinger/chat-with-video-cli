@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { ChatMessage, ChatService } from '../services/chat.service.js'
 import { parseCommand, getHelpText, type ChatCommand } from './chat-commands.js'
-import { copy } from 'copy-paste/promises'
+import { copy } from 'copy-paste/promises.js'
 import { writeFileSync } from 'fs'
 
 export type ExitHandler = () => void
@@ -39,32 +40,54 @@ export class MessageHandler {
       return
     }
 
+    await this.streamChatResponse(
+      message,
+      chatService,
+      currentMessages,
+      onMessageUpdate,
+      onStreamingUpdate
+    )
+    return
+  }
+
+  private async streamChatResponse(
+    query: string,
+    chatService: ChatService,
+    currentMessages: ChatMessage[],
+    onMessageUpdate: (messages: ChatMessage[]) => void,
+    onStreamingUpdate: (isStreaming: boolean) => void
+  ): Promise<void> {
+    const hasUserMessage = currentMessages.at(-1)?.role === 'user'
+    const userMessage = hasUserMessage
+      ? null
+      : {
+          id: `msg-${randomUUID()}-user`,
+          role: 'user' as const,
+          content: query,
+          timestamp: new Date()
+        }
+
+    const messagesWithUser = userMessage
+      ? [...currentMessages, userMessage]
+      : currentMessages
+
+    onMessageUpdate(messagesWithUser)
     onStreamingUpdate(true)
-
-    const userMessage: ChatMessage = {
-      id: `msg-${Date.now()}-user`,
-      role: 'user',
-      content: message,
-      timestamp: new Date()
-    }
-
-    const updatedMessages = [...currentMessages, userMessage]
-    onMessageUpdate(updatedMessages)
 
     try {
       let assistantContent = ''
       const assistantMessage: ChatMessage = {
-        id: `msg-${Date.now()}-assistant`,
+        id: `msg-${randomUUID()}-assistant`,
         role: 'assistant',
         content: '',
         timestamp: new Date(),
         streamingComplete: false
       }
 
-      const messagesWithAssistant = [...updatedMessages, assistantMessage]
+      const messagesWithAssistant = [...messagesWithUser, assistantMessage]
       onMessageUpdate(messagesWithAssistant)
 
-      for await (const textPart of chatService.sendMessage(message)) {
+      for await (const textPart of chatService.sendMessage(query)) {
         assistantContent += textPart
         const updatedMessagesWithStream = messagesWithAssistant.map(msg =>
           msg.id === assistantMessage.id
@@ -81,20 +104,25 @@ export class MessageHandler {
       )
       onMessageUpdate(finalMessages)
     } catch (error) {
-      console.error('Error sending message:', error)
+      const isSummaryQuery =
+        query ===
+        'give me a detailed summary of each topic addressed in this video'
+      console.error(
+        isSummaryQuery ? 'Error getting summary:' : 'Error sending message:',
+        error
+      )
 
-      // Add error message
       const errorMessage: ChatMessage = {
-        id: `msg-${Date.now()}-error`,
+        id: `msg-${randomUUID()}-error`,
         role: 'assistant',
-        content:
-          'Sorry, I encountered an error processing your message. Please try again.',
+        content: isSummaryQuery
+          ? 'Sorry, I encountered an error getting the summary. Please try again.'
+          : 'Sorry, I encountered an error processing your message. Please try again.',
         timestamp: new Date(),
         streamingComplete: true
       }
 
-      // Replace the incomplete assistant message with error message
-      const errorMessages = [...updatedMessages, errorMessage]
+      const errorMessages = [...messagesWithUser, errorMessage]
       onMessageUpdate(errorMessages)
     } finally {
       onStreamingUpdate(false)
@@ -117,13 +145,13 @@ export class MessageHandler {
     if (!parsedCommand) return
 
     const userMessage: ChatMessage = {
-      id: `msg-${Date.now()}-user`,
+      id: `msg-${randomUUID()}-user`,
       role: 'user',
       content: command,
       timestamp: new Date()
     }
 
-    const updatedMessages = [...currentMessages, userMessage]
+    const messagesWithCommand = [...currentMessages, userMessage]
 
     let responseContent = ''
     switch (parsedCommand.type) {
@@ -134,6 +162,7 @@ export class MessageHandler {
         responseContent = `Full Video Transcript:\n\n${transcript}`
         break
       case 'clear':
+        chatService.clearMessages()
         onMessageUpdate([]) // Clear all messages
         return // Don't add response message for clear
       case 'copy-last': {
@@ -185,7 +214,7 @@ export class MessageHandler {
             const sanitizedVideoName = this.sanitizeFilename(
               videoName || 'unknown-video'
             )
-            const filename = `${sanitizedVideoName}.chat.md`
+            const filename = `${sanitizedVideoName}-${this.formatTimestamp()}.chat.md`
 
             // Format chat as markdown
             const formattedChat = this.formatChatAsMarkdown(
@@ -208,72 +237,16 @@ export class MessageHandler {
         responseContent = 'Goodbye! 👋'
         break
       case 'summary': {
-        // For summary, we need to send a query to the chat service
-        const summaryQuery = 'give me a detailed summary of each topic addressed in this video'
-        
-        // Add the user's command to messages
-        const commandMessage: ChatMessage = {
-          id: `msg-${Date.now()}-user`,
-          role: 'user',
-          content: command,
-          timestamp: new Date()
-        }
-        
-        const messagesWithCommand = [...currentMessages, commandMessage]
-        onMessageUpdate(messagesWithCommand)
-        
-        // Start streaming
-        onStreamingUpdate(true)
-        
-        try {
-          let assistantContent = ''
-          const assistantMessage: ChatMessage = {
-            id: `msg-${Date.now()}-assistant`,
-            role: 'assistant',
-            content: '',
-            timestamp: new Date(),
-            streamingComplete: false
-          }
-          
-          const messagesWithAssistant = [...messagesWithCommand, assistantMessage]
-          onMessageUpdate(messagesWithAssistant)
-          
-          // Send the summary query to the chat service
-          for await (const textPart of chatService.sendMessage(summaryQuery)) {
-            assistantContent += textPart
-            const updatedMessagesWithStream = messagesWithAssistant.map(msg =>
-              msg.id === assistantMessage.id
-                ? { ...msg, content: assistantContent }
-                : msg
-            )
-            onMessageUpdate(updatedMessagesWithStream)
-          }
-          
-          const finalMessages = messagesWithAssistant.map(msg =>
-            msg.id === assistantMessage.id
-              ? { ...msg, content: assistantContent, streamingComplete: true }
-              : msg
-          )
-          onMessageUpdate(finalMessages)
-        } catch (error) {
-          console.error('Error getting summary:', error)
-          
-          // Add error message
-          const errorMessage: ChatMessage = {
-            id: `msg-${Date.now()}-error`,
-            role: 'assistant',
-            content: 'Sorry, I encountered an error getting the summary. Please try again.',
-            timestamp: new Date(),
-            streamingComplete: true
-          }
-          
-          const errorMessages = [...messagesWithCommand, errorMessage]
-          onMessageUpdate(errorMessages)
-        } finally {
-          onStreamingUpdate(false)
-        }
-        
-        // Return early since we've already handled the response
+        const summaryQuery =
+          'give me a detailed summary of each topic addressed in this video'
+
+        await this.streamChatResponse(
+          summaryQuery,
+          chatService,
+          messagesWithCommand,
+          onMessageUpdate,
+          onStreamingUpdate
+        )
         return
       }
       case 'unknown':
@@ -282,14 +255,14 @@ export class MessageHandler {
     }
 
     const assistantMessage: ChatMessage = {
-      id: `msg-${Date.now()}-assistant`,
+      id: `msg-${randomUUID()}-assistant`,
       role: 'assistant',
       content: responseContent,
       timestamp: new Date(),
       streamingComplete: true
     }
 
-    const finalMessages = [...updatedMessages, assistantMessage]
+    const finalMessages = [...messagesWithCommand, assistantMessage]
     onMessageUpdate(finalMessages)
 
     // Handle exit command
@@ -306,6 +279,17 @@ export class MessageHandler {
       .replace(/-+/g, '-') // Replace multiple dashes with single dash
       .replace(/^-|-$/g, '') // Remove leading/trailing dashes
       .toLowerCase()
+  }
+
+  private formatTimestamp(): string {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const seconds = String(now.getSeconds()).padStart(2, '0')
+    return `${year}${month}${day}-${hours}${minutes}${seconds}`
   }
 
   private formatChatAsMarkdown(

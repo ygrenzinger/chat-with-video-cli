@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { parseCommand, isCommand, getCommandSuggestions, isUnknownCommand } from './chat-commands.js'
+import {
+  parseCommand,
+  isCommand,
+  getCommandSuggestions,
+  isUnknownCommand
+} from './chat-commands.js'
 
 describe('Chat Commands', () => {
   describe('isCommand', () => {
@@ -90,8 +95,14 @@ describe('Chat Commands', () => {
     })
 
     it('should parse unknown commands starting with /', () => {
-      expect(parseCommand('/unknown')).toEqual({ type: 'unknown', command: '/unknown' })
-      expect(parseCommand('/test')).toEqual({ type: 'unknown', command: '/test' })
+      expect(parseCommand('/unknown')).toEqual({
+        type: 'unknown',
+        command: '/unknown'
+      })
+      expect(parseCommand('/test')).toEqual({
+        type: 'unknown',
+        command: '/test'
+      })
       expect(parseCommand('/xyz')).toEqual({ type: 'unknown', command: '/xyz' })
     })
 
@@ -119,9 +130,13 @@ describe('Chat Commands', () => {
       expect(suggestions[0].command).toBe('/clear')
       expect(suggestions[0].description).toBe('Clear the message history')
       expect(suggestions[1].command).toBe('/copy-last')
-      expect(suggestions[1].description).toBe('Copy the last assistant message to clipboard')
+      expect(suggestions[1].description).toBe(
+        'Copy the last assistant message to clipboard'
+      )
       expect(suggestions[2].command).toBe('/copy-all')
-      expect(suggestions[2].description).toBe('Copy the full chat history to clipboard')
+      expect(suggestions[2].description).toBe(
+        'Copy the full chat history to clipboard'
+      )
     })
 
     it('should return single match for more specific input', () => {
@@ -149,7 +164,9 @@ describe('Chat Commands', () => {
       const suggestions = getCommandSuggestions('/e')
       expect(suggestions).toHaveLength(1)
       expect(suggestions[0].command).toBe('/exit')
-      expect(suggestions[0].description).toBe('Exit the chat and close the application')
+      expect(suggestions[0].description).toBe(
+        'Exit the chat and close the application'
+      )
     })
 
     it('should return matches for /s', () => {

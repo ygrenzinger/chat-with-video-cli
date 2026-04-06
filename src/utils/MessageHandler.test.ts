@@ -1,15 +1,25 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 // Mock clipboardy
-vi.mock('copy-paste/promises', () => ({
+vi.mock('copy-paste/promises.js', () => ({
   copy: vi.fn()
+}))
+
+const mockWriteFileSync = vi.hoisted(() => vi.fn())
+
+vi.mock('fs', () => ({
+  writeFileSync: mockWriteFileSync,
+  default: {
+    writeFileSync: mockWriteFileSync
+  }
 }))
 
 // Mock console.error to avoid test pollution
 vi.spyOn(console, 'error').mockImplementation(() => {})
 import { MessageHandler } from './MessageHandler.js'
 import { ChatMessage, ChatService } from '../services/chat.service.js'
-import { copy } from 'copy-paste/promises'
+import { copy } from 'copy-paste/promises.js'
+import { writeFileSync } from 'fs'
 
 describe('MessageHandler', () => {
   let messageHandler: MessageHandler
@@ -29,7 +39,8 @@ describe('MessageHandler', () => {
     mockChatService = {
       sendMessage: vi.fn(),
       getMessages: vi.fn(),
-      getSystemPrompt: vi.fn()
+      getSystemPrompt: vi.fn(),
+      clearMessages: vi.fn()
     } as unknown as ChatService
     mockOnMessageUpdate = vi.fn()
     mockOnStreamingUpdate = vi.fn()
@@ -192,6 +203,7 @@ describe('MessageHandler', () => {
         mockOnStreamingUpdate
       )
 
+      expect(mockChatService.clearMessages).toHaveBeenCalledOnce()
       expect(mockOnMessageUpdate).toHaveBeenCalledWith([])
       expect(mockOnMessageUpdate).toHaveBeenCalledTimes(1) // Only called once for clear
     })
@@ -455,6 +467,40 @@ describe('MessageHandler', () => {
       ) // Command response
     })
 
+    it('should save chat history with a timestamped filename', async () => {
+      const existingMessages: ChatMessage[] = [
+        {
+          id: 'msg-1',
+          role: 'user',
+          content: 'Save this message',
+          timestamp: new Date()
+        }
+      ]
+
+      await messageHandler.handleMessage(
+        '/save-to-file',
+        mockChatService,
+        transcript,
+        videoName,
+        existingMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      expect(writeFileSync).toHaveBeenCalledOnce()
+      const [filename, formattedChat, encoding] =
+        mockWriteFileSync.mock.calls[0]
+      expect(filename).toMatch(/.*-\d{8}-\d{6}\.chat\.md$/)
+      expect(formattedChat).toContain('Save this message')
+      expect(encoding).toBe('utf8')
+
+      const finalCall = mockOnMessageUpdate.mock.calls[0][0]
+      expect(finalCall).toHaveLength(3)
+      expect(finalCall[0].content).toBe('Save this message')
+      expect(finalCall[1].content).toBe('/save-to-file')
+      expect(finalCall[2].content).toContain('Chat history saved to')
+    })
+
     it('should handle summary command', async () => {
       async function* mockStream() {
         yield 'Here is a '
@@ -487,21 +533,26 @@ describe('MessageHandler', () => {
       expect(mockOnMessageUpdate.mock.calls.length).toBeGreaterThan(2)
 
       // Check final message state
-      const finalCall = mockOnMessageUpdate.mock.calls[mockOnMessageUpdate.mock.calls.length - 1]
+      const finalCall =
+        mockOnMessageUpdate.mock.calls[
+          mockOnMessageUpdate.mock.calls.length - 1
+        ]
       expect(finalCall[0]).toHaveLength(2) // User command + assistant response
       expect(finalCall[0][0].content).toBe('/summary')
-      expect(finalCall[0][1].content).toBe('Here is a summary of the video topics')
+      expect(finalCall[0][1].content).toBe(
+        'Here is a summary of the video topics'
+      )
       expect(finalCall[0][1].streamingComplete).toBe(true)
     })
 
     it('should handle summary command error gracefully', async () => {
       const error = new Error('API Error')
-      
+
       async function* mockErrorStream(): AsyncGenerator<string, void, unknown> {
         yield '' // Yield at least once to satisfy the generator requirement
         throw error
       }
-      
+
       vi.mocked(mockChatService.sendMessage).mockReturnValue(mockErrorStream())
 
       await messageHandler.handleMessage(
@@ -524,10 +575,15 @@ describe('MessageHandler', () => {
       expect(mockOnStreamingUpdate).toHaveBeenCalledWith(false)
 
       // Should show error message
-      const finalCall = mockOnMessageUpdate.mock.calls[mockOnMessageUpdate.mock.calls.length - 1]
+      const finalCall =
+        mockOnMessageUpdate.mock.calls[
+          mockOnMessageUpdate.mock.calls.length - 1
+        ]
       expect(finalCall[0]).toHaveLength(2)
       expect(finalCall[0][0].content).toBe('/summary')
-      expect(finalCall[0][1].content).toBe('Sorry, I encountered an error getting the summary. Please try again.')
+      expect(finalCall[0][1].content).toBe(
+        'Sorry, I encountered an error getting the summary. Please try again.'
+      )
     })
 
     it('should handle unknown commands starting with /', async () => {
@@ -543,7 +599,7 @@ describe('MessageHandler', () => {
 
       // Should not call chat service for unknown commands
       expect(mockChatService.sendMessage).not.toHaveBeenCalled()
-      
+
       // Should not trigger streaming update
       expect(mockOnStreamingUpdate).not.toHaveBeenCalledWith(true)
 
@@ -552,12 +608,14 @@ describe('MessageHandler', () => {
       const finalCall = mockOnMessageUpdate.mock.calls[0]
       expect(finalCall[0]).toHaveLength(2) // User message + assistant response
       expect(finalCall[0][0].content).toBe('/invalidcommand')
-      expect(finalCall[0][1].content).toBe('Unknown command: /invalidcommand. Type /help for available commands.')
+      expect(finalCall[0][1].content).toBe(
+        'Unknown command: /invalidcommand. Type /help for available commands.'
+      )
     })
 
     it('should treat regular text as normal messages', async () => {
       const message = 'This is a regular message'
-      
+
       async function* mockStream() {
         yield 'Response'
       }
@@ -603,8 +661,8 @@ describe('MessageHandler', () => {
       const userMessage = mockOnMessageUpdate.mock.calls[0][0][0]
       const assistantMessage = mockOnMessageUpdate.mock.calls[1][0][1]
 
-      expect(userMessage.id).toMatch(/^msg-\d+-user$/)
-      expect(assistantMessage.id).toMatch(/^msg-\d+-assistant$/)
+      expect(userMessage.id).toMatch(/^msg-[0-9a-f-]+-user$/)
+      expect(assistantMessage.id).toMatch(/^msg-[0-9a-f-]+-assistant$/)
       expect(userMessage.id).not.toBe(assistantMessage.id)
     })
   })

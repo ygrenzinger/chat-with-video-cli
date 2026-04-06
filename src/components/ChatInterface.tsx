@@ -1,11 +1,8 @@
 import React from 'react'
 import { Text, Box } from 'ink'
-import type { ChatMessage, ChatService } from '../services/chat.service.js'
+import type { ChatMessage } from '../services/chat.service.js'
 
 type ChatInterfaceProps = {
-  transcript: string
-  chatService: ChatService
-  onExit: () => void
   messages?: ChatMessage[]
 }
 

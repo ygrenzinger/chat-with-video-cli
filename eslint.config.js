@@ -1,7 +1,7 @@
-import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import globals from 'globals';
+import js from '@eslint/js'
+import typescript from '@typescript-eslint/eslint-plugin'
+import typescriptParser from '@typescript-eslint/parser'
+import globals from 'globals'
 
 export default [
   js.configs.recommended,
@@ -13,24 +13,27 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
-          jsx: true,
-        },
+          jsx: true
+        }
       },
       globals: {
-        ...globals.node,
-      },
+        ...globals.node
+      }
     },
     plugins: {
-      '@typescript-eslint': typescript,
+      '@typescript-eslint': typescript
     },
     rules: {
       ...typescript.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+      ],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
-    },
+      '@typescript-eslint/no-explicit-any': 'warn'
+    }
   },
   {
-    ignores: ['dist/**', 'node_modules/**', 'bin/**'],
-  },
-];
+    ignores: ['dist/**', 'node_modules/**', 'bin/**']
+  }
+]
