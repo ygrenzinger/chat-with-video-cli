@@ -1,0 +1,172 @@
+eslint.config.js
+  55e69b0c8f78465f 1-4,16-17,20-21,24,28-31,33-34,37-39
+src/components/ChatStateRenderer.tsx
+  1c1c6bad6918cc0e 24,36
+src/services/chat.service.test.ts
+  2f087a62c481bcf4 78
+src/utils/exec-async.ts
+  d1e0e059bdaebcd9 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "add970e4c47dad1e978ad43171d73bfdcc5038d5",
+  "prompts": {
+    "1c1c6bad6918cc0e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-19bd7767-5cca-42e3-868e-e5ce988520ae",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "21f17b0bf821564b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_2a32ba206ffec61w5oTYGoyxap",
+        "model": "github-copilot/claude-opus-4.6"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 262,
+      "total_deletions": 3,
+      "accepted_lines": 191,
+      "overriden_lines": 0
+    },
+    "2338e759e69b84f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-8209b8b2-eee9-43d4-8859-effde2abe5e2",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "2f087a62c481bcf4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-b5b3ccc0-17c3-41f5-bf35-d25b978e4eb6",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "4ffb57440990b7be": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-e350a6ab-36e4-4c67-8eb0-03175c528ed6",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 251,
+      "total_deletions": 67,
+      "accepted_lines": 251,
+      "overriden_lines": 0
+    },
+    "55e69b0c8f78465f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-9a194d3c-9784-4a01-87f2-59a04bef5bd1",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 18,
+      "total_deletions": 15,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    },
+    "764f851b602b41a1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-b2ff7306-13c2-41f3-ae47-1640106d0869",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 14,
+      "total_deletions": 0,
+      "accepted_lines": 14,
+      "overriden_lines": 0
+    },
+    "7f66d108e31bb00e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-46e71030-ba0c-4870-acbd-7fd4c3e7453d",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 259,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "8736f341cd572860": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-5b53d53e-968d-4cb0-9ada-1a6cdf1e09fb",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 49,
+      "total_deletions": 0,
+      "accepted_lines": 49,
+      "overriden_lines": 0
+    },
+    "8d94f9b237f754fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-ea94907d-bb85-4e42-9f26-d8a8f8880562",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 1
+    },
+    "d1e0e059bdaebcd9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-f6537e85-73aa-4efd-8dee-87b710881b33",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "fc6e86571f98abfa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-3de3b3c9-8807-4b37-aa72-8c36ed1f14e9",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    }
+  }
+}
