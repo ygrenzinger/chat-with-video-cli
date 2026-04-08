@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, Box } from 'ink'
 import type { ChatMessage } from '../services/chat.service.js'
+import { MarkdownText } from './MarkdownText.js'
 
 type ChatInterfaceProps = {
   messages?: ChatMessage[]
@@ -26,11 +27,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       {messages.length > 0 && (
         <Box flexDirection="column" marginBottom={1}>
           {messages.map(message => (
-            <Box key={message.id} marginBottom={1}>
-              <Text color={message.role === 'user' ? 'blue' : 'green'}>
-                {message.role === 'user' ? '👤 You: ' : '🤖 Assistant: '}
-                {message.content}
+            <Box key={message.id} marginBottom={1} flexDirection="column">
+              <Text color={message.role === 'user' ? 'blue' : 'green'} bold>
+                {message.role === 'user' ? '👤 You:' : '🤖 Assistant:'}
               </Text>
+              {message.role === 'assistant' ? (
+                <Box marginLeft={2}>
+                  <MarkdownText>{message.content}</MarkdownText>
+                </Box>
+              ) : (
+                <Box marginLeft={2}>
+                  <Text>{message.content}</Text>
+                </Box>
+              )}
             </Box>
           ))}
         </Box>

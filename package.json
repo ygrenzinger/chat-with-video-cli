@@ -71,6 +71,7 @@
     "ink": "^6.2.0",
     "ink-spinner": "^5.0.0",
     "ink-text-input": "^6.0.0",
+    "markdansi": "^0.2.1",
     "react": "^19.1.1",
     "xstate": "^5.30.0",
     "zod": "^4.0.17"

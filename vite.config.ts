@@ -39,6 +39,7 @@ export default defineConfig({
         'node:crypto',
         'node:fs',
         'copy-paste/promises.js',
+        'markdansi',
         'buffer',
         'string_decoder',
         'xstate',
