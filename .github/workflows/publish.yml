@@ -21,19 +21,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: 10
 
@@ -89,12 +89,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "v${{ steps.version.outputs.new_version }}"
-          release_name: "Release v${{ steps.version.outputs.new_version }}"
+          tag_name: 'v${{ steps.version.outputs.new_version }}'
+          release_name: 'Release v${{ steps.version.outputs.new_version }}'
           body: |
             ## Changes
             Version bumped from ${{ steps.version.outputs.old_version }} to ${{ steps.version.outputs.new_version }} (${{ steps.version.outputs.version_type }})
-            
+
             ## Installation
             ```bash
             npm install -g chat-with-video@${{ steps.version.outputs.new_version }}
