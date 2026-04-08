@@ -1,0 +1,86 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "1e6ac262ca8f36decf4607f0d02c0e3b4a73b8c3",
+  "prompts": {
+    "21f17b0bf821564b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_2a32ba206ffec61w5oTYGoyxap",
+        "model": "github-copilot/claude-opus-4.6"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 194,
+      "overriden_lines": 0
+    },
+    "2338e759e69b84f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-8209b8b2-eee9-43d4-8859-effde2abe5e2",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "4ffb57440990b7be": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-e350a6ab-36e4-4c67-8eb0-03175c528ed6",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 248,
+      "overriden_lines": 0
+    },
+    "764f851b602b41a1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-b2ff7306-13c2-41f3-ae47-1640106d0869",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 14,
+      "overriden_lines": 0
+    },
+    "8736f341cd572860": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-5b53d53e-968d-4cb0-9ada-1a6cdf1e09fb",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 49,
+      "overriden_lines": 0
+    },
+    "8d94f9b237f754fb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "opencode-transcript-ses_2a177896cffe3YcZYwhpPXSjP6-ea94907d-bb85-4e42-9f26-d8a8f8880562",
+        "model": "unknown"
+      },
+      "human_author": "Yannick Grenzinger",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
