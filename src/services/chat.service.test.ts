@@ -42,18 +42,16 @@ describe('Chat Service', () => {
 
     const systemPrompt = chatService.getSystemPrompt()
 
-    expect(systemPrompt).toContain('helpful AI')
     expect(systemPrompt).toContain(
-      '<transcript>Video about TypeScript testing</transcript>'
+      '<transcript_srt>\nVideo about TypeScript testing\n</transcript_srt>'
     )
     expect(systemPrompt).toContain(
-      '<videoUrl>https://youtube.com/watch?v=test</videoUrl>'
+      '<video_url>\nhttps://youtube.com/watch?v=test\n</video_url>'
     )
-    expect(systemPrompt).toContain('markdown format')
+    expect(systemPrompt).toContain('Answer in Markdown')
     expect(systemPrompt).toContain(
-      'write the full absolute URL as plain text or as a Markdown autolink'
+      'Use this exact timestamp URL pattern for this video: https://youtube.com/watch?v=test&t=SECONDS'
     )
-    expect(systemPrompt).toContain('Do not use labeled Markdown links')
   })
 
   it('should use ModelSelectionService when no model config provided', () => {

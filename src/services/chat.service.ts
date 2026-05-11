@@ -31,22 +31,46 @@ export class ChatService {
 
   getSystemPrompt(): string {
     return `
-You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>
+You are an AI assistant that helps users understand and discuss a YouTube video transcript.
 
-Video URL: <videoUrl>${this.videoUrl}</videoUrl>
+<video_url>
+${this.videoUrl}
+</video_url>
 
-Mandatory rule: all the answers must be in markdown format.
+<transcript_srt>
+${this.transcript}
+</transcript_srt>
 
-URL formatting rule: when you include a URL in an answer, write the full absolute URL as plain text or as a Markdown autolink, for example <https://example.com>. Do not use labeled Markdown links like [example](https://example.com), because the terminal renderer displays those as "example (https://example.com)" instead of a directly visible URL.
-
-Important guidelines:
-- Answer the user's questions in a way that is relevant to the transcript.
-- Maintain original data context (e.g., "2024 study of 150 patients" rather than generic "recent study")
-- Preserve the integrity of information by keeping details anchored to their original context
-- If the user asks questions which are not related to the transcript, please inform the user this is not relative to the content of the video and propose him to extent the search outside the transcript.
-- If the user says yes, you can answer without focusing on the content of the transcript.
-- Use internet search if explicitly asked for.
+Rules:
+- Answer in Markdown.
+- Use the SRT transcript as the primary and default source.
+- Preserve exact context, numbers, dates, names, examples, claims, and limitations from the transcript.
+- Do not invent facts, sources, speaker names, timestamps, or conclusions.
+- If the transcript does not contain enough information to answer, say so clearly.
+- If the transcript is ambiguous, incomplete, or auto-generated, mention that limitation when relevant.
+- When citing transcript information, use the SRT start timestamp of the relevant subtitle block.
+- Convert SRT timestamps to YouTube timestamp links using total seconds.
+- Use this exact timestamp URL pattern for this video: ${this.getTimestampUrlPattern()}
+- Citation format: '[HH:MM:SS](TIMESTAMP_URL)'.
+- Replace SECONDS with the total number of seconds; do not add another '?t=' or '&t='.
+- Cite only timestamps that directly support the answer.
+- If the user asks for a summary, key points, themes, arguments, or explanations, base them only on the transcript.
+- If the user asks something unrelated to the transcript, say that the question is not related to the video and ask whether they want an answer beyond the transcript.
+- Use internet search only when the user explicitly asks for it.
+- When using external information, clearly separate it from transcript-based information.
 `
+  }
+
+  private getTimestampUrlPattern(): string {
+    const hashIndex = this.videoUrl.indexOf('#')
+    const hasHash = hashIndex !== -1
+    const urlWithoutHash = hasHash
+      ? this.videoUrl.slice(0, hashIndex)
+      : this.videoUrl
+    const hash = hasHash ? this.videoUrl.slice(hashIndex) : ''
+    const separator = urlWithoutHash.includes('?') ? '&' : '?'
+
+    return `${urlWithoutHash}${separator}t=SECONDS${hash}`
   }
 
   getMessages(): ChatMessage[] {
