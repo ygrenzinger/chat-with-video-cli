@@ -35,6 +35,7 @@ type DownloadSubtitleOutput = {
 }
 
 type InitializeChatServiceInput = {
+  url: string
   transcript: string
   chatServiceFactory: ChatServiceFactory
 }
@@ -68,7 +69,7 @@ export const chatWithVideoMachine = setup({
     }),
     initializeChatService: fromPromise<ChatService, InitializeChatServiceInput>(
       async ({ input }) => {
-        return input.chatServiceFactory(input.transcript)
+        return input.chatServiceFactory(input.url, input.transcript)
       }
     )
   }
@@ -142,6 +143,7 @@ export const chatWithVideoMachine = setup({
       invoke: {
         src: 'initializeChatService',
         input: ({ context }) => ({
+          url: context.url,
           transcript: context.transcript!,
           chatServiceFactory: context.chatServiceFactory
         }),

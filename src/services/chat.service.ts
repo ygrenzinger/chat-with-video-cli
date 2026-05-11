@@ -14,11 +14,17 @@ export type ChatMessage = {
 }
 
 export class ChatService {
+  private readonly videoUrl: string
   private readonly transcript: string
   private readonly modelConfig: ModelConfiguration
   private readonly messages: ChatMessage[] = []
 
-  constructor(transcript: string, modelConfig?: ModelConfiguration) {
+  constructor(
+    videoUrl: string,
+    transcript: string,
+    modelConfig?: ModelConfiguration
+  ) {
+    this.videoUrl = videoUrl
     this.transcript = transcript
     this.modelConfig = modelConfig || ModelSelectionService.selectModel()
   }
@@ -27,7 +33,11 @@ export class ChatService {
     return `
 You are a helpful AI that will help the user get detailed information about the transcript of this video <transcript>${this.transcript}</transcript>
 
+Video URL: <videoUrl>${this.videoUrl}</videoUrl>
+
 Mandatory rule: all the answers must be in markdown format.
+
+URL formatting rule: when you include a URL in an answer, write the full absolute URL as plain text or as a Markdown autolink, for example <https://example.com>. Do not use labeled Markdown links like [example](https://example.com), because the terminal renderer displays those as "example (https://example.com)" instead of a directly visible URL.
 
 Important guidelines:
 - Answer the user's questions in a way that is relevant to the transcript.

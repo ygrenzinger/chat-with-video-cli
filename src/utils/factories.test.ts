@@ -14,8 +14,9 @@ describe('factories', () => {
 
   describe('createChatService', () => {
     it('should create a ChatService instance with transcript', async () => {
+      const videoUrl = 'https://youtube.com/watch?v=test'
       const transcript = 'Test transcript'
-      const chatService = await createChatService(transcript)
+      const chatService = await createChatService(videoUrl, transcript)
 
       expect(chatService).toBeInstanceOf(ChatService)
     })
@@ -148,8 +149,9 @@ describe('factories', () => {
       const config = mergeConfig()
 
       // Test that the factories can create instances
+      const videoUrl = 'https://youtube.com/watch?v=test'
       const transcript = 'Test transcript'
-      const chatService = await config.chatServiceFactory(transcript)
+      const chatService = await config.chatServiceFactory(videoUrl, transcript)
       const messageHandler = config.messageHandlerFactory()
 
       expect(chatService).toBeInstanceOf(ChatService)
@@ -165,12 +167,18 @@ describe('factories', () => {
         messageHandlerFactory: vi.fn().mockReturnValue(mockMessageHandler)
       })
 
-      const chatService = await customConfig.chatServiceFactory('test')
+      const chatService = await customConfig.chatServiceFactory(
+        'https://youtube.com/watch?v=test',
+        'test'
+      )
       const messageHandler = customConfig.messageHandlerFactory()
 
       expect(chatService).toBe(mockChatService)
       expect(messageHandler).toBe(mockMessageHandler)
-      expect(customConfig.chatServiceFactory).toHaveBeenCalledWith('test')
+      expect(customConfig.chatServiceFactory).toHaveBeenCalledWith(
+        'https://youtube.com/watch?v=test',
+        'test'
+      )
       expect(customConfig.messageHandlerFactory).toHaveBeenCalled()
     })
   })

@@ -9,15 +9,17 @@ export type TimeoutHandler = (callback: () => void, delay: number) => void
  * Factory function for creating ChatService instances
  */
 export type ChatServiceFactory = (
+  videoUrl: string,
   transcript: string,
   modelConfig?: ModelConfiguration
 ) => Promise<ChatService>
 
 export const createChatService: ChatServiceFactory = async (
+  videoUrl: string,
   transcript: string,
   modelConfig?: ModelConfiguration
 ) => {
-  return new ChatService(transcript, modelConfig)
+  return new ChatService(videoUrl, transcript, modelConfig)
 }
 
 /**

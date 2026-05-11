@@ -141,9 +141,9 @@ describe('ChatWithVideo', () => {
     )
 
     const configuredFactory = mockUseChatMachine.mock.calls[0][2]
-    await configuredFactory('transcript')
+    await configuredFactory(url, 'transcript')
 
-    expect(baseFactory).toHaveBeenCalledWith('transcript', modelConfig)
+    expect(baseFactory).toHaveBeenCalledWith(url, 'transcript', modelConfig)
   })
 
   it('configures useMessageHandling from machine context', () => {

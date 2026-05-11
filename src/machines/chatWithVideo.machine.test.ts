@@ -84,6 +84,7 @@ describe('chatWithVideoMachine', () => {
     expect(actor.getSnapshot().context.transcript).toBe('transcript')
     expect(actor.getSnapshot().context.videoName).toBe('video')
     expect(actor.getSnapshot().context.chatService).toBe(mockChatService)
+    expect(mockChatServiceFactory).toHaveBeenCalledWith(url, 'transcript')
   })
 
   it('enters downloadError and retries back to selectingSubtitle', async () => {

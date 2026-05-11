@@ -36,8 +36,9 @@ describe('Chat Service', () => {
   })
 
   it('should generate system prompt with transcript embedded', () => {
+    const videoUrl = 'https://youtube.com/watch?v=test'
     const transcript = 'Video about TypeScript testing'
-    const chatService = new ChatService(transcript, mockModelConfig)
+    const chatService = new ChatService(videoUrl, transcript, mockModelConfig)
 
     const systemPrompt = chatService.getSystemPrompt()
 
@@ -45,19 +46,28 @@ describe('Chat Service', () => {
     expect(systemPrompt).toContain(
       '<transcript>Video about TypeScript testing</transcript>'
     )
+    expect(systemPrompt).toContain(
+      '<videoUrl>https://youtube.com/watch?v=test</videoUrl>'
+    )
     expect(systemPrompt).toContain('markdown format')
+    expect(systemPrompt).toContain(
+      'write the full absolute URL as plain text or as a Markdown autolink'
+    )
+    expect(systemPrompt).toContain('Do not use labeled Markdown links')
   })
 
   it('should use ModelSelectionService when no model config provided', () => {
+    const videoUrl = 'https://youtube.com/watch?v=test'
     const transcript = 'Test transcript'
-    new ChatService(transcript)
+    new ChatService(videoUrl, transcript)
 
     expect(ModelSelectionService.selectModel).toHaveBeenCalledOnce()
   })
 
   it('should not call ModelSelectionService when model config is provided', () => {
+    const videoUrl = 'https://youtube.com/watch?v=test'
     const transcript = 'Test transcript'
-    new ChatService(transcript, mockModelConfig)
+    new ChatService(videoUrl, transcript, mockModelConfig)
 
     expect(ModelSelectionService.selectModel).not.toHaveBeenCalled()
   })
@@ -73,7 +83,11 @@ describe('Chat Service', () => {
       textStream: mockTextStream()
     } as any)
 
-    const chatService = new ChatService('Test transcript', mockModelConfig)
+    const chatService = new ChatService(
+      'https://youtube.com/watch?v=test',
+      'Test transcript',
+      mockModelConfig
+    )
 
     for await (const _ of chatService.sendMessage('First question')) {
       break
@@ -98,7 +112,11 @@ describe('Chat Service', () => {
       textStream: mockTextStream()
     } as any)
 
-    const chatService = new ChatService('Test transcript', mockModelConfig)
+    const chatService = new ChatService(
+      'https://youtube.com/watch?v=test',
+      'Test transcript',
+      mockModelConfig
+    )
     const testMessage = 'What is this about?'
 
     const response = chatService.sendMessage(testMessage)

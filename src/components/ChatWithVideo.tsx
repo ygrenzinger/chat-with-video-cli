@@ -31,8 +31,12 @@ export const ChatWithVideo: React.FC<ChatWithVideoProps> = ({
 }) => {
   const mergedConfig = mergeConfig(config)
 
-  const createConfiguredChatService = (transcript: string) =>
-    mergedConfig.chatServiceFactory(transcript, mergedConfig.modelConfig)
+  const createConfiguredChatService = (videoUrl: string, transcript: string) =>
+    mergedConfig.chatServiceFactory(
+      videoUrl,
+      transcript,
+      mergedConfig.modelConfig
+    )
 
   const { state, send, context } = useChatMachine(
     url,

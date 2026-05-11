@@ -66,6 +66,7 @@ describe('useChatMachine', () => {
 
     expect(result.current.context.transcript).toBe('transcript')
     expect(result.current.context.chatService).toBe(chatService)
+    expect(chatServiceFactory).toHaveBeenCalledWith(url, 'transcript')
   })
 
   it('exposes download error state and supports retry', async () => {
