@@ -74,15 +74,13 @@ jobs:
           git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
           git tag "v${{ steps.version.outputs.new_version }}"
 
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
+
       - name: Push changes
         run: |
           git push origin main
           git push origin "v${{ steps.version.outputs.new_version }}"
-
-      - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
