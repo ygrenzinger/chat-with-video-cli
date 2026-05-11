@@ -2,6 +2,10 @@
   "name": "chat-with-video",
   "version": "1.7.0",
   "description": "Chat with YouTube videos using AI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ygrenzinger/chat-with-video-cli.git"
+  },
   "type": "module",
   "main": "dist/chat-with-video.js",
   "bin": {
