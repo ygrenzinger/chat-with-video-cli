@@ -50,3 +50,54 @@ export function extractYouTubeVideoId(url: string): string | null {
 export function isValidYouTubeUrl(url: string): boolean {
   return extractYouTubeVideoId(url) !== null
 }
+
+export function createYouTubeTimestampUrl(
+  videoUrl: string,
+  seconds: number
+): string | null {
+  const videoId = extractYouTubeVideoId(videoUrl)
+
+  if (!videoId) return null
+
+  return `https://youtu.be/${videoId}?t=${Math.floor(seconds)}`
+}
+
+export function addYouTubeTimestampLinks(
+  markdown: string,
+  videoUrl: string
+): string {
+  const videoId = extractYouTubeVideoId(videoUrl)
+
+  if (!videoId) return markdown
+
+  return markdown.replace(
+    /\((\d{1,2}:\d{2}(?::\d{2})?)\)/g,
+    (match, timestamp: string, offset: number) => {
+      const seconds = parseDisplayTimestamp(timestamp)
+
+      if (seconds === null) return match
+
+      const followingText = markdown.slice(offset + match.length).trimStart()
+      if (followingText.startsWith('https://')) return match
+
+      return `${match} https://youtu.be/${videoId}?t=${seconds}`
+    }
+  )
+}
+
+function parseDisplayTimestamp(timestamp: string): number | null {
+  const parts = timestamp.split(':').map(part => Number.parseInt(part, 10))
+
+  if (parts.some(Number.isNaN)) return null
+
+  const [first, second, third] = parts
+
+  if (third === undefined) {
+    if (second >= 60) return null
+    return first * 60 + second
+  }
+
+  if (second >= 60 || third >= 60) return null
+
+  return first * 3600 + second * 60 + third
+}

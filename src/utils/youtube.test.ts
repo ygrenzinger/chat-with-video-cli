@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { extractYouTubeVideoId, isValidYouTubeUrl } from './youtube'
+import {
+  addYouTubeTimestampLinks,
+  createYouTubeTimestampUrl,
+  extractYouTubeVideoId,
+  isValidYouTubeUrl
+} from './youtube'
 
 describe('isValidYouTubeUrl', () => {
   it('should return true for valid YouTube URLs with https', () => {
@@ -110,5 +115,57 @@ describe('isValidYouTubeUrl', () => {
     expect(
       extractYouTubeVideoId('https://www.youtube.com/embed/dQw4w9WgXcQ')
     ).toBe('dQw4w9WgXcQ')
+  })
+})
+
+describe('createYouTubeTimestampUrl', () => {
+  it('should create short YouTube timestamp links from supported URLs', () => {
+    expect(
+      createYouTubeTimestampUrl(
+        'https://www.youtube.com/watch?v=RjfbvDXpFls',
+        938
+      )
+    ).toBe('https://youtu.be/RjfbvDXpFls?t=938')
+    expect(createYouTubeTimestampUrl('https://youtu.be/RjfbvDXpFls', 1344)).toBe(
+      'https://youtu.be/RjfbvDXpFls?t=1344'
+    )
+  })
+
+  it('should return null for unsupported video URLs', () => {
+    expect(createYouTubeTimestampUrl('https://example.com/video', 938)).toBeNull()
+  })
+})
+
+describe('addYouTubeTimestampLinks', () => {
+  const videoUrl = 'https://www.youtube.com/watch?v=RjfbvDXpFls'
+
+  it('should append a YouTube link next to parenthesized MM:SS timestamps', () => {
+    expect(
+      addYouTubeTimestampLinks(
+        '- How to know what is critical? You read the code. (22:24)',
+        videoUrl
+      )
+    ).toBe(
+      '- How to know what is critical? You read the code. (22:24) https://youtu.be/RjfbvDXpFls?t=1344'
+    )
+  })
+
+  it('should append links for HH:MM:SS timestamps', () => {
+    expect(addYouTubeTimestampLinks('Long video point (1:02:03)', videoUrl)).toBe(
+      'Long video point (1:02:03) https://youtu.be/RjfbvDXpFls?t=3723'
+    )
+  })
+
+  it('should not add duplicate links when a timestamp already has one', () => {
+    const markdown =
+      'Point (22:24) https://youtu.be/RjfbvDXpFls?t=1344 and another point'
+
+    expect(addYouTubeTimestampLinks(markdown, videoUrl)).toBe(markdown)
+  })
+
+  it('should ignore invalid timestamp values', () => {
+    expect(addYouTubeTimestampLinks('Invalid (22:99)', videoUrl)).toBe(
+      'Invalid (22:99)'
+    )
   })
 })

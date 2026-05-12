@@ -40,6 +40,7 @@ describe('MessageHandler', () => {
       sendMessage: vi.fn(),
       getMessages: vi.fn(),
       getSystemPrompt: vi.fn(),
+      getVideoUrl: vi.fn(() => 'https://www.youtube.com/watch?v=RjfbvDXpFls'),
       clearMessages: vi.fn()
     } as unknown as ChatService
     mockOnMessageUpdate = vi.fn()
@@ -98,6 +99,36 @@ describe('MessageHandler', () => {
 
       // Check that the final call has streamingComplete = true
       const finalCall = mockOnMessageUpdate.mock.calls[5][0]
+      expect(finalCall[1].streamingComplete).toBe(true)
+    })
+
+    it('should add YouTube timestamp links to displayed assistant messages', async () => {
+      const message = 'Summarize the video'
+
+      async function* mockStream() {
+        yield '- How to know what is critical? '
+        yield 'You read the code. (22:24)'
+      }
+
+      vi.mocked(mockChatService.sendMessage).mockReturnValue(mockStream())
+
+      await messageHandler.handleMessage(
+        message,
+        mockChatService,
+        transcript,
+        videoName,
+        currentMessages,
+        mockOnMessageUpdate,
+        mockOnStreamingUpdate
+      )
+
+      const finalCall =
+        mockOnMessageUpdate.mock.calls[
+          mockOnMessageUpdate.mock.calls.length - 1
+        ][0]
+      expect(finalCall[1].content).toBe(
+        '- How to know what is critical? You read the code. (22:24) https://youtu.be/RjfbvDXpFls?t=1344'
+      )
       expect(finalCall[1].streamingComplete).toBe(true)
     })
 

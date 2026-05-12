@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { ChatMessage, ChatService } from '../services/chat.service.js'
 import { parseCommand, getHelpText, type ChatCommand } from './chat-commands.js'
+import { addYouTubeTimestampLinks } from './youtube.js'
 import { copy } from 'copy-paste/promises.js'
 import { writeFileSync } from 'fs'
 
@@ -89,17 +90,25 @@ export class MessageHandler {
 
       for await (const textPart of chatService.sendMessage(query)) {
         assistantContent += textPart
+        const displayContent = this.formatAssistantContent(
+          assistantContent,
+          chatService
+        )
         const updatedMessagesWithStream = messagesWithAssistant.map(msg =>
           msg.id === assistantMessage.id
-            ? { ...msg, content: assistantContent }
+            ? { ...msg, content: displayContent }
             : msg
         )
         onMessageUpdate(updatedMessagesWithStream)
       }
 
+      const displayContent = this.formatAssistantContent(
+        assistantContent,
+        chatService
+      )
       const finalMessages = messagesWithAssistant.map(msg =>
         msg.id === assistantMessage.id
-          ? { ...msg, content: assistantContent, streamingComplete: true }
+          ? { ...msg, content: displayContent, streamingComplete: true }
           : msg
       )
       onMessageUpdate(finalMessages)
@@ -127,6 +136,13 @@ export class MessageHandler {
     } finally {
       onStreamingUpdate(false)
     }
+  }
+
+  private formatAssistantContent(
+    content: string,
+    chatService: ChatService
+  ): string {
+    return addYouTubeTimestampLinks(content, chatService.getVideoUrl())
   }
 
   private async handleCommand(

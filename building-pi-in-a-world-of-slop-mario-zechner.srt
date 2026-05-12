@@ -1,0 +1,1155 @@
+1
+00:00:15,500 --> 00:00:20,800
+I'm Mario, I built Pi in a world of slop, and this is a tragedy in three acts.
+
+2
+00:00:21,200 --> 00:00:28,800
+Just to talk about this real quick, a bunch of people on the internet gave me money for ad space on my torso, and all of that goes to a charity, so yeah, thanks guys.
+
+3
+00:00:29,800 --> 00:00:31,400
+So, act one, building Pi.
+
+4
+00:00:31,600 --> 00:00:34,000
+In the beginning there was cloud code and it was good, right?
+
+5
+00:00:34,300 --> 00:00:39,000
+We all got basically catnipped by that thing and stopped sleeping.
+
+6
+00:00:40,600 --> 00:00:45,300
+A bunch of stuff before that, but Cloud Code was the one thing that kind of clicked with me the most.
+
+7
+00:00:45,800 --> 00:00:48,600
+And to preface all of this, I love the Cloud team.
+
+8
+00:00:48,700 --> 00:00:51,400
+They're brilliant people, talented, super high velocity.
+
+9
+00:00:51,400 --> 00:00:54,200
+So they also created the entire game.
+
+10
+00:00:55,000 --> 00:00:55,900
+Major props to them.
+
+11
+00:00:56,000 --> 00:00:56,900
+So this is not a roast.
+
+12
+00:00:56,900 --> 00:01:01,200
+This is just me, an old man, telling you why I stopped using Cloud Code and built my own thing.
+
+13
+00:01:02,700 --> 00:01:10,900
+In 2025, I started using Cloud Code in about April, I think, thanks to Peter, because he told us the agents are working now.
+
+14
+00:01:12,200 --> 00:01:15,100
+And back then, it was simple and predictable and fit my workflow.
+
+15
+00:01:15,200 --> 00:01:15,900
+But eventually,
+
+16
+00:01:17,000 --> 00:01:24,300
+The token madness got hold of them, I think, and the team got bigger and they started dogfooding that stuff and built a lot of features.
+
+17
+00:01:24,400 --> 00:01:27,300
+A lot of features I don't need, which is fine, I can just ignore them.
+
+18
+00:01:27,600 --> 00:01:30,000
+But with velocity and more features come...
+
+19
+00:01:30,700 --> 00:01:36,800
+And that's bad because I used to work at construction sites and if my hammer breaks every day, I'm getting really mad.
+
+20
+00:01:36,900 --> 00:01:40,000
+And if my development tools break every day, I'm also getting mad.
+
+21
+00:01:40,800 --> 00:01:41,500
+So there was this.
+
+22
+00:01:41,800 --> 00:01:42,800
+It's just a running gag.
+
+23
+00:01:42,800 --> 00:01:45,400
+And here's Tarek telling us that Cloud Code is now a game engine.
+
+24
+00:01:45,400 --> 00:01:47,900
+And here's Mitchell from Ghosty telling us, no, it's not.
+
+25
+00:01:48,400 --> 00:01:51,100
+And eventually they fixed the flicker, but then other stuff broke.
+
+26
+00:01:51,100 --> 00:01:54,800
+And I think they're now in the third iteration of a 2E renderer.
+
+27
+00:01:55,400 --> 00:01:57,000
+Yeah, but that's just a symptom.
+
+28
+00:01:57,100 --> 00:02:00,200
+The real problem is that my context wasn't my context.
+
+29
+00:02:00,500 --> 00:02:02,900
+Cloud code is the thing that controls my context.
+
+30
+00:02:03,200 --> 00:02:07,500
+And behind my back, cloud code does things to the context.
+
+31
+00:02:07,800 --> 00:02:11,800
+So you have the system problem, which changes on every release, including the tool definitions.
+
+32
+00:02:11,800 --> 00:02:14,200
+They would remove tools, modify tools.
+
+33
+00:02:14,800 --> 00:02:15,300
+It's not good.
+
+34
+00:02:15,900 --> 00:02:22,500
+They would insert system reminders in the most inopportune place in your context, telling the model, here's some information.
+
+35
+00:02:22,600 --> 00:02:25,400
+It may or may not be relevant to what you're doing.
+
+36
+00:02:26,200 --> 00:02:28,600
+It actually says it may or may not be relevant what you're doing.
+
+37
+00:02:29,000 --> 00:02:31,800
+And that kind of confused the model, and that kind of broke my workflows.
+
+38
+00:02:34,100 --> 00:02:40,200
+On top of all that, there's zero observability because that's how the tool is constructed and I like knowing what my agents are doing.
+
+39
+00:02:40,600 --> 00:02:42,300
+There's zero model choice, which is obvious.
+
+40
+00:02:42,300 --> 00:02:46,900
+It's the native anthropic harness, so it makes sense for them to want you to use cloth, right?
+
+41
+00:02:47,800 --> 00:02:56,300
+And there's almost zero extensibility, and some of you might have written some hooks for Cloud Code, but I'm telling you the number of hooks and the depth of those hooks is very shallow.
+
+42
+00:02:57,200 --> 00:03:00,000
+And every time a hook triggers, what actually happens is a new problem.
+
+43
+00:03:00,000 --> 00:03:06,300
+processes get spawned, basically the command you specified for the hook to be executed, and I don't find that specifically efficient.
+
+44
+00:03:06,800 --> 00:03:16,600
+So I took a step back and looked around for alternatives, and I'd like to especially call out AMP and FactoryDroid, the Porsche and Lamborghini of coding agent harnesses.
+
+45
+00:03:16,600 --> 00:03:18,200
+So if you can afford them, please use them.
+
+46
+00:03:18,200 --> 00:03:19,000
+They're at the frontier.
+
+47
+00:03:19,000 --> 00:03:21,100
+They're really good, and the teams are fantastic.
+
+48
+00:03:21,600 --> 00:03:22,800
+And there's a bunch of other options.
+
+49
+00:03:22,800 --> 00:03:26,900
+And I have history in OSS, so naturally I kind of gravitated towards open code.
+
+50
+00:03:27,300 --> 00:03:35,600
+And again, brilliant team, super high execution velocity, and they don't sell you hype, they sell you tools that work for the most part.
+
+51
+00:03:36,400 --> 00:03:42,400
+I started looking under the hood of open code with respect to context handling as well, because that's the most important part for me.
+
+52
+00:03:42,400 --> 00:03:44,100
+And I found a bunch of things like...
+
+53
+00:03:44,500 --> 00:03:53,200
+Given some conditions, OpenCode would just prune tool output after a specific minimum amount of tokens.
+
+54
+00:03:53,600 --> 00:03:55,300
+And that basically lobotomizes the model.
+
+55
+00:03:56,500 --> 00:04:04,100
+There's also LSP server support, which means every time your model is calling the edit tool, OpenCode goes to the LSP server that's connected.
+
+56
+00:04:04,700 --> 00:04:06,000
+asks, are there any errors?
+
+57
+00:04:06,000 --> 00:04:09,500
+And if so, injects that as part of the edit tool result.
+
+58
+00:04:10,200 --> 00:04:13,300
+Which is bad, because think about how you edit code.
+
+59
+00:04:13,500 --> 00:04:18,000
+You're not writing a line of code, checking the errors, writing the next line, checking the errors.
+
+60
+00:04:18,000 --> 00:04:18,800
+You don't do that.
+
+61
+00:04:19,100 --> 00:04:21,100
+You finish your work, and then you check the errors.
+
+62
+00:04:21,500 --> 00:04:22,600
+This confuses the model.
+
+63
+00:04:23,100 --> 00:04:27,500
+There's a bunch of other things like storing individual messages of a session in a JSON file.
+
+64
+00:04:27,800 --> 00:04:29,900
+Each message is a JSON file on disk.
+
+65
+00:04:31,000 --> 00:04:42,100
+There was this, and this happens to all of us, no blame there, but it's not great if by default a server spins up, course headers are set in such a way that any website you open in your browser can now access your open code server.
+
+66
+00:04:44,500 --> 00:04:53,600
+And entirely unrelated to all of this, I started looking into benchmarks for coding agent harnesses and found Terminal Bench, which is a pretty good benchmark, all things considered.
+
+67
+00:04:54,300 --> 00:04:58,500
+And the funny part about it is that it's the most minimal kind of thing you can think of.
+
+68
+00:04:58,800 --> 00:05:05,700
+All it gives the model is a tool to send keystrokes to a TMAX session and read the output of that TMAX session.
+
+69
+00:05:06,100 --> 00:05:09,900
+There's no file tools, no subagents, none of that stuff.
+
+70
+00:05:10,600 --> 00:05:13,000
+And it's one of the best performing harnesses in the leaderboard.
+
+71
+00:05:13,600 --> 00:05:16,000
+Here's the leaderboard from December 2025.
+
+72
+00:05:16,900 --> 00:05:23,700
+Irrespective of model family, Terminus scores higher, mostly even higher than the native harness of that model.
+
+73
+00:05:24,200 --> 00:05:25,300
+So what does that tell us?
+
+74
+00:05:25,900 --> 00:05:32,600
+A form 2 thesis is, we are in the fuck around and find out phase of coding agents, and the current form is not their final form, right?
+
+75
+00:05:33,600 --> 00:05:37,400
+So, second thesis is we need better ways to fuck around.
+
+76
+00:05:37,500 --> 00:05:41,100
+And for me that means self-modifying malleable agents.
+
+77
+00:05:41,600 --> 00:05:46,400
+Things that the agent itself can modify and I can modify depending on my workflow.
+
+78
+00:05:46,900 --> 00:05:53,900
+So I stripped away all the things, built a minimal core, but made it super extensible and made it so that the agent can modify itself.
+
+79
+00:05:55,300 --> 00:05:56,400
+With some creature comforts.
+
+80
+00:05:56,600 --> 00:05:57,800
+It's not entirely bare bones.
+
+81
+00:05:58,400 --> 00:05:59,000
+So that's Pi.
+
+82
+00:05:59,200 --> 00:06:00,000
+It's an agent that
+
+83
+00:06:00,000 --> 00:06:02,100
+adapts to your workflow instead of the other way around.
+
+84
+00:06:02,700 --> 00:06:15,400
+It comes with four packages, an AI package, it's basically just an abstraction across providers and context handoff between providers, an agent core, which is just a while loop and a tool calling, bespoke to a framework.
+
+85
+00:06:15,500 --> 00:06:20,900
+I come out of game development, so I built a thing that actually doesn't flicker too much, and the coding agent itself.
+
+86
+00:06:21,100 --> 00:06:22,400
+Here's Pi's system prompt.
+
+87
+00:06:23,900 --> 00:06:24,300
+That's it.
+
+88
+00:06:25,400 --> 00:06:29,700
+Eventually, the industry created a new standard called skills, which is basically just markdown files.
+
+89
+00:06:30,200 --> 00:06:32,500
+So we added that as well, and that needs to go in a system prompt.
+
+90
+00:06:32,500 --> 00:06:35,600
+So begrudgingly, we had to add a couple more lines.
+
+91
+00:06:36,100 --> 00:06:39,600
+And finally, here's the magic that makes Py able to modify itself.
+
+92
+00:06:40,500 --> 00:06:47,300
+We shipped the documentation, which was handcrafted by me and an agent, and code examples of extensions.
+
+93
+00:06:48,100 --> 00:06:56,800
+And all we need to do for the agent to modify itself is tell it, here's the documentation, here's some code that shows you how to modify yourself by writing extensions.
+
+94
+00:06:57,900 --> 00:06:58,900
+It comes with four tools.
+
+95
+00:06:58,900 --> 00:06:59,500
+That's all it has.
+
+96
+00:06:59,600 --> 00:07:00,500
+Read, write, edit, bash.
+
+97
+00:07:00,700 --> 00:07:01,900
+Here's the tool definitions.
+
+98
+00:07:02,000 --> 00:07:04,000
+Don't read the text, just look at the size.
+
+99
+00:07:05,900 --> 00:07:06,200
+That's it.
+
+100
+00:07:06,900 --> 00:07:09,700
+Here's what happens when you start a new session in one of these tools.
+
+101
+00:07:11,500 --> 00:07:20,800
+So the thing is, the models are actually reinforcement trained up the wazoo, so they know what a coding agent is, because a coding agent harness is basically what they're being trained when they are post-trained.
+
+102
+00:07:21,300 --> 00:07:24,300
+You don't need 10,000 tokens to tell them you're a coding agent.
+
+103
+00:07:24,500 --> 00:07:26,700
+They know, because they are coding agents now.
+
+104
+00:07:27,900 --> 00:07:30,400
+Pi is also a yellow by default because my security
+
+105
+00:07:30,000 --> 00:07:40,900
+Security needs are different than yours, and I don't think a little dialogue that pops up every time you call Bash asking you to approve is a smart security mechanism.
+
+106
+00:07:41,200 --> 00:07:48,100
+So instead, I give you so much rope that you can build anything that's fit for your specific security needs.
+
+107
+00:07:48,900 --> 00:07:50,400
+There's also stuff that's not built in.
+
+108
+00:07:51,500 --> 00:07:54,600
+I'm a heathen, because this is how I do it.
+
+109
+00:07:55,800 --> 00:08:01,600
+But if you don't like that, then you just ask Pi to build you sub-agent support on plan mode or MCP support, whatever you need.
+
+110
+00:08:02,900 --> 00:08:07,300
+Extensibility comes with a bunch of table stakes, and then with the extensions itself.
+
+111
+00:08:07,400 --> 00:08:09,700
+And extensions in Pi are just TypeScript modules.
+
+112
+00:08:10,100 --> 00:08:12,100
+In the simplest case, a TypeScript file on disk.
+
+113
+00:08:12,500 --> 00:08:13,700
+You point Pi at that.
+
+114
+00:08:14,100 --> 00:08:16,200
+Here's an extension loaded as part of the harness.
+
+115
+00:08:17,000 --> 00:08:25,400
+And with that, you get basically an extension API that lets you hook into everything and define stuff for the harness to expose to the model.
+
+116
+00:08:25,700 --> 00:08:28,400
+And that includes tools, slash command shortcuts.
+
+117
+00:08:28,700 --> 00:08:34,300
+You can listen in on any kind of event and react and then save state in the session.
+
+118
+00:08:36,100 --> 00:08:43,100
+Optionally provided to the agent as well or stored there for tools that analyze sessions as part of the organizational workflows.
+
+119
+00:08:43,500 --> 00:08:46,900
+You can do custom compaction, custom providers, and you have full control over the tools.
+
+120
+00:08:47,000 --> 00:08:48,500
+So you can modify everything in Py.
+
+121
+00:08:49,400 --> 00:08:59,400
+And you can then bundle all of that up and put it on NPM or on GitHub because I think we don't need to reinvent another bunch of silos called marketplaces.
+
+122
+00:09:00,000 --> 00:09:01,900
+They have package managers.
+
+123
+00:09:02,900 --> 00:09:04,100
+And all of that hot reloads.
+
+124
+00:09:04,200 --> 00:09:16,600
+So if you develop an extension for Pi, you do so in the session, and you hot reload the changes and see the effects of that immediately, which is very great, and it's also game development thingies.
+
+125
+00:09:16,900 --> 00:09:18,600
+In game development, you want high...
+
+126
+00:09:18,900 --> 00:09:21,100
+Very low iteration speeds.
+
+127
+00:09:21,500 --> 00:09:22,100
+And that's great.
+
+128
+00:09:22,600 --> 00:09:23,600
+So a couple of examples.
+
+129
+00:09:24,100 --> 00:09:29,100
+Cloud or Anthropic ships the slash by the way, which lets you talk to the agent while it goes on its main quest.
+
+130
+00:09:29,500 --> 00:09:35,000
+I posted this little prompt on Twitter, jokingly, and somebody built it in five minutes with more features.
+
+131
+00:09:35,300 --> 00:09:37,400
+And it didn't have to fork or clone Pi.
+
+132
+00:09:37,500 --> 00:09:39,100
+It just let the agent write.
+
+133
+00:09:39,500 --> 00:09:41,100
+The extension based on the prompt.
+
+134
+00:09:42,100 --> 00:09:45,100
+Here's Nico, he's one of the most prolific extension writers.
+
+135
+00:09:45,200 --> 00:09:46,900
+I don't know what the fuck is going on here.
+
+136
+00:09:47,000 --> 00:09:50,000
+It's a chat room for all of his Pi agents and they talk with each other.
+
+137
+00:09:50,000 --> 00:09:53,000
+I would never use this, but all of this is custom, including the UI.
+
+138
+00:09:53,700 --> 00:09:55,100
+Or you can play NES games.
+
+139
+00:09:55,800 --> 00:09:56,700
+Or you can play Doom.
+
+140
+00:09:58,700 --> 00:10:01,000
+And there's a bunch of other examples I'm not going to talk about.
+
+141
+00:10:01,200 --> 00:10:02,600
+So how do you build a Py extension?
+
+142
+00:10:02,600 --> 00:10:03,100
+You don't.
+
+143
+00:10:03,300 --> 00:10:09,600
+You tell Py to build it for you based on your specifications, and then you just iterate with it on that and hot reload during the session.
+
+144
+00:10:10,400 --> 00:10:11,800
+I'm going to skip that example as well.
+
+145
+00:10:12,000 --> 00:10:16,400
+And if you don't like building things yourself, and I hope you do like building things yourself, but if you don't,
+
+146
+00:10:17,300 --> 00:10:24,300
+You can look on MPM or our little search interface on top of MPM to find packages for subagents, MCP, and so on.
+
+147
+00:10:24,400 --> 00:10:25,400
+So does it actually work?
+
+148
+00:10:25,700 --> 00:10:29,900
+Well, here's the terminal bench leaderboard from October before Pi had compaction.
+
+149
+00:10:30,000 --> 00:10:31,900
+I added that for Peter's claw thingy.
+
+150
+00:10:32,500 --> 00:10:33,500
+It scored sixth place.
+
+151
+00:10:35,700 --> 00:10:37,100
+But none of this is actually about Pi.
+
+152
+00:10:38,800 --> 00:10:41,300
+I basically want you to retake control of your tools and workflows.
+
+153
+00:10:41,400 --> 00:10:42,100
+So build your own.
+
+154
+00:10:43,200 --> 00:10:46,300
+And if you want to know more about Pi and OpenClaw, go to this talk, please.
+
+155
+00:10:46,600 --> 00:10:48,100
+Yeah, and then eventually Peter happened.
+
+156
+00:10:48,400 --> 00:10:57,300
+He put Pi inside of OpenClaw, so it's a Gentic core, which meant my open source project became the target of a lot of OpenClaw instances, unbeknownst to their users.
+
+157
+00:10:57,800 --> 00:10:59,900
+So this is Act 2, OSS in the Age of Clankers.
+
+158
+00:11:00,400 --> 00:11:01,500
+Clankers are destroying OSS.
+
+159
+00:11:01,600 --> 00:11:02,300
+Here's Teal Draw.
+
+160
+00:11:02,500 --> 00:11:04,400
+They closed down the issue on pull request tracker.
+
+161
+00:11:04,800 --> 00:11:07,100
+Here's OpenClaw's trackers.
+
+162
+00:11:07,500 --> 00:11:08,000
+Here's mine.
+
+163
+00:11:08,300 --> 00:11:11,000
+Half of that is OpenClaw instances who post garbage.
+
+164
+00:11:11,900 --> 00:11:13,600
+So I started to rage against the clankers.
+
+165
+00:11:15,300 --> 00:11:23,500
+If you send a pull request, it gets autoclosed with a comment that asks you to please write a nice issue in your human voice no longer than a screen worth of text.
+
+166
+00:11:23,900 --> 00:11:30,900
+And if I see that, I write, looks good to me, and your account name gets put in a file in the repository, and the next time you send a pull request, it's let through.
+
+167
+00:11:31,600 --> 00:11:33,800
+Clankers don't read that comment.
+
+168
+00:11:33,800 --> 00:11:35,800
+They don't go back once they've posted a pull request.
+
+169
+00:11:35,900 --> 00:11:36,900
+So that's a perfect filter.
+
+170
+00:11:37,700 --> 00:11:39,300
+Mitchell eventually turned it into Vouch.
+
+171
+00:11:39,800 --> 00:11:40,500
+Here's a clanker.
+
+172
+00:11:41,100 --> 00:11:42,000
+I also labeled them.
+
+173
+00:11:42,100 --> 00:11:45,900
+If you had interactions with OpenClaw, your issues get deprioritized.
+
+174
+00:11:46,200 --> 00:11:52,700
+I also built tools where I embed issues and pull request texts into 3D space, so I see clusters of issues.
+
+175
+00:11:53,400 --> 00:11:55,000
+I also invented OSS vacation.
+
+176
+00:11:55,000 --> 00:11:58,200
+I just close the tracker whenever I want, so I have my life back.
+
+177
+00:11:59,000 --> 00:11:59,700
+So does this work?
+
+178
+00:11:59,800 --> 00:12:00,000
+Yes.
+
+179
+00:12:00,200 --> 00:12:00,500
+Sort of.
+
+180
+00:12:02,800 --> 00:12:05,100
+Which leads me to act three, slow the fuck down.
+
+181
+00:12:05,900 --> 00:12:06,900
+Everything's broken.
+
+182
+00:12:09,100 --> 00:12:12,600
+And then there's people that say, our product's been 100% built by agents.
+
+183
+00:12:12,700 --> 00:12:13,200
+Yes, we know.
+
+184
+00:12:13,200 --> 00:12:14,200
+It fucking sucks now.
+
+185
+00:12:14,300 --> 00:12:15,200
+Congratulations.
+
+186
+00:12:22,800 --> 00:12:26,200
+And I'm hearing this from my peers, and this is entirely unhealthy.
+
+187
+00:12:27,700 --> 00:12:30,900
+So here's how we should not work with agents and why, at least in my opinion.
+
+188
+00:12:31,200 --> 00:12:39,600
+I wrote this on my blog a while ago, but the basic gist is, we're having an army of agents, and you're using Beats, and you don't know that it's basically uninstallable malware.
+
+189
+00:12:39,800 --> 00:12:41,300
+And Anthropic built a C compiler.
+
+190
+00:12:41,400 --> 00:12:43,100
+It kind of works, but actually doesn't.
+
+191
+00:12:43,100 --> 00:12:45,300
+And we're hoping the next generation of models will fix it.
+
+192
+00:12:45,300 --> 00:12:48,400
+And here is Curso building a browser, and that's also super fucking broken.
+
+193
+00:12:48,900 --> 00:12:50,200
+But the next generation will fix it.
+
+194
+00:12:50,500 --> 00:12:51,700
+And SaaS is dead.
+
+195
+00:12:51,700 --> 00:12:52,900
+Software is solved in six months.
+
+196
+00:12:52,900 --> 00:12:55,900
+And my grandma just built herself a Spotify with her open claw.
+
+197
+00:12:57,000 --> 00:12:57,600
+Come on, people.
+
+198
+00:12:58,900 --> 00:13:05,800
+So agents are actually compounding boo-boos, which is my word for errors, with zero learning and no bottlenecks and delayed pain.
+
+199
+00:13:05,900 --> 00:13:07,000
+The delayed pain is for you.
+
+200
+00:13:08,000 --> 00:13:12,000
+Here's your code base on a human, on one agent, and 10 agents.
+
+201
+00:13:12,400 --> 00:13:14,100
+How much of the agent code can you review?
+
+202
+00:13:14,900 --> 00:13:18,500
+Here's the same code base, but expressed in number of boo-boos per day.
+
+203
+00:13:19,900 --> 00:13:21,800
+How much of those boo-boos do you think you'll find?
+
+204
+00:13:22,400 --> 00:13:24,300
+Then you say, oh, I have a review agent.
+
+205
+00:13:25,100 --> 00:13:27,500
+Let me introduce you to the wonderful world of the Ouroboros.
+
+206
+00:13:28,300 --> 00:13:28,900
+Doesn't work.
+
+207
+00:13:29,100 --> 00:13:30,100
+It catches some issues.
+
+208
+00:13:31,100 --> 00:13:33,400
+The problem is that agents and merchants have learned complexity.
+
+209
+00:13:33,700 --> 00:13:35,400
+Where did they learn that complexity from?
+
+210
+00:13:35,600 --> 00:13:36,300
+From the internet.
+
+211
+00:13:36,400 --> 00:13:37,200
+What's on the internet?
+
+212
+00:13:37,400 --> 00:13:38,600
+All our old garbage code.
+
+213
+00:13:39,000 --> 00:13:45,100
+There are some pearls on the internet, really well-designed systems, but 90% of code on the internet is our old garbage.
+
+214
+00:13:45,300 --> 00:13:46,600
+That's what the models learned from.
+
+215
+00:13:47,600 --> 00:13:58,100
+And every decision of an agent is local, especially if the code base is so big that it doesn't fit into its context, and if you let it go wild and add abstractions everywhere that are intertwined.
+
+216
+00:13:59,200 --> 00:14:03,700
+So that leads to lots of abstractions and duplication and backwards compatibility.
+
+217
+00:14:03,700 --> 00:14:05,900
+Who has seen that in the output of their agent?
+
+218
+00:14:06,000 --> 00:14:07,000
+It's fucking annoying.
+
+219
+00:14:07,400 --> 00:14:08,800
+Or defense in depth.
+
+220
+00:14:09,400 --> 00:14:14,800
+So yeah, you get enterprise-grade complexity within two weeks with just two humans and ten agents.
+
+221
+00:14:14,900 --> 00:14:15,800
+Congratulations.
+
+222
+00:14:16,800 --> 00:14:18,800
+And then you say, but my detailed spec.
+
+223
+00:14:19,000 --> 00:14:20,000
+Yes, sure.
+
+224
+00:14:20,200 --> 00:14:22,400
+You know what we call a sufficiently detailed spec?
+
+225
+00:14:23,300 --> 00:14:24,100
+It's a program.
+
+226
+00:14:26,000 --> 00:14:29,300
+So if you leave blanks in your spec, what do you think happens?
+
+227
+00:14:29,400 --> 00:14:31,100
+How does the model fill in the blanks?
+
+228
+00:14:31,200 --> 00:14:32,700
+And with what does it fill that in?
+
+229
+00:14:33,200 --> 00:14:38,300
+It fills it in with the garbage that it learned on the internet from our old code, which is garbage to mediocre.
+
+230
+00:14:39,200 --> 00:14:40,900
+And then you say, but humans also.
+
+231
+00:14:41,000 --> 00:14:44,800
+Yes, humans are horrible, fallible beings, but they can learn.
+
+232
+00:14:45,800 --> 00:14:46,800
+And they are bottlenecks.
+
+233
+00:14:46,800 --> 00:14:50,500
+There's only so many boo-boos they can add to your code base on a daily basis.
+
+234
+00:14:51,400 --> 00:14:56,100
+And humans feel pain, which is a very interesting property because humans hate pain.
+
+235
+00:14:56,200 --> 00:14:59,200
+And once there's too much pain, the human has a bunch of options.
+
+236
+00:14:59,200 --> 00:14:59,900
+It can...
+
+237
+00:15:00,200 --> 00:15:10,100
+quit their job, it can blame somebody else and make them fix it, or everybody bands together and starts refactoring the shit out of the garbage code base, right?
+
+238
+00:15:10,800 --> 00:15:14,100
+Agents will happily keep shitting into your code base.
+
+239
+00:15:16,200 --> 00:15:20,600
+And now your agents MD and super complex memory systems will not save you.
+
+240
+00:15:20,700 --> 00:15:22,200
+Agents don't learn the way we learn.
+
+241
+00:15:24,600 --> 00:15:26,400
+Those are my most beloved people.
+
+242
+00:15:26,700 --> 00:15:28,300
+I don't even read the code anymore.
+
+243
+00:15:28,800 --> 00:15:29,800
+Congratulations.
+
+244
+00:15:30,100 --> 00:15:33,300
+Something is broken and your users are screaming, so who are you going to call?
+
+245
+00:15:33,800 --> 00:15:35,800
+Not yourself, because you haven't read the code.
+
+246
+00:15:36,400 --> 00:15:46,000
+So you're relying on your agents, but they are now also overwhelmed because the code base is so humongous that there's absolutely zero chance they can get all the context they need to fix the issues.
+
+247
+00:15:46,500 --> 00:15:53,400
+And long context windows are a hack, as most of you will find out this year as everybody's switching to 1 million tokens context windows.
+
+248
+00:15:53,900 --> 00:15:55,600
+And agentic search is also failing.
+
+249
+00:15:57,000 --> 00:16:00,200
+So the agent patches locally and fucks shit up globally.
+
+250
+00:16:00,700 --> 00:16:03,000
+If you see this in your code base, you're fucked.
+
+251
+00:16:06,900 --> 00:16:11,300
+So you cannot trust your code base anymore and also not your test because your agent wrote your test, so good game.
+
+252
+00:16:11,900 --> 00:16:13,200
+So here's how I think we should work.
+
+253
+00:16:14,100 --> 00:16:16,500
+There's a bunch of properties for good agent tasks.
+
+254
+00:16:16,500 --> 00:16:18,300
+That means scope.
+
+255
+00:16:18,700 --> 00:16:24,900
+If you can scope it in such a way that the agent is guaranteed to find all the things it needs to find to do a good job, you're done.
+
+256
+00:16:25,200 --> 00:16:26,800
+That means modularize your code base.
+
+257
+00:16:27,100 --> 00:16:29,900
+If you can give it a function to evaluate how well it did the job,
+
+258
+00:16:30,300 --> 00:16:32,800
+Even better, hill climbing, all the research.
+
+259
+00:16:33,600 --> 00:16:35,700
+Anything non-mission critical, let it wipe.
+
+260
+00:16:36,100 --> 00:16:37,400
+Boring stuff, let it wipe.
+
+261
+00:16:37,800 --> 00:16:42,300
+Reproduction cases for user issues, which are usually only partial in information, perfect.
+
+262
+00:16:42,300 --> 00:16:44,300
+I don't spend any mornings anymore doing that.
+
+263
+00:16:44,600 --> 00:16:46,900
+Or if you don't have a human near you, rubber duck.
+
+264
+00:16:47,400 --> 00:16:49,900
+So lots of tasks you can use them for and save time.
+
+265
+00:16:50,800 --> 00:16:52,200
+At the end of that, you evaluate.
+
+266
+00:16:52,400 --> 00:16:56,000
+You take what's reasonable, most of it isn't, and then finalize.
+
+267
+00:16:56,900 --> 00:16:59,200
+My final slide, more or less, slow the fuck down.
+
+268
+00:17:00,400 --> 00:17:03,500
+Think about what you're building and why, and don't just build because your agent can do it now.
+
+269
+00:17:03,500 --> 00:17:05,100
+That's stupid.
+
+270
+00:17:06,100 --> 00:17:07,100
+Learn to say no.
+
+271
+00:17:07,100 --> 00:17:10,700
+This is your most valuable capability at the moment.
+
+272
+00:17:11,200 --> 00:17:12,900
+Fewer features, but the ones that matter.
+
+273
+00:17:13,100 --> 00:17:15,700
+And then use your agents to polish the shit out of that.
+
+274
+00:17:15,800 --> 00:17:21,000
+Enlighten your users, not your token maxing desires.
+
+275
+00:17:21,800 --> 00:17:24,700
+Cap the amount of generated code that you need to review.
+
+276
+00:17:25,900 --> 00:17:28,600
+And non-critical code, sure, wipe slop ahead.
+
+277
+00:17:29,000 --> 00:17:30,600
+Critical code, read every fucking line.
+
+278
+00:17:31,900 --> 00:17:34,200
+See the keynote after me for more info on that.
+
+279
+00:17:34,600 --> 00:17:35,900
+So how do you know what's critical?
+
+280
+00:17:36,200 --> 00:17:36,800
+Any guesses?
+
+281
+00:17:38,800 --> 00:17:40,700
+Well, you read the fucking code.
+
+282
+00:17:42,200 --> 00:17:43,900
+If you do anything important, write it by hand.
+
+283
+00:17:44,000 --> 00:17:52,000
+You can use a clanker to help you with that, but don't let it make the decisions for you, because we've learned all the decisions it makes are learned from the internet.
+
+284
+00:17:52,600 --> 00:17:58,200
+And that friction is the thing that builds the understanding of the system in your head, which is important.
+
+285
+00:17:58,900 --> 00:17:59,900
+And it's also where you're
+
+286
+00:18:00,000 --> 00:18:01,600
+You learn new things.
+
+287
+00:18:02,700 --> 00:18:04,700
+And all of this requires discipline and agency.
+
+288
+00:18:05,400 --> 00:18:07,200
+And all of this still requires humans.
+
+289
+00:18:07,900 --> 00:18:08,300
+Thank you.

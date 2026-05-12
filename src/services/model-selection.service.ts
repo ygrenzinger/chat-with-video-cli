@@ -31,7 +31,7 @@ export class ModelSelectionService {
   private static readonly MODEL_MAPPING = {
     mistral: 'mistral-small-latest',
     openai: 'gpt-4o-nano',
-    google: 'gemini-2.5-flash',
+    google: 'gemini-3-flash-preview',
     anthropic: 'claude-3-5-haiku-latest'
   } as const
 

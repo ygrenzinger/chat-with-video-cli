@@ -94,7 +94,7 @@ describe('ModelSelectionService', () => {
       )
 
       expect(config.provider).toBe('google')
-      expect(config.modelId).toBe('gemini-2.5-flash')
+      expect(config.modelId).toBe('gemini-3-flash-preview')
       expect(config.providerInstance).toBeDefined()
       expect(config.model).toBeDefined()
     })
@@ -148,7 +148,7 @@ describe('ModelSelectionService', () => {
       expect(models).toEqual({
         mistral: 'mistral-small-latest',
         openai: 'gpt-4o-nano',
-        google: 'gemini-2.5-flash',
+        google: 'gemini-3-flash-preview',
         anthropic: 'claude-3-5-haiku-latest'
       })
     })

@@ -50,11 +50,28 @@ describe('Chat Service', () => {
     )
     expect(systemPrompt).toContain('Answer in Markdown')
     expect(systemPrompt).toContain(
-      'Use this exact timestamp URL pattern for this video: https://youtube.com/watch?v=test&t=SECONDS'
+      'Format citations as (MM:SS), or (HH:MM:SS) for videos longer than one hour.'
     )
     expect(systemPrompt).toContain(
-      'Citation format: TIMESTAMP_URL as plain visible text, for example https://youtube.com/watch?v=test&t=42.'
+      'Do not create YouTube timestamp links yourself; the app adds those links after your response.'
     )
+    expect(systemPrompt).toContain(
+      'SRT cue numbers are not timestamps. Never use the cue number as the YouTube t= value.'
+    )
+    expect(systemPrompt).toContain(
+      'Citation format: (MM:SS) as plain visible text, for example (00:42).'
+    )
+    expect(systemPrompt).toContain(
+      'Keep each citation close to the specific claim it supports.'
+    )
+  })
+
+  it('should expose the source video URL for display post-processing', () => {
+    const videoUrl = 'https://youtube.com/watch?v=test'
+    const transcript = 'Test transcript'
+    const chatService = new ChatService(videoUrl, transcript, mockModelConfig)
+
+    expect(chatService.getVideoUrl()).toBe(videoUrl)
   })
 
   it('should use ModelSelectionService when no model config provided', () => {
