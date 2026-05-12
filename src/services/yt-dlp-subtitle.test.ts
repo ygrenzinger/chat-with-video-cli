@@ -152,6 +152,8 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
         '--sub-lang',
         'en-US',
         '--sub-format',
+        'srt/vtt/best',
+        '--convert-subs',
         'srt',
         '--skip-download',
         'https://youtube.com/watch?v=test'
@@ -183,10 +185,40 @@ fr       French                vtt, srt, ttml, srv3, srv2, srv1, json3`
         '--sub-lang',
         'fr-orig',
         '--sub-format',
+        'srt/vtt/best',
+        '--convert-subs',
         'srt',
         '--skip-download',
         'https://youtube.com/watch?v=test'
       ])
+    })
+
+    it('should return converted SRT path when yt-dlp downloads VTT first', async () => {
+      mockExecFileAsync.mockResolvedValue({
+        stdout:
+          '[download] Destination: test.en.vtt\n[SubtitlesConvertor] Converting subtitles\nDeleting original file test.en.vtt (pass -k to keep)',
+        stderr: ''
+      })
+
+      const subtitle = {
+        code: 'en',
+        name: 'English',
+        type: 'auto' as const
+      }
+
+      const result = await service.downloadSubtitle(
+        'https://youtube.com/watch?v=test',
+        subtitle
+      )
+
+      expect(result).toEqual({
+        success: true,
+        filePath: 'test.en.srt'
+      })
+      expect(mockExecFileAsync).toHaveBeenCalledWith(
+        'yt-dlp',
+        expect.arrayContaining(['--convert-subs', 'srt'])
+      )
     })
 
     it('should handle download errors', async () => {

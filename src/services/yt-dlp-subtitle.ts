@@ -84,6 +84,8 @@ export class YtdlpSubtitleService implements SubtitleService {
               '--sub-lang',
               subtitle.code,
               '--sub-format',
+              'srt/vtt/best',
+              '--convert-subs',
               'srt',
               '--skip-download',
               url
@@ -93,6 +95,8 @@ export class YtdlpSubtitleService implements SubtitleService {
               '--sub-lang',
               subtitle.code,
               '--sub-format',
+              'srt/vtt/best',
+              '--convert-subs',
               'srt',
               '--skip-download',
               url
@@ -106,6 +110,14 @@ export class YtdlpSubtitleService implements SubtitleService {
         return {
           success: true,
           filePath: srtMatch[1]
+        }
+      }
+
+      const convertedSrtPath = this.extractConvertedSrtPath(output.stdout)
+      if (convertedSrtPath) {
+        return {
+          success: true,
+          filePath: convertedSrtPath
         }
       }
 
@@ -202,5 +214,19 @@ export class YtdlpSubtitleService implements SubtitleService {
     }
 
     return languages
+  }
+
+  private extractConvertedSrtPath(output: string): string | null {
+    if (!output.includes('[SubtitlesConvertor]')) {
+      return null
+    }
+
+    const destinationMatch = output.match(/^\[download] Destination: (.+)$/m)
+    const downloadedPath = destinationMatch?.[1]
+    if (!downloadedPath) {
+      return null
+    }
+
+    return downloadedPath.replace(/\.[^./\\]+$/, '.srt')
   }
 }
