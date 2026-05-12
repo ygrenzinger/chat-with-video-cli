@@ -14,7 +14,7 @@ export const MarkdownText: React.FC<MarkdownTextProps> = ({
   const rendered = renderMarkdown(children, {
     width: Math.max(width - 4, 40),
     wrap: true,
-    hyperlinks: true,
+    hyperlinks: false,
     codeBox: true,
     tableBorder: 'unicode'
   })

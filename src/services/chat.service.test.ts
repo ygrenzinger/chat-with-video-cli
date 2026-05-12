@@ -52,6 +52,9 @@ describe('Chat Service', () => {
     expect(systemPrompt).toContain(
       'Use this exact timestamp URL pattern for this video: https://youtube.com/watch?v=test&t=SECONDS'
     )
+    expect(systemPrompt).toContain(
+      'Citation format: TIMESTAMP_URL as plain visible text, for example https://youtube.com/watch?v=test&t=42.'
+    )
   })
 
   it('should use ModelSelectionService when no model config provided', () => {

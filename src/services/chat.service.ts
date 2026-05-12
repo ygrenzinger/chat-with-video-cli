@@ -51,7 +51,7 @@ Rules:
 - When citing transcript information, use the SRT start timestamp of the relevant subtitle block.
 - Convert SRT timestamps to YouTube timestamp links using total seconds.
 - Use this exact timestamp URL pattern for this video: ${this.getTimestampUrlPattern()}
-- Citation format: '[HH:MM:SS](TIMESTAMP_URL)'.
+- Citation format: TIMESTAMP_URL as plain visible text, for example ${this.getExampleTimestampUrl()}.
 - Replace SECONDS with the total number of seconds; do not add another '?t=' or '&t='.
 - Cite only timestamps that directly support the answer.
 - If the user asks for a summary, key points, themes, arguments, or explanations, base them only on the transcript.
@@ -62,6 +62,14 @@ Rules:
   }
 
   private getTimestampUrlPattern(): string {
+    return this.getTimestampUrl('SECONDS')
+  }
+
+  private getExampleTimestampUrl(): string {
+    return this.getTimestampUrl('42')
+  }
+
+  private getTimestampUrl(seconds: string): string {
     const hashIndex = this.videoUrl.indexOf('#')
     const hasHash = hashIndex !== -1
     const urlWithoutHash = hasHash
@@ -70,7 +78,7 @@ Rules:
     const hash = hasHash ? this.videoUrl.slice(hashIndex) : ''
     const separator = urlWithoutHash.includes('?') ? '&' : '?'
 
-    return `${urlWithoutHash}${separator}t=SECONDS${hash}`
+    return `${urlWithoutHash}${separator}t=${seconds}${hash}`
   }
 
   getMessages(): ChatMessage[] {

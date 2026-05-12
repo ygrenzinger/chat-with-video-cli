@@ -9,17 +9,17 @@ vi.mock('markdansi', () => ({
 }))
 
 describe('MarkdownText', () => {
-  it('forces terminal hyperlinks for markdown links', () => {
+  it('does not emit OSC 8 terminal hyperlinks', () => {
     render(
       <MarkdownText>
-        {'[00:00:03](https://youtube.com/watch?v=test&t=3)'}
+        {'https://youtube.com/watch?v=abc&t=42'}
       </MarkdownText>
     )
 
     expect(renderMarkdown).toHaveBeenCalledWith(
-      '[00:00:03](https://youtube.com/watch?v=test&t=3)',
+      'https://youtube.com/watch?v=abc&t=42',
       expect.objectContaining({
-        hyperlinks: true
+        hyperlinks: false
       })
     )
   })
