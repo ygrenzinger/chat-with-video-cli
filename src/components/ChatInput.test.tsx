@@ -534,6 +534,26 @@ describe('ChatInput', () => {
       expect(output).toContain('lear')
     })
 
+    it('should move cursor to end after selecting suggestion with Tab key', async () => {
+      const { lastFrame, stdin } = render(
+        <ChatInput onSubmit={mockOnSubmit} disabled={false} />
+      )
+
+      for (const ch of '/c') {
+        stdin.write(ch)
+        await flush()
+      }
+
+      stdin.write('\t')
+      await flush()
+      stdin.write('x')
+      await flush()
+
+      const output = lastFrame()
+      expect(output).toContain('/clearx')
+      expect(output).not.toContain('/cxlear')
+    })
+
     it('should select suggestion with Enter key', async () => {
       const { lastFrame, stdin } = render(
         <ChatInput onSubmit={mockOnSubmit} disabled={false} />

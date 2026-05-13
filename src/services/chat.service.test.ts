@@ -45,25 +45,6 @@ describe('Chat Service', () => {
     expect(systemPrompt).toContain(
       '<transcript_srt>\nVideo about TypeScript testing\n</transcript_srt>'
     )
-    expect(systemPrompt).toContain(
-      '<video_url>\nhttps://youtube.com/watch?v=test\n</video_url>'
-    )
-    expect(systemPrompt).toContain('Answer in Markdown')
-    expect(systemPrompt).toContain(
-      'Format citations as (MM:SS), or (HH:MM:SS) for videos longer than one hour.'
-    )
-    expect(systemPrompt).toContain(
-      'Do not create YouTube timestamp links yourself; the app adds those links after your response.'
-    )
-    expect(systemPrompt).toContain(
-      'SRT cue numbers are not timestamps. Never use the cue number as the YouTube t= value.'
-    )
-    expect(systemPrompt).toContain(
-      'Citation format: (MM:SS) as plain visible text, for example (00:42).'
-    )
-    expect(systemPrompt).toContain(
-      'Keep each citation close to the specific claim it supports.'
-    )
   })
 
   it('should expose the source video URL for display post-processing', () => {

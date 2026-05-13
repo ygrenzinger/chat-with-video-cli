@@ -12,6 +12,7 @@ type ChatInputProps = {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
   const [input, setInput] = useState('')
+  const [inputInstanceKey, setInputInstanceKey] = useState(0)
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0)
   const [showSuggestions, setShowSuggestions] = useState(false)
 
@@ -30,6 +31,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
     setShowSuggestions(shouldShow)
   }, [suggestions, input])
 
+  const acceptSuggestion = (command: string) => {
+    setInput(command)
+    setInputInstanceKey(key => key + 1)
+    setSelectedSuggestionIndex(0)
+  }
+
   const handleSubmit = (value: string) => {
     // If we have partial command with suggestions, use the selected command
     if (
@@ -40,8 +47,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
     ) {
       const selectedCommand = suggestions[selectedSuggestionIndex]?.command
       if (selectedCommand) {
-        setInput(selectedCommand)
-        setSelectedSuggestionIndex(0)
+        acceptSuggestion(selectedCommand)
         return
       }
     }
@@ -81,8 +87,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
         if (suggestions.length > 0) {
           const selectedCommand = suggestions[selectedSuggestionIndex]?.command
           if (selectedCommand) {
-            setInput(selectedCommand)
-            setSelectedSuggestionIndex(0)
+            acceptSuggestion(selectedCommand)
           }
         }
         return
@@ -111,6 +116,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSubmit, disabled }) => {
       <Box>
         <Text color="cyan">{'> '}</Text>
         <TextInput
+          key={inputInstanceKey}
           value={input}
           onChange={value => {
             setInput(value)
